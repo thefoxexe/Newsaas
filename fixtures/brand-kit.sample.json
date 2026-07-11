@@ -1,0 +1,31 @@
+{
+  "sourceUrl": "https://example-store.com",
+  "colors": {
+    "primary": "#FF6B35",
+    "secondary": "#2E294E",
+    "background": "#0B0B0F",
+    "text": "#F5F5F0",
+    "accent": null,
+    "confidence": 0.82
+  },
+  "typography": {
+    "headingFamily": "Arial",
+    "bodyFamily": "Arial",
+    "googleFontMatch": null,
+    "fallbackStack": "sans-serif"
+  },
+  "logo": null,
+  "products": [
+    {
+      "title": "Veste technique Aro",
+      "price": "CHF 129.00",
+      "imageUrl": "https://example-store.com/products/aro-jacket.jpg",
+      "description": "Veste impermeable et respirante pour la ville."
+    }
+  ],
+  "copy": {
+    "tagline": "Le vestiaire de la ville",
+    "headings": ["Nouvelle collection", "Livraison en 48h"],
+    "reviewSnippets": ["Parfaite pour l'automne", "Coupe impeccable"]
+  }
+}

@@ -1,0 +1,64 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div class="stage">
+      <div class="hook" id="hook"></div>
+      <div class="body-lines" id="body"></div>
+      <div class="cta" id="cta"></div>
+    </div>
+    <script id="adforge-data" type="application/json">__ADFORGE_DATA__</script>
+    <script>
+      (function () {
+        var data = JSON.parse(document.getElementById("adforge-data").textContent);
+        var root = document.documentElement;
+        root.style.setProperty("--color-primary", data.colors.primary);
+        root.style.setProperty("--color-background", data.colors.background);
+        root.style.setProperty("--color-text", data.colors.text);
+        root.style.setProperty(
+          "--font-heading",
+          "'" + data.typography.headingFamily + "', " + data.typography.fallbackStack,
+        );
+        root.style.setProperty(
+          "--font-body",
+          "'" + data.typography.bodyFamily + "', " + data.typography.fallbackStack,
+        );
+
+        var hookEl = document.getElementById("hook");
+        data.hook.split(" ").forEach(function (word) {
+          var span = document.createElement("span");
+          span.className = "word";
+          span.textContent = word;
+          hookEl.appendChild(span);
+        });
+
+        var bodyEl = document.getElementById("body");
+        data.body.forEach(function (line) {
+          var p = document.createElement("p");
+          p.className = "body-line";
+          p.textContent = line;
+          bodyEl.appendChild(p);
+        });
+
+        document.getElementById("cta").textContent = data.cta;
+
+        // Every Animation starts in its "before" phase immediately, so pausing
+        // here (before any paint) and later seeking currentTime is enough to
+        // capture any point in the timeline deterministically.
+        document.getAnimations().forEach(function (animation) {
+          animation.pause();
+        });
+
+        window.__adforgeSeek = function (ms) {
+          document.getAnimations().forEach(function (animation) {
+            animation.currentTime = ms;
+          });
+        };
+        window.__adforgeReady = true;
+      })();
+    </script>
+  </body>
+</html>
