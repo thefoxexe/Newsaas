@@ -10,7 +10,11 @@ Générateur de pubs vidéo motion-design. Voir `docs/SPEC_REVIEW.md` pour la fi
 
 **Phase 3** : `ConceptGenerator`, un `BrandKit` → une `BrandAnalysis` + 5 `AdConcept` via l'API Claude. Chaîne complète vérifiée de bout en bout : URL → BrandKit → 5 concepts → 5 MP4 réels.
 
-**Phases 4 à 7** : pas commencées — web/DB/auth/queue/Stripe, landing page, les 4 autres templates. Ont besoin des décisions/accès listés dans `docs/SPEC_REVIEW.md` avant de pouvoir avancer sérieusement.
+**Phase 4 (fondations)** : schéma Postgres (Drizzle) appliqué à un vrai projet Supabase (`adforge`, eu-central-1), et la logique de quotas/entitlements (§8 du spec) — testée exhaustivement, vérifiée en conditions réelles contre la base Supabase. Pas encore fait : l'app Next.js elle-même (auth, pages, queue de rendu asynchrone).
+
+**Phase 5 (fondations)** : produits/prix Starter/Growth/Scale réels créés dans Stripe (compte `BroNote.ch`, **mode live** — voir l'avertissement plus bas), parsing des webhooks avec idempotence, Checkout, Customer Portal — tout testé, y compris un test d'intégration avec une vraie vérification de signature Stripe. Pas encore fait : les routes HTTP qui exposent ça (elles arrivent avec l'app Next.js).
+
+**Phases 6-7** : pas commencées — landing page, les 4 autres templates.
 
 ## Lancer le projet en local
 
@@ -50,6 +54,12 @@ src/
   generate/     ConceptGenerator (prompt, appel LLM, parsing Zod strict, re-verification
                 des contraintes de texte, un retry) — IO isolée derrière LlmClient,
                 implémenté par l'API Anthropic dans llm-client.ts
+  db/           schéma Drizzle (schema.ts) + migrations SQL versionnées + client Postgres
+  entitlements/ logique de quotas : canGenerate (pure) et reserveRenderCredit/
+                refundRenderCredit (transaction Postgres, verrou SELECT ... FOR UPDATE)
+  billing/      Stripe : mapping plan <-> price lookup_key, parsing des webhooks
+                (Zod, tolérant aux deux emplacements possibles de current_period_*),
+                traitement idempotent, Checkout, Customer Portal
   templates/    templates HTML/CSS/manifest.json, un dossier par template
   cli.ts        rendu : BrandKit + AdConcept JSON -> MP4
   extract-cli.ts extraction : URL -> BrandKit JSON
@@ -72,6 +82,16 @@ Couleurs pondérées par surface visible et boostées pour les éléments promin
 
 Un seul appel Claude produit `BrandAnalysis` + 5 `AdConcept` en JSON strict. Le modèle enveloppe parfois sa réponse dans un bloc markdown malgré la consigne — plutôt que de "réparer" ça avec une regex après coup (interdit par le spec), la réponse assistant est préfixée avec `{` (voir `src/generate/llm-client.ts`), ce qui empêche structurellement l'ajout de markdown. Chaque concept est re-vérifié après parsing contre les contraintes de texte du template et contre le nombre réel de produits (`productImageIndex`) ; un échec déclenche un unique retry, puis une erreur typée. `recommendedTemplate` vaut toujours `"kinetic-type"` pour l'instant, seul template existant (Phase 7 ajoutera le choix réel).
 
+## Quotas et abonnements
+
+`canGenerate` est une fonction pure testée sur chaque combinaison plan x limite de crédits x statut d'abonnement. `reserveRenderCredit` fait la vraie décrémentation dans une transaction Postgres (`SELECT ... FOR UPDATE` sur la ligne `usage` du user, pour que deux requêtes concurrentes ne passent pas toutes les deux) — vérifié contre la vraie base Supabase (réservations concurrentes, remboursement, plancher à 0). Le plan free n'a jamais de vrai abonnement Stripe derrière lui ; ses crédits se réinitialisent sur le mois calendaire plutôt que sur une période Stripe.
+
+## Stripe
+
+**Le compte Stripe connecté (`BroNote.ch`) est en mode live**, avec des produits existants sans rapport avec ADFORGE (confirmé avant de créer quoi que ce soit). Les produits/prix `ADFORGE Starter/Growth/Scale` (mensuel + annuel, 2 mois offerts) ont été créés en mode live sur ce compte, décision explicitement validée par l'utilisateur — voir `docs/SPEC_REVIEW.md`. Aucun Checkout réel n'a été déclenché : seuls le catalogue (Products/Prices) existe pour l'instant, pas de transaction.
+
+Stripe reste la seule source de vérité de l'abonnement : `handleStripeWebhook` ne fait que mettre à jour un cache (`subscriptions`) à partir des événements `customer.subscription.*`, jamais l'inverse. Idempotence par `stripe_events.id` (`ON CONFLICT DO NOTHING`) — un événement rejoué (Stripe retente les webhooks) est un no-op, vérifié par test avec une vraie vérification de signature (`stripe.webhooks.generateTestHeaderString`).
+
 ## Ce qui n'est pas encore construit
 
-Web/DB/auth/queue/Stripe (Phases 4-5), landing page (Phase 6), les 4 autres templates (Phase 7). Fixtures HTML capturées sur 5 vraies boutiques (au lieu des 2 fixtures construites à la main actuelles) — voir `docs/SPEC_REVIEW.md`.
+L'app Next.js elle-même : auth, pages, queue de rendu asynchrone, routes HTTP pour Stripe (Phase 4-5 restant), landing page (Phase 6), les 4 autres templates (Phase 7). Fixtures HTML capturées sur 5 vraies boutiques (au lieu des 2 fixtures construites à la main actuelles) — voir `docs/SPEC_REVIEW.md`.
