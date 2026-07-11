@@ -61,3 +61,11 @@ Les points ci-dessus ne bloquent pas le démarrage de la **Phase 1** (script CLI
 5. Valider les garde-fous anti-abus (rate-limit, pas de persistance sans compte) sur l'outil d'analyse gratuit avant la Phase 6.
 
 Aucune de ces réponses n'est requise pour lancer la Phase 1. Dis-moi si tu veux que j'enchaîne dessus maintenant.
+
+---
+
+## Journal des décisions prises en cours de route
+
+- **Stripe est en mode live sur le compte connecté (`BroNote.ch`).** Avant de créer le moindre produit, j'ai vérifié le catalogue existant : il contient des produits sans rapport avec ADFORGE (packs de crédits façon blackjack), confirmant qu'il s'agit du compte Stripe d'un autre business existant de l'utilisateur, pas d'un compte dédié. J'ai arrêté et demandé confirmation avant de créer quoi que ce soit. Réponse : créer en mode live, sur ce compte. Fait — Products/Prices `ADFORGE Starter/Growth/Scale` (mensuel + annuel) existent maintenant dans ce compte live, aux côtés des produits de l'autre business. Aucun Checkout réel n'a été déclenché.
+- **Supabase : projet créé (`adforge`, eu-central-1, tier gratuit, 0 CHF/mois).** RLS est désactivé sur les 7 tables par défaut (avertissement de sécurité de l'outil Supabase). Je ne l'ai pas activé moi-même : l'activer sans policies bloquerait tout accès, et l'app ne passe pas par supabase-js/la clé anon (connexion Postgres directe côté serveur uniquement), donc le risque d'exposition via l'API REST auto-générée de Supabase est faible dans l'architecture actuelle — mais à trancher explicitement avant que quoi que ce soit d'autre touche ce projet Supabase (ex: si on active un jour Supabase Auth ou le SDK client).
+- **`DATABASE_URL` n'est pas récupérable via les outils MCP Supabase** (le mot de passe de la base n'est montré qu'une fois, dans le dashboard). Les tests d'intégration qui en ont besoin (`reserve-credit`, `handle-webhook`) sont donc gated sur la variable d'environnement et skippés dans cette session — la logique elle-même a été vérifiée en exécutant les séquences SQL équivalentes directement contre la vraie base via `execute_sql`.
