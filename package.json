@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "render": "tsx src/cli.ts",
+    "extract": "tsx src/extract-cli.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "lint": "eslint ."

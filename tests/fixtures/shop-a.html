@@ -1,0 +1,73 @@
+<!doctype html>
+<!--
+  Hand-built fixture representative of a JSON-LD-driven storefront
+  (Shopify-style). Not a capture of a real site — see docs/SPEC_REVIEW.md,
+  §2, for the plan to add fixtures captured from real stores.
+-->
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <title>Aro — Vestes techniques</title>
+    <meta name="description" content="Vestes techniques imperméables pour la ville." />
+    <meta property="og:description" content="Le vestiaire technique de la ville." />
+    <meta property="og:image" content="assets/og-cover.jpg" />
+    <link rel="icon" href="assets/favicon-16.png" sizes="16x16" />
+    <link rel="icon" href="assets/favicon-512.png" sizes="512x512" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        "name": "Veste technique Aro",
+        "image": "assets/aro-jacket.jpg",
+        "description": "Veste impermeable et respirante pour la ville.",
+        "offers": { "@type": "Offer", "price": "129.00", "priceCurrency": "CHF" }
+      }
+    </script>
+    <style>
+      body {
+        margin: 0;
+        background: #0b0b0f;
+        color: #f5f5f0;
+        font-family: Arial, sans-serif;
+      }
+      h1,
+      h2 {
+        font-family: Georgia, serif;
+      }
+      header {
+        padding: 24px;
+      }
+      .logo {
+        height: 32px;
+      }
+      main {
+        padding: 40px;
+      }
+      .btn.cta-buy {
+        background: #ff6b35;
+        color: #0b0b0f;
+        border: none;
+        padding: 16px 32px;
+        font-size: 18px;
+      }
+      .review-card {
+        background: #16161c;
+        padding: 16px;
+        margin: 12px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <img class="logo" src="assets/header-logo.svg" alt="Aro logo" />
+    </header>
+    <main>
+      <h1>Ta veste te lache deja</h1>
+      <h2>Aro tient 4 saisons</h2>
+      <p>Garantie 2 ans, livraison en 48h.</p>
+      <button class="btn cta-buy">Je decouvre</button>
+      <div class="review-card">"Parfaite pour l'automne, je la recommande." — Julie</div>
+      <div class="review-card">"Coupe impeccable, tres respirante." — Marc</div>
+    </main>
+  </body>
+</html>
