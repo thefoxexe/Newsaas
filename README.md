@@ -8,7 +8,9 @@ Générateur de pubs vidéo motion-design. Voir `docs/SPEC_REVIEW.md` pour la fi
 
 **Phase 2** : `BrandExtractor`, une URL → un `BrandKit` JSON via Playwright (couleurs pondérées par surface/proéminence, typo, logo, produits JSON-LD, copy, score de confiance).
 
-**Phases 3 à 7** : pas commencées. Phase 3 (génération de concepts via l'API Claude) a besoin d'une clé `ANTHROPIC_API_KEY` que cet environnement n'a pas — je ne voulais pas livrer du code d'appel LLM sans pouvoir le vérifier par une vraie requête, au même niveau de rigueur que les phases 1 et 2. Les phases 4+ (web, DB, auth, queue, Stripe) ont aussi besoin de décisions/accès (voir `docs/SPEC_REVIEW.md`) avant de pouvoir avancer sérieusement.
+**Phase 3** : `ConceptGenerator`, un `BrandKit` → une `BrandAnalysis` + 5 `AdConcept` via l'API Claude. Chaîne complète vérifiée de bout en bout : URL → BrandKit → 5 concepts → 5 MP4 réels.
+
+**Phases 4 à 7** : pas commencées — web/DB/auth/queue/Stripe, landing page, les 4 autres templates. Ont besoin des décisions/accès listés dans `docs/SPEC_REVIEW.md` avant de pouvoir avancer sérieusement.
 
 ## Lancer le projet en local
 
@@ -17,6 +19,7 @@ npm install
 npx playwright install chromium   # une fois, si Chromium n'est pas déjà installé
 npm run render -- --brand fixtures/brand-kit.sample.json --concept fixtures/ad-concept.sample.json --format 9:16 --out out/ad.mp4
 npm run extract -- --url https://exemple-boutique.com --out out/brand-kit.json
+npm run generate -- --brand out/brand-kit.json --out out/generation.json   # a besoin de ANTHROPIC_API_KEY
 ```
 
 ffmpeg doit être installé sur la machine (`apt install ffmpeg` / `brew install ffmpeg`), avec le support `libx264`.
@@ -44,9 +47,13 @@ src/
   extract/      BrandExtractor (clustering de couleurs, typo, logo, produits JSON-LD,
                 copy, confiance) — IO isolée derrière PageAnalyzer, implémenté par
                 Playwright dans analyze-page.ts
+  generate/     ConceptGenerator (prompt, appel LLM, parsing Zod strict, re-verification
+                des contraintes de texte, un retry) — IO isolée derrière LlmClient,
+                implémenté par l'API Anthropic dans llm-client.ts
   templates/    templates HTML/CSS/manifest.json, un dossier par template
   cli.ts        rendu : BrandKit + AdConcept JSON -> MP4
   extract-cli.ts extraction : URL -> BrandKit JSON
+  generate-cli.ts generation : BrandKit JSON -> BrandAnalysis + 5 AdConcept JSON
 fixtures/       BrandKit et AdConcept d'exemple
 tests/          tests unitaires (logique pure) + tests d'intégration
 tests/fixtures/ pages HTML construites à la main pour tester l'extraction
@@ -61,6 +68,10 @@ Le spec suggère `page.clock` de Playwright pour figer le temps. En pratique, `p
 
 Couleurs pondérées par surface visible et boostées pour les éléments prominents (`button`, `.btn`, `[class*="cta"]`) via une distance perceptuelle approximée (formule "redmean"). Typo choisie par vote majoritaire sur les polices réellement résolues (`document.fonts.check`), avec un match Google Fonts contre une liste statique **volontairement réduite** — voir `src/extract/google-fonts-catalog.ts` : le vrai catalogue nécessite une clé API Google Fonts, décision non prise (`docs/SPEC_REVIEW.md`, §2). Timeout dur de 20s avec attente en deux temps (`domcontentloaded` puis `networkidle` en best-effort) pour ne pas rester bloqué sur des sites dont les trackers ne cessent jamais de faire du polling.
 
+## Génération de concepts
+
+Un seul appel Claude produit `BrandAnalysis` + 5 `AdConcept` en JSON strict. Le modèle enveloppe parfois sa réponse dans un bloc markdown malgré la consigne — plutôt que de "réparer" ça avec une regex après coup (interdit par le spec), la réponse assistant est préfixée avec `{` (voir `src/generate/llm-client.ts`), ce qui empêche structurellement l'ajout de markdown. Chaque concept est re-vérifié après parsing contre les contraintes de texte du template et contre le nombre réel de produits (`productImageIndex`) ; un échec déclenche un unique retry, puis une erreur typée. `recommendedTemplate` vaut toujours `"kinetic-type"` pour l'instant, seul template existant (Phase 7 ajoutera le choix réel).
+
 ## Ce qui n'est pas encore construit
 
-Génération de concepts LLM (Phase 3, bloquée sur une clé `ANTHROPIC_API_KEY`), web/DB/auth/queue/Stripe (Phases 4-5), landing page (Phase 6), les 4 autres templates (Phase 7). Fixtures HTML capturées sur 5 vraies boutiques (au lieu des 2 fixtures construites à la main actuelles) — voir `docs/SPEC_REVIEW.md`.
+Web/DB/auth/queue/Stripe (Phases 4-5), landing page (Phase 6), les 4 autres templates (Phase 7). Fixtures HTML capturées sur 5 vraies boutiques (au lieu des 2 fixtures construites à la main actuelles) — voir `docs/SPEC_REVIEW.md`.

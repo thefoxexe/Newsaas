@@ -2,6 +2,7 @@ import type { BrandKit } from "../domain/brand-kit.js";
 import type { AdConcept } from "../domain/ad-concept.js";
 import type { Result } from "../domain/result.js";
 import { ok, err } from "../domain/result.js";
+import { checkTextConstraints } from "../domain/text-constraints.js";
 import { TemplateValidationError } from "./errors.js";
 import type { LoadedTemplate } from "./load-template.js";
 
@@ -56,44 +57,9 @@ function validateTextConstraints(
   template: LoadedTemplate,
   concept: AdConcept,
 ): Result<true, TemplateValidationError> {
-  const { textConstraints } = template.manifest;
-
-  if (concept.hook.length > textConstraints.hook.maxChars) {
-    return err(
-      new TemplateValidationError(
-        "hook",
-        `"${concept.hook}" is ${concept.hook.length} chars, max is ${textConstraints.hook.maxChars}`,
-      ),
-    );
+  const violation = checkTextConstraints(template.manifest.textConstraints, concept);
+  if (violation.ok) {
+    return ok(true);
   }
-
-  if (concept.body.length > textConstraints.body.maxLines) {
-    return err(
-      new TemplateValidationError(
-        "body",
-        `${concept.body.length} lines, max is ${textConstraints.body.maxLines}`,
-      ),
-    );
-  }
-
-  const tooLongLine = concept.body.find((line) => line.length > textConstraints.body.maxCharsPerLine);
-  if (tooLongLine !== undefined) {
-    return err(
-      new TemplateValidationError(
-        "body",
-        `"${tooLongLine}" is longer than ${textConstraints.body.maxCharsPerLine} chars`,
-      ),
-    );
-  }
-
-  if (concept.cta.length > textConstraints.cta.maxChars) {
-    return err(
-      new TemplateValidationError(
-        "cta",
-        `"${concept.cta}" is ${concept.cta.length} chars, max is ${textConstraints.cta.maxChars}`,
-      ),
-    );
-  }
-
-  return ok(true);
+  return err(new TemplateValidationError(violation.error.field, violation.error.reason));
 }
