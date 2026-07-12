@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
 import { db } from "@/src/db/client";
 import { subscriptions } from "@/src/db/schema";
-import { getCurrentSession } from "@/src/auth/get-session";
+import { getCurrentSession } from "@/src/supabase/get-session";
 import { createStripeClient } from "@/src/billing/stripe-client";
 import { createPortalSession } from "@/src/billing/portal";
 

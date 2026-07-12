@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
 import { db } from "@/src/db/client";
 import { renders } from "@/src/db/schema";
-import { getCurrentSession } from "@/src/auth/get-session";
+import { getCurrentSession } from "@/src/supabase/get-session";
 
 export async function GET(_request: Request, context: { params: Promise<{ id: string }> }): Promise<Response> {
   const session = await getCurrentSession();

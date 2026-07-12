@@ -10,13 +10,12 @@ const databaseUrl = process.env["DATABASE_URL"];
 describe.skipIf(!databaseUrl)("reserveRenderCredit / refundRenderCredit (real Postgres)", () => {
   it("decrements once per reservation, serializes concurrent reservations, and refunds correctly", async () => {
     const { db } = await import("../src/db/client");
-    const { users, usage } = await import("../src/db/schema");
+    const { authUsers, usage } = await import("../src/db/schema");
     const { reserveRenderCredit, refundRenderCredit } = await import("../src/entitlements/reserve-credit");
 
-    const [user] = await db
-      .insert(users)
-      .values({ email: `quota-test-${randomUUID()}@example.com` })
-      .returning();
+    // Identity lives in Supabase Auth's auth.users, which this test doesn't
+    // own — insert the minimal row (id only) our FK needs to be satisfied.
+    const [user] = await db.insert(authUsers).values({ id: randomUUID() }).returning();
     if (!user) throw new Error("failed to create test user");
 
     try {
@@ -46,7 +45,7 @@ describe.skipIf(!databaseUrl)("reserveRenderCredit / refundRenderCredit (real Po
       const [row] = await db.select().from(usage).where(eq(usage.userId, user.id));
       expect(row?.creditsUsed).toBe(3);
     } finally {
-      await db.delete(users).where(eq(users.id, user.id));
+      await db.delete(authUsers).where(eq(authUsers.id, user.id));
     }
   }, 30_000);
 });

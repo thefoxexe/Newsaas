@@ -1,4 +1,4 @@
-import { getCurrentSession } from "@/src/auth/get-session";
+import { getCurrentSession } from "@/src/supabase/get-session";
 import { SignOutButton, DeleteAccountButton } from "./account-actions";
 
 export default async function SettingsPage() {

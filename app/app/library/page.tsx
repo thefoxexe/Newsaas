@@ -1,7 +1,7 @@
 import { desc, eq } from "drizzle-orm";
 import { db } from "@/src/db/client";
 import { renders } from "@/src/db/schema";
-import { getCurrentSession } from "@/src/auth/get-session";
+import { getCurrentSession } from "@/src/supabase/get-session";
 
 export default async function LibraryPage() {
   const session = await getCurrentSession();

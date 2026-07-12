@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { authClient } from "@/src/auth/auth-client";
+import { createClient } from "@/src/supabase/client";
 
 export function SignOutButton() {
   const router = useRouter();
@@ -10,7 +10,8 @@ export function SignOutButton() {
   return (
     <button
       onClick={async () => {
-        await authClient.signOut();
+        const supabase = createClient();
+        await supabase.auth.signOut();
         router.push("/");
       }}
       className="rounded-pill border border-border px-4 py-2 text-sm font-semibold"

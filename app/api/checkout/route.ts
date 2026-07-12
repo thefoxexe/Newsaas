@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { getCurrentSession } from "@/src/auth/get-session";
+import { getCurrentSession } from "@/src/supabase/get-session";
 import { createStripeClient } from "@/src/billing/stripe-client";
 import { createCheckoutSession } from "@/src/billing/checkout";
 import { lookupKeyFor } from "@/src/billing/plan-prices";

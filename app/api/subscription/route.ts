@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { and, eq } from "drizzle-orm";
 import { db } from "@/src/db/client";
 import { subscriptions, usage } from "@/src/db/schema";
-import { getCurrentSession } from "@/src/auth/get-session";
+import { getCurrentSession } from "@/src/supabase/get-session";
 import { PLAN_LIMITS, type Plan } from "@/src/entitlements/plans";
 import { resolvePeriod } from "@/src/entitlements/resolve-period";
 

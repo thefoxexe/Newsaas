@@ -3,7 +3,7 @@ import { z } from "zod";
 import { eq } from "drizzle-orm";
 import { db } from "@/src/db/client";
 import { brands, concepts, renders } from "@/src/db/schema";
-import { getCurrentSession } from "@/src/auth/get-session";
+import { getCurrentSession } from "@/src/supabase/get-session";
 import { FormatSchema } from "@/src/domain/format";
 import { reserveRenderCredit } from "@/src/entitlements/reserve-credit";
 

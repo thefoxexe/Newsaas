@@ -11,12 +11,14 @@ const webhookSecret = "whsec_test_secret_for_local_verification_only";
 describe.skipIf(!databaseUrl)("handleStripeWebhook (real Postgres, signed test event)", () => {
   it("upserts the subscriptions cache once, then skips the exact same event on replay", async () => {
     const { db } = await import("../src/db/client");
-    const { users, subscriptions, stripeEvents } = await import("../src/db/schema");
+    const { authUsers, subscriptions, stripeEvents } = await import("../src/db/schema");
     const { handleStripeWebhook } = await import("../src/billing/handle-webhook");
 
     const stripeClient = new Stripe("sk_test_placeholder_not_a_real_key");
 
-    const [user] = await db.insert(users).values({ email: `webhook-test-${randomUUID()}@example.com` }).returning();
+    // Identity lives in Supabase Auth's auth.users, which this test doesn't
+    // own — insert the minimal row (id only) our FK needs to be satisfied.
+    const [user] = await db.insert(authUsers).values({ id: randomUUID() }).returning();
     if (!user) throw new Error("failed to create test user");
 
     const eventId = `evt_test_${randomUUID()}`;
@@ -54,7 +56,7 @@ describe.skipIf(!databaseUrl)("handleStripeWebhook (real Postgres, signed test e
       expect(replay.value).toEqual({ skipped: true });
     } finally {
       await db.delete(stripeEvents).where(eq(stripeEvents.id, eventId));
-      await db.delete(users).where(eq(users.id, user.id));
+      await db.delete(authUsers).where(eq(authUsers.id, user.id));
     }
   }, 30_000);
 

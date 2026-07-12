@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { authClient } from "@/src/auth/auth-client";
+import { createClient } from "@/src/supabase/client";
 import { claimPendingBrandIfAny } from "../claim-pending-brand";
 
 export default function SignUpPage() {
@@ -12,27 +12,56 @@ export default function SignUpPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [checkEmail, setCheckEmail] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-
-  async function afterAuth(): Promise<void> {
-    const brandId = await claimPendingBrandIfAny();
-    router.push(brandId ? `/app?brand=${brandId}` : "/app");
-  }
 
   async function handleSubmit(event: React.FormEvent): Promise<void> {
     event.preventDefault();
     setSubmitting(true);
     setError(null);
 
-    const result = await authClient.signUp.email({ name, email, password });
+    const supabase = createClient();
+    const { data, error: signUpError } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { name } },
+    });
     setSubmitting(false);
 
-    if (result.error) {
-      setError(result.error.message ?? "Impossible de créer le compte.");
+    if (signUpError) {
+      setError(signUpError.message);
       return;
     }
 
-    await afterAuth();
+    // If email confirmation is enabled in the Supabase project, signUp
+    // succeeds but returns no session until the user clicks the link —
+    // there's nothing to redirect into yet.
+    if (!data.session) {
+      setCheckEmail(true);
+      return;
+    }
+
+    const brandId = await claimPendingBrandIfAny();
+    router.push(brandId ? `/app?brand=${brandId}` : "/app");
+  }
+
+  async function signInWithProvider(provider: "google" | "github"): Promise<void> {
+    const supabase = createClient();
+    await supabase.auth.signInWithOAuth({
+      provider,
+      options: { redirectTo: `${window.location.origin}/auth/callback` },
+    });
+  }
+
+  if (checkEmail) {
+    return (
+      <main className="mx-auto max-w-sm px-6 py-24 text-center">
+        <h1 className="text-2xl font-bold">Vérifie ta boîte mail</h1>
+        <p className="mt-4 text-muted">
+          On a envoyé un lien de confirmation à <strong>{email}</strong>. Clique dessus pour activer ton compte.
+        </p>
+      </main>
+    );
   }
 
   return (
@@ -77,13 +106,13 @@ export default function SignUpPage() {
 
       <div className="mt-6 flex flex-col gap-3">
         <button
-          onClick={() => authClient.signIn.social({ provider: "google", callbackURL: "/app" })}
+          onClick={() => signInWithProvider("google")}
           className="rounded-pill border border-border px-5 py-3 font-semibold"
         >
           Continuer avec Google
         </button>
         <button
-          onClick={() => authClient.signIn.social({ provider: "github", callbackURL: "/app" })}
+          onClick={() => signInWithProvider("github")}
           className="rounded-pill border border-border px-5 py-3 font-semibold"
         >
           Continuer avec GitHub

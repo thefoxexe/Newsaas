@@ -3,7 +3,7 @@ import { z } from "zod";
 import { eq } from "drizzle-orm";
 import { db } from "@/src/db/client";
 import { brands } from "@/src/db/schema";
-import { getCurrentSession } from "@/src/auth/get-session";
+import { getCurrentSession } from "@/src/supabase/get-session";
 import { deriveBrandName } from "@/src/domain/brand-name";
 
 const CreateBrandSchema = z.object({

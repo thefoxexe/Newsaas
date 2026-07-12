@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
 import { db } from "@/src/db/client";
 import { brands, concepts } from "@/src/db/schema";
-import { getCurrentSession } from "@/src/auth/get-session";
+import { getCurrentSession } from "@/src/supabase/get-session";
 import { BrandKitSchema } from "@/src/domain/brand-kit";
 import { generateConcepts } from "@/src/generate/generate-concepts";
 import { AnthropicLlmClient } from "@/src/generate/llm-client";

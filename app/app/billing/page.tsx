@@ -1,5 +1,5 @@
 import { PLAN_LIMITS, type Plan } from "@/src/entitlements/plans";
-import { getCurrentSession } from "@/src/auth/get-session";
+import { getCurrentSession } from "@/src/supabase/get-session";
 import { db } from "@/src/db/client";
 import { subscriptions, usage } from "@/src/db/schema";
 import { and, eq } from "drizzle-orm";

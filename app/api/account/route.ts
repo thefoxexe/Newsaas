@@ -1,19 +1,22 @@
 import { NextResponse } from "next/server";
-import { eq } from "drizzle-orm";
-import { db } from "@/src/db/client";
-import { users } from "@/src/db/schema";
-import { getCurrentSession } from "@/src/auth/get-session";
+import { getCurrentSession } from "@/src/supabase/get-session";
+import { createAdminClient } from "@/src/supabase/admin";
 
-// Cascades to brands/renders/subscriptions/usage/sessions/accounts via the
-// FK "on delete cascade" constraints in src/db/schema.ts. Does not yet purge
-// rendered video files from object storage — there is no real object
-// storage wired up yet (see src/storage/video-storage.ts).
+// Deleting the auth.users row cascades to brands/renders/subscriptions/usage
+// via the FK "on delete cascade" constraints in src/db/schema.ts. Does not
+// yet purge rendered video files from object storage — there is no real
+// object storage wired up yet (see src/storage/video-storage.ts).
 export async function DELETE(): Promise<Response> {
   const session = await getCurrentSession();
   if (!session) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
-  await db.delete(users).where(eq(users.id, session.user.id));
+  const admin = createAdminClient();
+  const { error } = await admin.auth.admin.deleteUser(session.user.id);
+  if (error) {
+    return NextResponse.json({ error: "failed to delete account" }, { status: 500 });
+  }
+
   return NextResponse.json({ deleted: true });
 }

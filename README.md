@@ -26,7 +26,7 @@ Si la version npm de `playwright` ne correspond pas au build Chromium déjà pr�
 
 ```bash
 npm install
-cp .env.example .env   # puis remplir DATABASE_URL, BETTER_AUTH_SECRET, ANTHROPIC_API_KEY, STRIPE_SECRET_KEY
+cp .env.example .env   # puis remplir DATABASE_URL, NEXT_PUBLIC_SUPABASE_URL/ANON_KEY, ANTHROPIC_API_KEY, STRIPE_SECRET_KEY
 npx drizzle-kit generate && psql "$DATABASE_URL" -f src/db/migrations/000X_*.sql   # une fois par nouvelle migration
 npm run dev       # l'app web sur http://localhost:3000
 npm run worker    # dans un second terminal — traite les extractions et les rendus en attente
@@ -49,7 +49,8 @@ Les tests d'intégration (`tests/*.integration.test.ts`) ne tournent que si `PLA
 
 **L'app web et le worker de rendu sont deux déploiements séparés, volontairement.** Playwright (Chromium) et ffmpeg ne tournent pas correctement sur des functions serverless (taille des binaires, pas de navigateur persistant) — ce n'est pas une limitation de Netlify en particulier, c'est vrai de tout hébergement serverless. Le spec le prévoyait déjà (§3 : `RenderWorker` est une brique à part du reste de l'API).
 
-- **App web (Next.js) → Netlify.** `netlify.toml` + `@netlify/plugin-nextjs` sont déjà configurés. Étapes : connecter ce repo GitHub dans le dashboard Netlify (Add new site → Import an existing project), définir les variables d'environnement listées dans `.env.example` (`DATABASE_URL`, `BETTER_AUTH_URL`/`NEXT_PUBLIC_APP_URL` = l'URL Netlify, `BETTER_AUTH_SECRET`, `ANTHROPIC_API_KEY`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, éventuellement `GOOGLE_CLIENT_ID`/`GITHUB_CLIENT_ID` + secrets), puis déployer. Cette étape n'a pas pu être faite depuis cette session : aucun compte Netlify n'est connecté ici.
+- **App web (Next.js) → Netlify.** `netlify.toml` + `@netlify/plugin-nextjs` sont déjà configurés. Étapes : connecter ce repo GitHub dans le dashboard Netlify (Add new site → Import an existing project), définir les variables d'environnement listées dans `.env.example` (`DATABASE_URL`, `NEXT_PUBLIC_SUPABASE_URL`/`NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `NEXT_PUBLIC_APP_URL` = l'URL Netlify, `ANTHROPIC_API_KEY`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`), puis déployer.
+- **Auth = Supabase Auth**, pas un système maison. Google/GitHub se configurent entièrement dans le dashboard Supabase (Authentication > Providers) — pas de client id/secret côté Netlify.
 - **Worker (`npm run worker`) → un hôte qui garde un processus vivant** (Fly.io, Railway, un petit VPS, un conteneur). Il lui faut `DATABASE_URL`, `ANTHROPIC_API_KEY`, et un Chromium installé (`npx playwright install chromium --with-deps`).
 - **Stockage vidéo.** `src/storage/video-storage.ts` écrit sur disque local pour l'instant (`LocalDiskStorage`) — ça ne survit pas à un redéploiement et ne fonctionne que si le worker et le serveur qui sert les fichiers sont la même machine. Remplacer par Cloudflare R2 (ou S3) avant un vrai lancement — nécessite des identifiants que je n'ai pas.
 

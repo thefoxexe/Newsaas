@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { authClient } from "@/src/auth/auth-client";
+import { createClient } from "@/src/supabase/client";
 import { claimPendingBrandIfAny } from "../claim-pending-brand";
 
 export default function SignInPage() {
@@ -18,16 +18,25 @@ export default function SignInPage() {
     setSubmitting(true);
     setError(null);
 
-    const result = await authClient.signIn.email({ email, password });
+    const supabase = createClient();
+    const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
     setSubmitting(false);
 
-    if (result.error) {
-      setError(result.error.message ?? "Identifiants incorrects.");
+    if (signInError) {
+      setError(signInError.message);
       return;
     }
 
     const brandId = await claimPendingBrandIfAny();
     router.push(brandId ? `/app?brand=${brandId}` : "/app");
+  }
+
+  async function signInWithProvider(provider: "google" | "github"): Promise<void> {
+    const supabase = createClient();
+    await supabase.auth.signInWithOAuth({
+      provider,
+      options: { redirectTo: `${window.location.origin}/auth/callback` },
+    });
   }
 
   return (
@@ -63,13 +72,13 @@ export default function SignInPage() {
 
       <div className="mt-6 flex flex-col gap-3">
         <button
-          onClick={() => authClient.signIn.social({ provider: "google", callbackURL: "/app" })}
+          onClick={() => signInWithProvider("google")}
           className="rounded-pill border border-border px-5 py-3 font-semibold"
         >
           Continuer avec Google
         </button>
         <button
-          onClick={() => authClient.signIn.social({ provider: "github", callbackURL: "/app" })}
+          onClick={() => signInWithProvider("github")}
           className="rounded-pill border border-border px-5 py-3 font-semibold"
         >
           Continuer avec GitHub

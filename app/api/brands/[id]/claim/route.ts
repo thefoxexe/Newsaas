@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { and, eq, isNull } from "drizzle-orm";
 import { db } from "@/src/db/client";
 import { brands } from "@/src/db/schema";
-import { getCurrentSession } from "@/src/auth/get-session";
+import { getCurrentSession } from "@/src/supabase/get-session";
 
 // Attaches an anonymous extraction to the account that just signed up.
 // Guarded by `isNull(userId)` so a brand already claimed by someone else
