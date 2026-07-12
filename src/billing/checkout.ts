@@ -16,6 +16,7 @@ export async function createCheckoutSession(stripeClient: Stripe, input: CreateC
     line_items: [{ price: input.priceId, quantity: 1 }],
     customer_email: input.userEmail,
     client_reference_id: input.userId,
+    allow_promotion_codes: true,
     subscription_data: { metadata: { userId: input.userId } },
     success_url: input.successUrl,
     cancel_url: input.cancelUrl,
