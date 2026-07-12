@@ -1,0 +1,31 @@
+{
+  "sourceUrl": "https://example-skincare.com",
+  "colors": {
+    "primary": "#C9184A",
+    "secondary": "#4A4A4A",
+    "background": "#FDF8F5",
+    "text": "#2B2B2B",
+    "accent": null,
+    "confidence": 0.9
+  },
+  "typography": {
+    "headingFamily": "Georgia",
+    "bodyFamily": "Arial",
+    "googleFontMatch": null,
+    "fallbackStack": "serif"
+  },
+  "logo": null,
+  "products": [
+    {
+      "title": "Serum Eclat",
+      "price": "CHF 42.00",
+      "imageUrl": "https://example-skincare.com/serum.jpg",
+      "description": "Serum vegan a l'acide hyaluronique."
+    }
+  ],
+  "copy": {
+    "tagline": "Une peau qui respire",
+    "headings": ["Nouveaute", "Formule vegan"],
+    "reviewSnippets": ["Resultats visibles en 2 semaines", "Ma peau n'a jamais ete aussi douce"]
+  }
+}

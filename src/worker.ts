@@ -2,7 +2,7 @@ import path from "node:path";
 import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { eq } from "drizzle-orm";
-import pino from "pino";
+import { createLogger } from "./logger";
 import { db } from "./db/client";
 import { brands, concepts, renders } from "./db/schema";
 import { BrandKitSchema } from "./domain/brand-kit";
@@ -16,7 +16,7 @@ import { renderVideo } from "./render/render-video";
 import { refundRenderCredit } from "./entitlements/reserve-credit";
 import { LocalDiskStorage } from "./storage/video-storage";
 
-const logger = pino({ name: "reeljolt-worker" });
+const logger = createLogger("reeljolt-worker");
 const POLL_INTERVAL_MS = 3000;
 const TEMPLATES_DIR = path.join(process.cwd(), "src", "templates");
 
@@ -44,7 +44,18 @@ async function claimOnePendingBrand() {
 async function processExtraction(brand: { id: string; sourceUrl: string }): Promise<void> {
   logger.info({ brandId: brand.id, url: brand.sourceUrl }, "extraction started");
 
-  const result = await extractBrandKit(brand.sourceUrl, new PlaywrightPageAnalyzer());
+  // Catches both the typed Result errors below and anything unexpected
+  // (a bug, a Playwright crash) — without this, an unanticipated throw would
+  // leave the brand stuck in "extracting" forever instead of failing loudly.
+  let result;
+  try {
+    result = await extractBrandKit(brand.sourceUrl, new PlaywrightPageAnalyzer());
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    await db.update(brands).set({ status: "failed", errorCode: message }).where(eq(brands.id, brand.id));
+    logger.error({ brandId: brand.id, error: message }, "extraction crashed unexpectedly");
+    return;
+  }
 
   if (!result.ok) {
     await db.update(brands).set({ status: "failed", errorCode: result.error.name }).where(eq(brands.id, brand.id));

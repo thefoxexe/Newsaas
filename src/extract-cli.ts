@@ -1,11 +1,11 @@
 import { parseArgs } from "node:util";
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
-import pino from "pino";
+import { createLogger } from "./logger";
 import { extractBrandKit } from "./extract/extract-brand-kit";
 import { PlaywrightPageAnalyzer } from "./extract/analyze-page";
 
-const logger = pino({ name: "reeljolt-extract-cli" });
+const logger = createLogger("reeljolt-extract-cli");
 
 async function main(): Promise<void> {
   const { values } = parseArgs({

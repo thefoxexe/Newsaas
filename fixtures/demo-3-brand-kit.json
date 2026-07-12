@@ -1,0 +1,31 @@
+{
+  "sourceUrl": "https://example-sneakers.com",
+  "colors": {
+    "primary": "#39FF14",
+    "secondary": "#FF0090",
+    "background": "#050505",
+    "text": "#FFFFFF",
+    "accent": null,
+    "confidence": 0.88
+  },
+  "typography": {
+    "headingFamily": "Arial",
+    "bodyFamily": "Arial",
+    "googleFontMatch": null,
+    "fallbackStack": "sans-serif"
+  },
+  "logo": null,
+  "products": [
+    {
+      "title": "Runner X Edition Limitee",
+      "price": "CHF 189.00",
+      "imageUrl": "https://example-sneakers.com/runner-x.jpg",
+      "description": "200 paires seulement."
+    }
+  ],
+  "copy": {
+    "tagline": "Ne marche pas. Vole.",
+    "headings": ["Drop exclusif", "200 paires"],
+    "reviewSnippets": ["Confort exceptionnel", "Design qui tue"]
+  }
+}

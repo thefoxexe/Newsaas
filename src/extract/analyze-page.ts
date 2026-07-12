@@ -37,6 +37,15 @@ export class PlaywrightPageAnalyzer implements PageAnalyzer {
     try {
       const page = await browser.newPage();
 
+      // tsx/esbuild compiles this file with `keepNames`, which wraps named
+      // functions in a `__name(fn, "fn")` helper call to preserve `.name` —
+      // including collectSignals below. Playwright serializes it via
+      // toString() and runs it in the page's isolated context, where that
+      // helper doesn't exist, so every extraction throws a bare
+      // ReferenceError. Defining a no-op stand-in before any evaluate call
+      // fixes it without touching the collector's logic or types.
+      await page.addInitScript({ content: "window.__name = window.__name || function (fn) { return fn; };" });
+
       try {
         await page.goto(url, { waitUntil: "domcontentloaded", timeout: DOM_CONTENT_LOADED_TIMEOUT_MS });
       } catch (cause) {

@@ -2,7 +2,7 @@ import { parseArgs } from "node:util";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import pino from "pino";
+import { createLogger } from "./logger";
 import { BrandKitSchema } from "./domain/brand-kit";
 import { AdConceptSchema } from "./domain/ad-concept";
 import { FormatSchema } from "./domain/format";
@@ -11,7 +11,7 @@ import { PlaywrightFrameCapturer } from "./render/capture-frames";
 import { FfmpegVideoEncoder } from "./render/encode-video";
 import { renderVideo } from "./render/render-video";
 
-const logger = pino({ name: "reeljolt-cli" });
+const logger = createLogger("reeljolt-cli");
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 async function main(): Promise<void> {
