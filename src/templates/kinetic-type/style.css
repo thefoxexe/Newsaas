@@ -12,6 +12,7 @@ body {
 }
 
 .stage {
+  position: relative;
   width: 100vw;
   height: 100vh;
   display: flex;
@@ -21,6 +22,38 @@ body {
   padding: 6vw;
   background: var(--color-background);
   font-family: var(--font-body);
+  overflow: hidden;
+}
+
+/* A slowly-pulsing color disc behind the copy — gives the frame some depth
+   instead of a flat fill. Deliberately a flat shape, not a radial-gradient
+   or a blur filter: both render with GPU-dependent dithering/AA that isn't
+   bit-identical across separate Chromium launches, which silently broke
+   the determinism guarantee (caught by the render integration test, not
+   by eye — the frames looked fine, only the file hash differed). */
+.stage::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 120vw;
+  height: 120vw;
+  background: var(--color-primary);
+  border-radius: 50%;
+  opacity: 0.1;
+  transform: translate(-50%, -50%) scale(0.85);
+  animation: glow-pulse 6000ms ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes glow-pulse {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(0.85);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1);
+  }
 }
 
 .hook {
@@ -33,15 +66,16 @@ body {
 }
 
 .hook .word {
+  position: relative;
   font-family: var(--font-heading);
   font-weight: 800;
-  font-size: clamp(2rem, 9vw, 6rem);
+  font-size: clamp(2.2rem, 10vw, 6.6rem);
   line-height: 1;
   color: var(--color-text);
   text-transform: uppercase;
   letter-spacing: -0.01em;
   opacity: 0;
-  transform: translateY(6vh) scale(0.85);
+  transform: translateY(6vh) scale(0.85) rotate(-2deg);
   animation: word-in 500ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
@@ -59,15 +93,15 @@ body {
 @keyframes word-in {
   0% {
     opacity: 0;
-    transform: translateY(6vh) scale(0.85);
+    transform: translateY(6vh) scale(0.85) rotate(-2deg);
   }
   55% {
     opacity: 1;
-    transform: translateY(0) scale(1.08);
+    transform: translateY(0) scale(1.08) rotate(1deg);
   }
   100% {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0) scale(1) rotate(0deg);
   }
 }
 
@@ -104,19 +138,21 @@ body {
 }
 
 .cta {
-  padding: 1.6vh 3.2vw;
+  padding: 1.8vh 3.6vw;
   border-radius: 999px;
   background: var(--color-primary);
   color: var(--color-background);
   font-family: var(--font-heading);
   font-weight: 700;
-  font-size: clamp(1rem, 3.2vw, 1.6rem);
+  font-size: clamp(1.05rem, 3.4vw, 1.7rem);
   text-transform: uppercase;
   letter-spacing: 0.02em;
+  box-shadow: 0 0 0 0 var(--color-primary);
   opacity: 0;
   transform: scale(0.6);
-  animation: cta-pop 600ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-  animation-delay: 4200ms;
+  animation:
+    cta-pop 600ms cubic-bezier(0.34, 1.56, 0.64, 1) 4200ms forwards,
+    cta-glow 900ms ease-out 4800ms 2;
 }
 
 @keyframes cta-pop {
@@ -131,5 +167,15 @@ body {
   100% {
     opacity: 1;
     transform: scale(1);
+  }
+}
+
+/* A short double "ping" halo right after the CTA lands, like a nudge. */
+@keyframes cta-glow {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-primary) 60%, transparent);
+  }
+  100% {
+    box-shadow: 0 0 0 2.2vw transparent;
   }
 }

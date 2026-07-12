@@ -1,0 +1,31 @@
+{
+  "sourceUrl": "https://example-audio.com",
+  "colors": {
+    "primary": "#00E5FF",
+    "secondary": "#FF3D81",
+    "background": "#0A0E27",
+    "text": "#FFFFFF",
+    "accent": null,
+    "confidence": 0.91
+  },
+  "typography": {
+    "headingFamily": "Arial",
+    "bodyFamily": "Arial",
+    "googleFontMatch": null,
+    "fallbackStack": "sans-serif"
+  },
+  "logo": null,
+  "products": [
+    {
+      "title": "EchoPods Pro",
+      "price": "CHF 149.00",
+      "imageUrl": "https://example-audio.com/echopods.jpg",
+      "description": "Ecouteurs sans fil, reduction de bruit active."
+    }
+  ],
+  "copy": {
+    "tagline": "Le son qui te suit",
+    "headings": ["Nouvelle generation", "30h d'autonomie"],
+    "reviewSnippets": ["Qualite audio bluffante", "Je les oublie sur moi"]
+  }
+}

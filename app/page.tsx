@@ -1,12 +1,7 @@
 import Link from "next/link";
 import { PLAN_LIMITS } from "@/src/entitlements/plans";
 import { UrlAnalyzer } from "./url-analyzer";
-
-const DEMOS = [
-  { src: "/demos/demo-1-urban.mp4", label: "Mode urbaine" },
-  { src: "/demos/demo-2-skincare.mp4", label: "Cosmetique" },
-  { src: "/demos/demo-3-sneakers.mp4", label: "Sneakers" },
-];
+import { DemoCarousel } from "./demo-carousel";
 
 const PLANS: Array<{ id: "starter" | "growth" | "scale"; price: number; highlight?: boolean }> = [
   { id: "starter", price: 29 },
@@ -34,25 +29,14 @@ export default function LandingPage() {
       <section className="mt-24">
         <h2 className="text-center text-2xl font-bold">De vraies sorties de notre moteur</h2>
         <p className="mt-2 text-center text-muted">
-          Pas de mockup, pas de vidéo stock. Chaque exemple ci-dessous est un fichier produit par le pipeline réel.
+          Pas de mockup, pas de vidéo stock. Trois secteurs différents, trois DA différentes — chaque pub ci-dessous
+          est un fichier produit par le pipeline réel, telle quelle.
         </p>
-        <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-3">
-          {DEMOS.map((demo) => (
-            <div key={demo.src} className="overflow-hidden rounded-card border border-border bg-surface">
-              <video
-                src={demo.src}
-                className="aspect-[9/16] w-full object-cover"
-                autoPlay
-                loop
-                muted
-                playsInline
-                controls
-              />
-              <p className="p-3 text-center text-sm text-muted">{demo.label}</p>
-            </div>
-          ))}
-        </div>
       </section>
+
+      <div className="mt-10">
+        <DemoCarousel />
+      </div>
 
       <section className="mt-24 rounded-card border border-border bg-surface p-8">
         <h2 className="text-center text-2xl font-bold">Motion design, pas des avatars IA</h2>

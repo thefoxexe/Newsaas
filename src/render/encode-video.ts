@@ -45,6 +45,13 @@ export class FfmpegVideoEncoder implements VideoEncoder {
         "20",
         "-pix_fmt",
         "yuv420p",
+        // Without this, ffmpeg writes the moov atom (the index a browser
+        // needs before it can start decoding) at the end of the file, so
+        // playback can't start until that tail has downloaded. Moving it to
+        // the front makes the file playable progressively, as web video
+        // should be — standard practice, independent of any specific bug.
+        "-movflags",
+        "+faststart",
         options.outputPath,
       ]);
     } finally {

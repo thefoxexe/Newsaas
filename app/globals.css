@@ -17,10 +17,21 @@
 
   --radius-card: 1rem;
   --radius-pill: 999px;
+
+  --animate-marquee: marquee 32s linear infinite;
 }
 
 body {
   background: var(--color-background);
   color: var(--color-foreground);
   font-family: var(--font-body);
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
 }
