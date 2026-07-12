@@ -1,9 +1,9 @@
 const DEMOS = [
-  { src: "/demos/demo-3-sneakers.mp4", label: "Sneakers", angle: "Scarcity" },
-  { src: "/demos/demo-2-skincare.mp4", label: "Skincare", angle: "Social proof" },
-  { src: "/demos/demo-4-audio.mp4", label: "Tech audio", angle: "Product benefit" },
-  { src: "/demos/demo-5-fitness.mp4", label: "Fitness", angle: "Transformation" },
-  { src: "/demos/demo-6-watches-fr.mp4", label: "Watches (FR)", angle: "Urgence" },
+  { src: "/demos/demo-3-sneakers-v2.mp4", label: "Sneakers", angle: "Scarcity" },
+  { src: "/demos/demo-2-skincare-v2.mp4", label: "Skincare", angle: "Social proof" },
+  { src: "/demos/demo-4-audio-v2.mp4", label: "Tech audio", angle: "Product benefit" },
+  { src: "/demos/demo-5-fitness-v2.mp4", label: "Fitness", angle: "Transformation" },
+  { src: "/demos/demo-6-watches-fr-v2.mp4", label: "Watches (FR)", angle: "Urgence" },
 ];
 
 // Duplicated once so the CSS marquee can loop seamlessly at -50%.
