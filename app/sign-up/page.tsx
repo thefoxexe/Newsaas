@@ -20,29 +20,34 @@ export default function SignUpPage() {
     setSubmitting(true);
     setError(null);
 
-    const supabase = createClient();
-    const { data, error: signUpError } = await supabase.auth.signUp({
-      email,
-      password,
-      options: { data: { name } },
-    });
-    setSubmitting(false);
+    try {
+      const supabase = createClient();
+      const { data, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { data: { name } },
+      });
 
-    if (signUpError) {
-      setError(signUpError.message);
-      return;
+      if (signUpError) {
+        setError(signUpError.message);
+        return;
+      }
+
+      // If email confirmation is enabled in the Supabase project, signUp
+      // succeeds but returns no session until the user clicks the link —
+      // there's nothing to redirect into yet.
+      if (!data.session) {
+        setCheckEmail(true);
+        return;
+      }
+
+      const brandId = await claimPendingBrandIfAny();
+      router.push(brandId ? `/app?brand=${brandId}` : "/app");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Une erreur inattendue est survenue.");
+    } finally {
+      setSubmitting(false);
     }
-
-    // If email confirmation is enabled in the Supabase project, signUp
-    // succeeds but returns no session until the user clicks the link —
-    // there's nothing to redirect into yet.
-    if (!data.session) {
-      setCheckEmail(true);
-      return;
-    }
-
-    const brandId = await claimPendingBrandIfAny();
-    router.push(brandId ? `/app?brand=${brandId}` : "/app");
   }
 
   if (checkEmail) {

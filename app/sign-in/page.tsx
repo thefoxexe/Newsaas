@@ -18,17 +18,22 @@ export default function SignInPage() {
     setSubmitting(true);
     setError(null);
 
-    const supabase = createClient();
-    const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
-    setSubmitting(false);
+    try {
+      const supabase = createClient();
+      const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
 
-    if (signInError) {
-      setError(signInError.message);
-      return;
+      if (signInError) {
+        setError(signInError.message);
+        return;
+      }
+
+      const brandId = await claimPendingBrandIfAny();
+      router.push(brandId ? `/app?brand=${brandId}` : "/app");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Une erreur inattendue est survenue.");
+    } finally {
+      setSubmitting(false);
     }
-
-    const brandId = await claimPendingBrandIfAny();
-    router.push(brandId ? `/app?brand=${brandId}` : "/app");
   }
 
   return (
