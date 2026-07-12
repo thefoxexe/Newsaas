@@ -45,14 +45,6 @@ export default function SignUpPage() {
     router.push(brandId ? `/app?brand=${brandId}` : "/app");
   }
 
-  async function signInWithProvider(provider: "google" | "github"): Promise<void> {
-    const supabase = createClient();
-    await supabase.auth.signInWithOAuth({
-      provider,
-      options: { redirectTo: `${window.location.origin}/auth/callback` },
-    });
-  }
-
   if (checkEmail) {
     return (
       <main className="mx-auto max-w-sm px-6 py-24 text-center">
@@ -103,21 +95,6 @@ export default function SignUpPage() {
           {submitting ? "..." : "Créer mon compte"}
         </button>
       </form>
-
-      <div className="mt-6 flex flex-col gap-3">
-        <button
-          onClick={() => signInWithProvider("google")}
-          className="rounded-pill border border-border px-5 py-3 font-semibold"
-        >
-          Continuer avec Google
-        </button>
-        <button
-          onClick={() => signInWithProvider("github")}
-          className="rounded-pill border border-border px-5 py-3 font-semibold"
-        >
-          Continuer avec GitHub
-        </button>
-      </div>
 
       <p className="mt-6 text-center text-sm text-muted">
         Déjà un compte ?{" "}
