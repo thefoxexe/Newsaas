@@ -4,17 +4,9 @@ Générateur de pubs vidéo motion-design. Voir `docs/SPEC_REVIEW.md` pour la fi
 
 ## État actuel
 
-**Phase 1** (§12 du spec) : moteur de rendu en CLI, sans DB/web/auth. Un template (`kinetic-type`), trois formats (`9:16`, `1:1`, `16:9`). Entrée : deux fichiers JSON (`BrandKit`, `AdConcept`). Sortie : un MP4 H.264/yuv420p déterministe.
+**Phases 1-5 : faites et vérifiées en conditions réelles**, bout en bout — landing page → analyse DA gratuite (Playwright) → inscription → génération de 5 concepts (Claude) → rendu vidéo (Playwright + ffmpeg) → lecture du MP4 dans le navigateur. Auth (email/mot de passe + Google/GitHub), DB Postgres (Supabase), quotas, Stripe (Checkout, Portal, webhooks idempotents) sont tous branchés et testés.
 
-**Phase 2** : `BrandExtractor`, une URL → un `BrandKit` JSON via Playwright (couleurs pondérées par surface/proéminence, typo, logo, produits JSON-LD, copy, score de confiance).
-
-**Phase 3** : `ConceptGenerator`, un `BrandKit` → une `BrandAnalysis` + 5 `AdConcept` via l'API Claude. Chaîne complète vérifiée de bout en bout : URL → BrandKit → 5 concepts → 5 MP4 réels.
-
-**Phase 4 (fondations)** : schéma Postgres (Drizzle) appliqué à un vrai projet Supabase (`adforge`, eu-central-1), et la logique de quotas/entitlements (§8 du spec) — testée exhaustivement, vérifiée en conditions réelles contre la base Supabase. Pas encore fait : l'app Next.js elle-même (auth, pages, queue de rendu asynchrone).
-
-**Phase 5 (fondations)** : produits/prix Starter/Growth/Scale réels créés dans Stripe (compte `BroNote.ch`, **mode live** — voir l'avertissement plus bas), parsing des webhooks avec idempotence, Checkout, Customer Portal — tout testé, y compris un test d'intégration avec une vraie vérification de signature Stripe. Pas encore fait : les routes HTTP qui exposent ça (elles arrivent avec l'app Next.js).
-
-**Phases 6-7** : pas commencées — landing page, les 4 autres templates.
+**Ce qui reste ouvert** : les 4 templates additionnels (Phase 7 — un seul, `kinetic-type`, existe), le stockage vidéo réel (actuellement un stockage disque local temporaire, R2/S3 pas encore branché), et le déploiement effectif (voir §Déploiement).
 
 ## Lancer le projet en local
 
@@ -30,15 +22,36 @@ ffmpeg doit être installé sur la machine (`apt install ffmpeg` / `brew install
 
 Si la version npm de `playwright` ne correspond pas au build Chromium déjà présent sur la machine, définir `PLAYWRIGHT_CHROMIUM_EXECUTABLE` (voir `.env.example`) plutôt que de relancer un téléchargement.
 
+## Lancer l'application web en local
+
+```bash
+npm install
+cp .env.example .env   # puis remplir DATABASE_URL, BETTER_AUTH_SECRET, ANTHROPIC_API_KEY, STRIPE_SECRET_KEY
+npx drizzle-kit generate && psql "$DATABASE_URL" -f src/db/migrations/000X_*.sql   # une fois par nouvelle migration
+npm run dev       # l'app web sur http://localhost:3000
+npm run worker    # dans un second terminal — traite les extractions et les rendus en attente
+```
+
+L'app web (auth, pages, Stripe, DB) et le worker (Playwright + ffmpeg) sont deux processus séparés — voir §Architecture.
+
 ## Commandes utiles
 
 ```bash
 npm run typecheck   # tsc --noEmit, strict, zéro any
 npm run lint         # eslint, zéro warning ignoré
 npm test             # vitest — logique métier + un test d'intégration réel (rendu + ffmpeg)
+npm run build        # build Next.js de production
 ```
 
-Les tests d'intégration (`tests/*.integration.test.ts`) ne tournent que si `PLAYWRIGHT_CHROMIUM_EXECUTABLE` est défini dans l'environnement — ils lancent un vrai Chromium (et un vrai ffmpeg pour le rendu), et vérifient : que deux rendus du même JSON produisent un MP4 strictement identique (même hash MD5), et que l'extraction sur deux pages locales de test produit un `BrandKit` cohérent.
+Les tests d'intégration (`tests/*.integration.test.ts`) ne tournent que si `PLAYWRIGHT_CHROMIUM_EXECUTABLE` (et pour certains, `DATABASE_URL`) est défini dans l'environnement — ils lancent un vrai Chromium (et un vrai ffmpeg pour le rendu), et vérifient : que deux rendus du même JSON produisent un MP4 strictement identique (même hash MD5), que l'extraction sur deux pages locales de test produit un `BrandKit` cohérent, et que les réservations de crédits/webhooks Stripe fonctionnent contre une vraie base Postgres.
+
+## Architecture de déploiement
+
+**L'app web et le worker de rendu sont deux déploiements séparés, volontairement.** Playwright (Chromium) et ffmpeg ne tournent pas correctement sur des functions serverless (taille des binaires, pas de navigateur persistant) — ce n'est pas une limitation de Netlify en particulier, c'est vrai de tout hébergement serverless. Le spec le prévoyait déjà (§3 : `RenderWorker` est une brique à part du reste de l'API).
+
+- **App web (Next.js) → Netlify.** `netlify.toml` + `@netlify/plugin-nextjs` sont déjà configurés. Étapes : connecter ce repo GitHub dans le dashboard Netlify (Add new site → Import an existing project), définir les variables d'environnement listées dans `.env.example` (`DATABASE_URL`, `BETTER_AUTH_URL`/`NEXT_PUBLIC_APP_URL` = l'URL Netlify, `BETTER_AUTH_SECRET`, `ANTHROPIC_API_KEY`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, éventuellement `GOOGLE_CLIENT_ID`/`GITHUB_CLIENT_ID` + secrets), puis déployer. Cette étape n'a pas pu être faite depuis cette session : aucun compte Netlify n'est connecté ici.
+- **Worker (`npm run worker`) → un hôte qui garde un processus vivant** (Fly.io, Railway, un petit VPS, un conteneur). Il lui faut `DATABASE_URL`, `ANTHROPIC_API_KEY`, et un Chromium installé (`npx playwright install chromium --with-deps`).
+- **Stockage vidéo.** `src/storage/video-storage.ts` écrit sur disque local pour l'instant (`LocalDiskStorage`) — ça ne survit pas à un redéploiement et ne fonctionne que si le worker et le serveur qui sert les fichiers sont la même machine. Remplacer par Cloudflare R2 (ou S3) avant un vrai lancement — nécessite des identifiants que je n'ai pas.
 
 ## Structure
 
