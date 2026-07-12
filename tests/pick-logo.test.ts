@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { pickLogo } from "../src/extract/pick-logo.js";
+import { pickLogo } from "../src/extract/pick-logo";
 
 describe("pickLogo", () => {
   it("prefers a high-definition favicon over everything else", () => {

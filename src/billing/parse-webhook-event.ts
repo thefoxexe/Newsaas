@@ -1,10 +1,10 @@
 import { z } from "zod";
 import type Stripe from "stripe";
-import type { Result } from "../domain/result.js";
-import { ok, err } from "../domain/result.js";
-import { planForLookupKey } from "./plan-prices.js";
-import type { Plan } from "../entitlements/plans.js";
-import { WebhookParseError } from "./errors.js";
+import type { Result } from "../domain/result";
+import { ok, err } from "../domain/result";
+import { planForLookupKey } from "./plan-prices";
+import type { Plan } from "../entitlements/plans";
+import { WebhookParseError } from "./errors";
 
 const SubscriptionItemSchema = z
   .object({

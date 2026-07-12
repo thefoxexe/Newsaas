@@ -2,8 +2,8 @@ import { parseArgs } from "node:util";
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import pino from "pino";
-import { extractBrandKit } from "./extract/extract-brand-kit.js";
-import { PlaywrightPageAnalyzer } from "./extract/analyze-page.js";
+import { extractBrandKit } from "./extract/extract-brand-kit";
+import { PlaywrightPageAnalyzer } from "./extract/analyze-page";
 
 const logger = pino({ name: "reeljolt-extract-cli" });
 

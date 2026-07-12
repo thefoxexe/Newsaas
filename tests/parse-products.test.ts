@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseJsonLdProducts } from "../src/extract/parse-products.js";
+import { parseJsonLdProducts } from "../src/extract/parse-products";
 
 describe("parseJsonLdProducts", () => {
   it("extracts a Product node with a flat offer", () => {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { matchTypography } from "../src/extract/match-typography.js";
+import { matchTypography } from "../src/extract/match-typography";
 
 describe("matchTypography", () => {
   it("picks the most frequent resolved font per role", () => {

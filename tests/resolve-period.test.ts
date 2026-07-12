@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { resolvePeriod } from "../src/entitlements/resolve-period.js";
+import { resolvePeriod } from "../src/entitlements/resolve-period";
 
 describe("resolvePeriod", () => {
   it("uses the Stripe period verbatim when one is provided", () => {

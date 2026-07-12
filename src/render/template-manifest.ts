@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { FormatSchema } from "../domain/format.js";
-import { TemplateIdSchema } from "../domain/ad-concept.js";
+import { FormatSchema } from "../domain/format";
+import { TemplateIdSchema } from "../domain/ad-concept";
 
 export const TemplateManifestSchema = z.object({
   id: TemplateIdSchema,

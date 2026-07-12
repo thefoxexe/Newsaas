@@ -1,14 +1,14 @@
-import type { BrandKit } from "../domain/brand-kit.js";
-import type { Result } from "../domain/result.js";
-import { ok, err } from "../domain/result.js";
-import type { PageAnalyzer } from "./analyze-page.js";
-import { pickBrandColors } from "./pick-brand-colors.js";
-import { matchTypography } from "./match-typography.js";
-import { pickLogo } from "./pick-logo.js";
-import { parseJsonLdProducts } from "./parse-products.js";
-import { buildCopy } from "./build-copy.js";
-import { computeConfidence } from "./confidence.js";
-import { ExtractionNavigationError, ExtractionTimeoutError } from "./errors.js";
+import type { BrandKit } from "../domain/brand-kit";
+import type { Result } from "../domain/result";
+import { ok, err } from "../domain/result";
+import type { PageAnalyzer } from "./analyze-page";
+import { pickBrandColors } from "./pick-brand-colors";
+import { matchTypography } from "./match-typography";
+import { pickLogo } from "./pick-logo";
+import { parseJsonLdProducts } from "./parse-products";
+import { buildCopy } from "./build-copy";
+import { computeConfidence } from "./confidence";
+import { ExtractionNavigationError, ExtractionTimeoutError } from "./errors";
 
 // JSON-LD image URLs are commonly relative on real storefronts, unlike the
 // signals collected in-browser (already resolved against document.baseURI).

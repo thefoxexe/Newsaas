@@ -1,4 +1,4 @@
-import type { LogoCandidate } from "./page-signals.js";
+import type { LogoCandidate } from "./page-signals";
 
 export type Logo = {
   url: string;

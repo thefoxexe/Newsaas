@@ -1,9 +1,9 @@
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { describe, expect, it } from "vitest";
-import { extractBrandKit } from "../src/extract/extract-brand-kit.js";
-import { PlaywrightPageAnalyzer } from "../src/extract/analyze-page.js";
-import { BrandKitSchema } from "../src/domain/brand-kit.js";
+import { extractBrandKit } from "../src/extract/extract-brand-kit";
+import { PlaywrightPageAnalyzer } from "../src/extract/analyze-page";
+import { BrandKitSchema } from "../src/domain/brand-kit";
 
 // Needs a real Chromium binary, same gating as the render integration test.
 const chromiumAvailable = Boolean(process.env["PLAYWRIGHT_CHROMIUM_EXECUTABLE"]);

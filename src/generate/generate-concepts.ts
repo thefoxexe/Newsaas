@@ -1,12 +1,12 @@
-import type { BrandKit } from "../domain/brand-kit.js";
-import type { TextConstraints } from "../domain/text-constraints.js";
-import { checkTextConstraints } from "../domain/text-constraints.js";
-import type { Result } from "../domain/result.js";
-import { ok, err } from "../domain/result.js";
-import type { LlmClient } from "./llm-client.js";
-import { buildGenerationPrompt } from "./build-prompt.js";
-import { parseGenerationResponse, type GenerationResponse } from "./parse-generation-response.js";
-import { LlmConstraintViolationError, LlmResponseParseError } from "./errors.js";
+import type { BrandKit } from "../domain/brand-kit";
+import type { TextConstraints } from "../domain/text-constraints";
+import { checkTextConstraints } from "../domain/text-constraints";
+import type { Result } from "../domain/result";
+import { ok, err } from "../domain/result";
+import type { LlmClient } from "./llm-client";
+import { buildGenerationPrompt } from "./build-prompt";
+import { parseGenerationResponse, type GenerationResponse } from "./parse-generation-response";
+import { LlmConstraintViolationError, LlmResponseParseError } from "./errors";
 
 export async function generateConcepts(
   brandKit: BrandKit,

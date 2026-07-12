@@ -1,5 +1,5 @@
-import type { Result } from "./result.js";
-import { ok, err } from "./result.js";
+import type { Result } from "./result";
+import { ok, err } from "./result";
 
 export type TextConstraints = {
   hook: { maxChars: number };

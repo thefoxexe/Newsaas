@@ -3,10 +3,10 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import pino from "pino";
-import { BrandKitSchema } from "./domain/brand-kit.js";
-import { generateConcepts } from "./generate/generate-concepts.js";
-import { AnthropicLlmClient } from "./generate/llm-client.js";
-import { loadTemplate } from "./render/load-template.js";
+import { BrandKitSchema } from "./domain/brand-kit";
+import { generateConcepts } from "./generate/generate-concepts";
+import { AnthropicLlmClient } from "./generate/llm-client";
+import { loadTemplate } from "./render/load-template";
 
 const logger = pino({ name: "reeljolt-generate-cli" });
 const __dirname = path.dirname(fileURLToPath(import.meta.url));

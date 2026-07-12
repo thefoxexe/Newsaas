@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseGenerationResponse } from "../src/generate/parse-generation-response.js";
+import { parseGenerationResponse } from "../src/generate/parse-generation-response";
 
 const validPayload = {
   analysis: {

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { BrandKit } from "../domain/brand-kit.js";
+import type { BrandKit } from "../domain/brand-kit";
 
 const OfferSchema = z
   .object({

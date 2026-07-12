@@ -9,9 +9,9 @@ const databaseUrl = process.env["DATABASE_URL"];
 
 describe.skipIf(!databaseUrl)("reserveRenderCredit / refundRenderCredit (real Postgres)", () => {
   it("decrements once per reservation, serializes concurrent reservations, and refunds correctly", async () => {
-    const { db } = await import("../src/db/client.js");
-    const { users, usage } = await import("../src/db/schema.js");
-    const { reserveRenderCredit, refundRenderCredit } = await import("../src/entitlements/reserve-credit.js");
+    const { db } = await import("../src/db/client");
+    const { users, usage } = await import("../src/db/schema");
+    const { reserveRenderCredit, refundRenderCredit } = await import("../src/entitlements/reserve-credit");
 
     const [user] = await db
       .insert(users)

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { checkTextConstraints, type TextConstraints } from "../src/domain/text-constraints.js";
+import { checkTextConstraints, type TextConstraints } from "../src/domain/text-constraints";
 
 const constraints: TextConstraints = {
   hook: { maxChars: 10 },

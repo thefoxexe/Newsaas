@@ -1,4 +1,4 @@
-import type { ColorSample } from "./page-signals.js";
+import type { ColorSample } from "./page-signals";
 
 export type ColorCluster = {
   color: string;

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { AdConceptSchema } from "../src/domain/ad-concept.js";
+import { AdConceptSchema } from "../src/domain/ad-concept";
 
 const validConcept = {
   id: "concept-1",

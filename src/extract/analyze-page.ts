@@ -1,6 +1,6 @@
 import { chromium } from "playwright";
-import type { ColorSample, LogoCandidate, RawPageSignals } from "./page-signals.js";
-import { ExtractionNavigationError, ExtractionTimeoutError } from "./errors.js";
+import type { ColorSample, LogoCandidate, RawPageSignals } from "./page-signals";
+import { ExtractionNavigationError, ExtractionTimeoutError } from "./errors";
 
 export interface PageAnalyzer {
   analyze(url: string): Promise<RawPageSignals>;

@@ -1,14 +1,14 @@
-import type { BrandKit } from "../domain/brand-kit.js";
-import type { AdConcept } from "../domain/ad-concept.js";
-import type { Format } from "../domain/format.js";
-import { dimensionsFor } from "../domain/format.js";
-import type { Result } from "../domain/result.js";
-import { ok, err } from "../domain/result.js";
-import type { LoadedTemplate } from "./load-template.js";
-import type { FrameCapturer } from "./capture-frames.js";
-import type { VideoEncoder } from "./encode-video.js";
-import { renderTemplateHtml } from "./render-html.js";
-import { UnsupportedFormatError, type TemplateValidationError } from "./errors.js";
+import type { BrandKit } from "../domain/brand-kit";
+import type { AdConcept } from "../domain/ad-concept";
+import type { Format } from "../domain/format";
+import { dimensionsFor } from "../domain/format";
+import type { Result } from "../domain/result";
+import { ok, err } from "../domain/result";
+import type { LoadedTemplate } from "./load-template";
+import type { FrameCapturer } from "./capture-frames";
+import type { VideoEncoder } from "./encode-video";
+import { renderTemplateHtml } from "./render-html";
+import { UnsupportedFormatError, type TemplateValidationError } from "./errors";
 
 export type RenderVideoInput = {
   template: LoadedTemplate;

@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import { TemplateManifestSchema, type TemplateManifest } from "./template-manifest.js";
+import { TemplateManifestSchema, type TemplateManifest } from "./template-manifest";
 
 export type LoadedTemplate = {
   manifest: TemplateManifest;

@@ -2,7 +2,7 @@ import { spawn } from "node:child_process";
 import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { VideoEncodeError } from "./errors.js";
+import { VideoEncodeError } from "./errors";
 
 export type EncodeOptions = {
   fps: number;

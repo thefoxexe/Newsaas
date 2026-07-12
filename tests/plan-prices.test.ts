@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { lookupKeyFor, planForLookupKey } from "../src/billing/plan-prices.js";
+import { lookupKeyFor, planForLookupKey } from "../src/billing/plan-prices";
 
 describe("plan-prices", () => {
   it("resolves a plan from a known lookup_key", () => {

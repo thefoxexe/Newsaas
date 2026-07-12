@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { pickBrandColors } from "../src/extract/pick-brand-colors.js";
-import type { ColorSample } from "../src/extract/page-signals.js";
+import { pickBrandColors } from "../src/extract/pick-brand-colors";
+import type { ColorSample } from "../src/extract/page-signals";
 
 describe("pickBrandColors", () => {
   it("picks the dominant background, a prominent CTA as primary, and resolves text color", () => {

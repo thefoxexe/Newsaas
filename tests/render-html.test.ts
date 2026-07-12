@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { renderTemplateHtml } from "../src/render/render-html.js";
-import type { LoadedTemplate } from "../src/render/load-template.js";
-import type { BrandKit } from "../src/domain/brand-kit.js";
-import type { AdConcept } from "../src/domain/ad-concept.js";
+import { renderTemplateHtml } from "../src/render/render-html";
+import type { LoadedTemplate } from "../src/render/load-template";
+import type { BrandKit } from "../src/domain/brand-kit";
+import type { AdConcept } from "../src/domain/ad-concept";
 
 const template: LoadedTemplate = {
   manifest: {

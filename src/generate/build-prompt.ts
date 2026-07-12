@@ -1,6 +1,6 @@
-import type { BrandKit } from "../domain/brand-kit.js";
-import type { TextConstraints } from "../domain/text-constraints.js";
-import type { Prompt } from "./llm-client.js";
+import type { BrandKit } from "../domain/brand-kit";
+import type { TextConstraints } from "../domain/text-constraints";
+import type { Prompt } from "./llm-client";
 
 const CONCEPT_COUNT = 5;
 

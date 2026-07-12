@@ -1,4 +1,4 @@
-import { GOOGLE_FONTS_CATALOG } from "./google-fonts-catalog.js";
+import { GOOGLE_FONTS_CATALOG } from "./google-fonts-catalog";
 
 export type TypographyResult = {
   headingFamily: string;

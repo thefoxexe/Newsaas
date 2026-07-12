@@ -1,7 +1,7 @@
-import type { Result } from "../domain/result.js";
-import { ok, err } from "../domain/result.js";
-import { PLAN_LIMITS, type Plan } from "./plans.js";
-import { QuotaError } from "./errors.js";
+import type { Result } from "../domain/result";
+import { ok, err } from "../domain/result";
+import { PLAN_LIMITS, type Plan } from "./plans";
+import { QuotaError } from "./errors";
 
 export const ACTIVE_SUBSCRIPTION_STATUSES = ["active", "trialing"] as const;
 export type SubscriptionStatus =

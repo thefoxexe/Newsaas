@@ -1,7 +1,7 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { loadTemplate } from "../src/render/load-template.js";
+import { loadTemplate } from "../src/render/load-template";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const templateDir = path.join(__dirname, "..", "src", "templates", "kinetic-type");

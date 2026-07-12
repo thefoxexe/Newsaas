@@ -1,5 +1,5 @@
-import type { ColorSample } from "./page-signals.js";
-import { clusterColors, type ColorCluster } from "./cluster-colors.js";
+import type { ColorSample } from "./page-signals";
+import { clusterColors, type ColorCluster } from "./cluster-colors";
 
 export type BrandColors = {
   primary: string;

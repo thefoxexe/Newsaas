@@ -4,12 +4,12 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { loadTemplate } from "../src/render/load-template.js";
-import { PlaywrightFrameCapturer } from "../src/render/capture-frames.js";
-import { FfmpegVideoEncoder } from "../src/render/encode-video.js";
-import { renderVideo } from "../src/render/render-video.js";
-import { BrandKitSchema } from "../src/domain/brand-kit.js";
-import { AdConceptSchema } from "../src/domain/ad-concept.js";
+import { loadTemplate } from "../src/render/load-template";
+import { PlaywrightFrameCapturer } from "../src/render/capture-frames";
+import { FfmpegVideoEncoder } from "../src/render/encode-video";
+import { renderVideo } from "../src/render/render-video";
+import { BrandKitSchema } from "../src/domain/brand-kit";
+import { AdConceptSchema } from "../src/domain/ad-concept";
 
 // Needs a real Chromium binary. Skipped automatically when Playwright's
 // browser isn't installed for this Node/OS combination (e.g. bare CI images).

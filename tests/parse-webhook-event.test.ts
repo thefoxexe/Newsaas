@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type Stripe from "stripe";
-import { parseWebhookEvent } from "../src/billing/parse-webhook-event.js";
+import { parseWebhookEvent } from "../src/billing/parse-webhook-event";
 
 function fakeEvent(type: string, object: Record<string, unknown>): Stripe.Event {
   return { id: "evt_test", type, data: { object } } as unknown as Stripe.Event;

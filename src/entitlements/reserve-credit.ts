@@ -1,12 +1,12 @@
 import { and, eq, sql } from "drizzle-orm";
-import type { Db } from "../db/client.js";
-import { subscriptions, usage } from "../db/schema.js";
-import type { Result } from "../domain/result.js";
-import { ok, err } from "../domain/result.js";
-import { canGenerate, type SubscriptionStatus } from "./can-generate.js";
-import { resolvePeriod } from "./resolve-period.js";
-import type { Plan } from "./plans.js";
-import { QuotaError } from "./errors.js";
+import type { Db } from "../db/client";
+import { subscriptions, usage } from "../db/schema";
+import type { Result } from "../domain/result";
+import { ok, err } from "../domain/result";
+import { canGenerate, type SubscriptionStatus } from "./can-generate";
+import { resolvePeriod } from "./resolve-period";
+import type { Plan } from "./plans";
+import { QuotaError } from "./errors";
 
 export type ReservedCredit = {
   usageId: string;

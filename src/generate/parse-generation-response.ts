@@ -1,9 +1,9 @@
 import { z } from "zod";
-import { BrandAnalysisSchema } from "../domain/brand-analysis.js";
-import { AdConceptSchema } from "../domain/ad-concept.js";
-import type { Result } from "../domain/result.js";
-import { ok, err } from "../domain/result.js";
-import { LlmResponseParseError } from "./errors.js";
+import { BrandAnalysisSchema } from "../domain/brand-analysis";
+import { AdConceptSchema } from "../domain/ad-concept";
+import type { Result } from "../domain/result";
+import { ok, err } from "../domain/result";
+import { LlmResponseParseError } from "./errors";
 
 const GenerationResponseSchema = z.object({
   analysis: BrandAnalysisSchema,

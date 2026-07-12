@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { canGenerate } from "../src/entitlements/can-generate.js";
-import { PLAN_LIMITS, type Plan } from "../src/entitlements/plans.js";
+import { canGenerate } from "../src/entitlements/can-generate";
+import { PLAN_LIMITS, type Plan } from "../src/entitlements/plans";
 
 describe("canGenerate", () => {
   for (const plan of ["free", "starter", "growth", "scale"] as Plan[]) {

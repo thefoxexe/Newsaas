@@ -10,9 +10,9 @@ const webhookSecret = "whsec_test_secret_for_local_verification_only";
 
 describe.skipIf(!databaseUrl)("handleStripeWebhook (real Postgres, signed test event)", () => {
   it("upserts the subscriptions cache once, then skips the exact same event on replay", async () => {
-    const { db } = await import("../src/db/client.js");
-    const { users, subscriptions, stripeEvents } = await import("../src/db/schema.js");
-    const { handleStripeWebhook } = await import("../src/billing/handle-webhook.js");
+    const { db } = await import("../src/db/client");
+    const { users, subscriptions, stripeEvents } = await import("../src/db/schema");
+    const { handleStripeWebhook } = await import("../src/billing/handle-webhook");
 
     const stripeClient = new Stripe("sk_test_placeholder_not_a_real_key");
 
@@ -59,8 +59,8 @@ describe.skipIf(!databaseUrl)("handleStripeWebhook (real Postgres, signed test e
   }, 30_000);
 
   it("rejects a payload whose signature doesn't match", async () => {
-    const { db } = await import("../src/db/client.js");
-    const { handleStripeWebhook } = await import("../src/billing/handle-webhook.js");
+    const { db } = await import("../src/db/client");
+    const { handleStripeWebhook } = await import("../src/billing/handle-webhook");
 
     const stripeClient = new Stripe("sk_test_placeholder_not_a_real_key");
     const result = await handleStripeWebhook(db, stripeClient, '{"id":"evt_bad"}', "t=1,v1=deadbeef", webhookSecret);

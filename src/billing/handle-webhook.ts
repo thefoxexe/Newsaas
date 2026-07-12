@@ -1,11 +1,11 @@
 import type Stripe from "stripe";
 import { eq } from "drizzle-orm";
-import type { Db } from "../db/client.js";
-import { stripeEvents, subscriptions } from "../db/schema.js";
-import type { Result } from "../domain/result.js";
-import { ok, err } from "../domain/result.js";
-import { parseWebhookEvent } from "./parse-webhook-event.js";
-import { WebhookParseError, WebhookSignatureError } from "./errors.js";
+import type { Db } from "../db/client";
+import { stripeEvents, subscriptions } from "../db/schema";
+import type { Result } from "../domain/result";
+import { ok, err } from "../domain/result";
+import { parseWebhookEvent } from "./parse-webhook-event";
+import { WebhookParseError, WebhookSignatureError } from "./errors";
 
 export type WebhookOutcome = { skipped: true } | { skipped: false; kind: string };
 

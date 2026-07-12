@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { generateConcepts } from "../src/generate/generate-concepts.js";
-import type { LlmClient, Prompt } from "../src/generate/llm-client.js";
-import type { GenerationResponse } from "../src/generate/parse-generation-response.js";
-import type { BrandKit } from "../src/domain/brand-kit.js";
-import type { TextConstraints } from "../src/domain/text-constraints.js";
+import { generateConcepts } from "../src/generate/generate-concepts";
+import type { LlmClient, Prompt } from "../src/generate/llm-client";
+import type { GenerationResponse } from "../src/generate/parse-generation-response";
+import type { BrandKit } from "../src/domain/brand-kit";
+import type { TextConstraints } from "../src/domain/text-constraints";
 
 const textConstraints: TextConstraints = {
   hook: { maxChars: 40 },

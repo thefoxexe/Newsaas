@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { BrandKitSchema } from "../src/domain/brand-kit.js";
+import { BrandKitSchema } from "../src/domain/brand-kit";
 
 const validBrandKit = {
   sourceUrl: "https://example.com",

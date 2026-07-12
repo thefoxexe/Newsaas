@@ -1,10 +1,10 @@
-import type { BrandKit } from "../domain/brand-kit.js";
-import type { AdConcept } from "../domain/ad-concept.js";
-import type { Result } from "../domain/result.js";
-import { ok, err } from "../domain/result.js";
-import { checkTextConstraints } from "../domain/text-constraints.js";
-import { TemplateValidationError } from "./errors.js";
-import type { LoadedTemplate } from "./load-template.js";
+import type { BrandKit } from "../domain/brand-kit";
+import type { AdConcept } from "../domain/ad-concept";
+import type { Result } from "../domain/result";
+import { ok, err } from "../domain/result";
+import { checkTextConstraints } from "../domain/text-constraints";
+import { TemplateValidationError } from "./errors";
+import type { LoadedTemplate } from "./load-template";
 
 type TemplateData = {
   colors: { primary: string; background: string; text: string };

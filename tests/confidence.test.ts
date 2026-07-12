@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { computeConfidence } from "../src/extract/confidence.js";
+import { computeConfidence } from "../src/extract/confidence";
 
 describe("computeConfidence", () => {
   it("returns 1 when every signal is strong", () => {

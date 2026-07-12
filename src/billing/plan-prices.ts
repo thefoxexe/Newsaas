@@ -1,4 +1,4 @@
-import type { Plan } from "../entitlements/plans.js";
+import type { Plan } from "../entitlements/plans";
 
 export type BillingPeriod = "monthly" | "annual";
 

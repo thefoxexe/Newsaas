@@ -1,5 +1,5 @@
 import { chromium } from "playwright";
-import { FrameCaptureError } from "./errors.js";
+import { FrameCaptureError } from "./errors";
 
 export type CaptureOptions = {
   width: number;

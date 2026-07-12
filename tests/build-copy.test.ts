@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildCopy } from "../src/extract/build-copy.js";
+import { buildCopy } from "../src/extract/build-copy";
 
 describe("buildCopy", () => {
   it("prefers og:description over the meta description for the tagline", () => {

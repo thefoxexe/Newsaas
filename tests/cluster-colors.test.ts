@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { clusterColors } from "../src/extract/cluster-colors.js";
-import type { ColorSample } from "../src/extract/page-signals.js";
+import { clusterColors } from "../src/extract/cluster-colors";
+import type { ColorSample } from "../src/extract/page-signals";
 
 function sample(color: string, areaPx: number, isProminent = false): ColorSample {
   return { color, role: "background", areaPx, isProminent };
