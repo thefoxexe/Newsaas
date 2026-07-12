@@ -1,9 +1,9 @@
 {
   "id": "demo-3",
-  "angle": "creer la raretee",
-  "hook": "Ne marche pas. Vole.",
-  "body": ["Edition limitee", "200 paires seulement"],
-  "cta": "Je fonce",
+  "angle": "Scarcity",
+  "hook": "Don't walk. Fly.",
+  "body": ["Limited drop", "200 pairs only"],
+  "cta": "I'm in",
   "recommendedTemplate": "kinetic-type",
   "productImageIndex": 0
 }

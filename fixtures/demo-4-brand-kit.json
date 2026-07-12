@@ -18,14 +18,14 @@
   "products": [
     {
       "title": "EchoPods Pro",
-      "price": "CHF 149.00",
+      "price": "$149.00",
       "imageUrl": "https://example-audio.com/echopods.jpg",
-      "description": "Ecouteurs sans fil, reduction de bruit active."
+      "description": "Wireless earbuds with active noise cancelling."
     }
   ],
   "copy": {
-    "tagline": "Le son qui te suit",
-    "headings": ["Nouvelle generation", "30h d'autonomie"],
-    "reviewSnippets": ["Qualite audio bluffante", "Je les oublie sur moi"]
+    "tagline": "The sound that follows you",
+    "headings": ["Next generation", "30h battery life"],
+    "reviewSnippets": ["Stunning audio quality", "I forget I'm even wearing them"]
   }
 }

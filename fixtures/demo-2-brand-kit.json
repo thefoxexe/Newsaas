@@ -17,15 +17,15 @@
   "logo": null,
   "products": [
     {
-      "title": "Serum Eclat",
-      "price": "CHF 42.00",
+      "title": "Glow Serum",
+      "price": "$42.00",
       "imageUrl": "https://example-skincare.com/serum.jpg",
-      "description": "Serum vegan a l'acide hyaluronique."
+      "description": "Vegan serum with hyaluronic acid."
     }
   ],
   "copy": {
-    "tagline": "Une peau qui respire",
-    "headings": ["Nouveaute", "Formule vegan"],
-    "reviewSnippets": ["Resultats visibles en 2 semaines", "Ma peau n'a jamais ete aussi douce"]
+    "tagline": "Skin that breathes",
+    "headings": ["New", "Vegan formula"],
+    "reviewSnippets": ["Visible results in 2 weeks", "My skin has never been this soft"]
   }
 }

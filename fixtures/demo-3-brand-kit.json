@@ -17,15 +17,15 @@
   "logo": null,
   "products": [
     {
-      "title": "Runner X Edition Limitee",
-      "price": "CHF 189.00",
+      "title": "Runner X Limited Edition",
+      "price": "$189.00",
       "imageUrl": "https://example-sneakers.com/runner-x.jpg",
-      "description": "200 paires seulement."
+      "description": "Only 200 pairs."
     }
   ],
   "copy": {
-    "tagline": "Ne marche pas. Vole.",
-    "headings": ["Drop exclusif", "200 paires"],
-    "reviewSnippets": ["Confort exceptionnel", "Design qui tue"]
+    "tagline": "Don't walk. Fly.",
+    "headings": ["Exclusive drop", "200 pairs"],
+    "reviewSnippets": ["Unreal comfort", "Design that kills"]
   }
 }

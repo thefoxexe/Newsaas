@@ -63,6 +63,7 @@ describe("renderTemplateHtml", () => {
     expect(result.value).toContain("<style>.stage { color: red; }</style>");
     expect(result.value).toContain('"hook":"Short hook"');
     expect(result.value).toContain('"primary":"#FF0000"');
+    expect(result.value).toContain('"angle":"test angle"');
   });
 
   it("rejects a hook longer than the template's maxChars", () => {

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useLanguage } from "./i18n/language-context";
 
 type BrandPreview = {
   status: "pending" | "extracting" | "done" | "failed";
@@ -25,6 +26,7 @@ async function pollBrand(id: string, onUpdate: (brand: BrandPreview) => void): P
 }
 
 export function UrlAnalyzer() {
+  const { t } = useLanguage();
   const [url, setUrl] = useState("");
   const [brandId, setBrandId] = useState<string | null>(null);
   const [brand, setBrand] = useState<BrandPreview | null>(null);
@@ -61,7 +63,7 @@ export function UrlAnalyzer() {
           required
           value={url}
           onChange={(event) => setUrl(event.target.value)}
-          placeholder="https://ta-boutique.com"
+          placeholder={t.hero.inputPlaceholder}
           className="flex-1 rounded-pill bg-transparent px-5 py-3 text-foreground outline-none placeholder:text-muted"
         />
         <button
@@ -69,27 +71,26 @@ export function UrlAnalyzer() {
           disabled={submitting}
           className="rounded-pill bg-primary px-6 py-3 font-semibold text-primary-foreground transition-transform hover:scale-[1.02] disabled:opacity-50"
         >
-          {submitting ? "Analyse..." : "Analyser gratuitement"}
+          {submitting ? t.hero.inputSubmitting : t.hero.inputSubmit}
         </button>
       </form>
-      <p className="mt-3 text-center text-xs text-muted">Aucune carte bancaire requise · résultat en quelques secondes</p>
+      <p className="mt-3 text-center text-xs text-muted">{t.hero.inputHint}</p>
 
       {brandId && (
         <div className="mx-auto mt-6 max-w-xl rounded-card border border-border bg-surface p-6 text-left">
           {!brand || brand.status === "pending" || brand.status === "extracting" ? (
             <div className="flex items-center gap-3 text-muted">
               <span className="h-2 w-2 animate-pulse rounded-full bg-primary" />
-              Analyse de la direction artistique en cours...
+              {t.hero.analyzing}
             </div>
           ) : brand.status === "failed" ? (
-            <p className="text-danger">
-              On n&apos;a pas réussi à analyser ce site. Réessaie avec une autre URL, ou crée un compte pour corriger
-              la DA à la main.
-            </p>
+            <p className="text-danger">{t.hero.failed}</p>
           ) : (
             brand.brandKit && (
               <>
-                <p className="text-sm text-muted">Direction artistique détectée pour {brand.name}</p>
+                <p className="text-sm text-muted">
+                  {t.hero.detected} {brand.name}
+                </p>
                 <div className="mt-3 flex gap-2">
                   {[brand.brandKit.colors.primary, brand.brandKit.colors.secondary, brand.brandKit.colors.background].map(
                     (color) => (
@@ -102,14 +103,12 @@ export function UrlAnalyzer() {
                     ),
                   )}
                 </div>
-                <p className="mt-3 text-foreground">
-                  {brand.brandKit.copy.tagline ?? "Positionnement détecté, prêt à générer."}
-                </p>
+                <p className="mt-3 text-foreground">{brand.brandKit.copy.tagline ?? ""}</p>
                 <Link
                   href="/sign-up"
                   className="mt-4 inline-block rounded-pill bg-primary px-5 py-2 font-semibold text-primary-foreground transition-transform hover:scale-[1.02]"
                 >
-                  Voir mes 5 pubs — créer un compte
+                  {t.hero.ctaClaim}
                 </Link>
               </>
             )

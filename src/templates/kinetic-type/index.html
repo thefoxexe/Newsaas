@@ -6,6 +6,7 @@
   </head>
   <body>
     <div class="stage">
+      <div class="eyebrow" id="eyebrow"><span class="eyebrow-label" id="eyebrow-label"></span></div>
       <div class="hook" id="hook"></div>
       <div class="body-lines" id="body"></div>
       <div class="cta" id="cta"></div>
@@ -26,6 +27,8 @@
           "--font-body",
           "'" + data.typography.bodyFamily + "', " + data.typography.fallbackStack,
         );
+
+        document.getElementById("eyebrow-label").textContent = data.angle;
 
         var hookEl = document.getElementById("hook");
         data.hook.split(" ").forEach(function (word) {

@@ -1,0 +1,31 @@
+{
+  "sourceUrl": "https://example-fitapp.com",
+  "colors": {
+    "primary": "#FF6B00",
+    "secondary": "#1A1A1A",
+    "background": "#0D0D0D",
+    "text": "#FFFFFF",
+    "accent": null,
+    "confidence": 0.87
+  },
+  "typography": {
+    "headingFamily": "Arial",
+    "bodyFamily": "Arial",
+    "googleFontMatch": null,
+    "fallbackStack": "sans-serif"
+  },
+  "logo": null,
+  "products": [
+    {
+      "title": "12-Week Transformation Plan",
+      "price": "$29.00",
+      "imageUrl": "https://example-fitapp.com/plan.jpg",
+      "description": "Home workouts, no equipment needed."
+    }
+  ],
+  "copy": {
+    "tagline": "Stop scrolling. Start moving.",
+    "headings": ["New program", "No gym required"],
+    "reviewSnippets": ["Down 12 lbs in 6 weeks", "Finally a plan I stuck with"]
+  }
+}

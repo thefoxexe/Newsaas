@@ -1,0 +1,31 @@
+{
+  "sourceUrl": "https://example-montres.ch",
+  "colors": {
+    "primary": "#D4AF37",
+    "secondary": "#8A8A8A",
+    "background": "#0B0B0C",
+    "text": "#F5F5F0",
+    "accent": null,
+    "confidence": 0.92
+  },
+  "typography": {
+    "headingFamily": "Georgia",
+    "bodyFamily": "Arial",
+    "googleFontMatch": null,
+    "fallbackStack": "serif"
+  },
+  "logo": null,
+  "products": [
+    {
+      "title": "Montre Aurore",
+      "price": "CHF 590.00",
+      "imageUrl": "https://example-montres.ch/aurore.jpg",
+      "description": "Boitier acier, mouvement suisse, 100 pieces."
+    }
+  ],
+  "copy": {
+    "tagline": "Le temps qui marque",
+    "headings": ["Serie limitee", "Fabrication suisse"],
+    "reviewSnippets": ["Finitions impeccables", "Elle ne me quitte plus"]
+  }
+}

@@ -20,7 +20,7 @@ body {
   align-items: center;
   justify-content: center;
   padding: 6vw;
-  background: var(--color-background);
+  background-color: var(--color-background);
   font-family: var(--font-body);
   overflow: hidden;
 }
@@ -87,6 +87,44 @@ body {
   }
 }
 
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 1vw;
+  margin-bottom: 2.5vh;
+  opacity: 0;
+  transform: translateY(2vh);
+  animation: eyebrow-in 400ms ease-out forwards;
+}
+
+.eyebrow::before {
+  content: "";
+  width: 2.4vw;
+  height: 0.35vh;
+  background: var(--color-primary);
+  border-radius: 999px;
+}
+
+.eyebrow-label {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: clamp(0.75rem, 1.6vw, 1rem);
+  color: var(--color-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+}
+
+@keyframes eyebrow-in {
+  0% {
+    opacity: 0;
+    transform: translateY(2vh);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .hook {
   position: relative;
   display: flex;
@@ -128,12 +166,12 @@ body {
 .hook .word {
   position: relative;
   font-family: var(--font-heading);
-  font-weight: 800;
-  font-size: clamp(2.2rem, 10vw, 6.6rem);
-  line-height: 1;
+  font-weight: 900;
+  font-size: clamp(2.3rem, 10.5vw, 6.9rem);
+  line-height: 0.98;
   color: var(--color-text);
   text-transform: uppercase;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.03em;
   opacity: 0;
   transform: translateY(6vh) scale(0.85) rotate(-2deg);
   animation: word-in 500ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
@@ -197,34 +235,39 @@ body {
   }
 }
 
+/* The closing beat: a full-bleed, hard-cut color-block card (the ad's
+   "outro slide"), not a small inline pill — the loud, single-color CTA
+   card is the whole point of the reference style being matched here.
+   Covers the hook/body underneath by simple DOM order + opacity, no
+   fade-out choreography needed on the layers below. */
 .cta {
-  position: relative;
-  padding: 1.8vh 3.6vw;
-  border-radius: 999px;
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8vw;
+  text-align: center;
   background: var(--color-primary);
   color: var(--color-background);
   font-family: var(--font-heading);
-  font-weight: 700;
-  font-size: clamp(1.05rem, 3.4vw, 1.7rem);
+  font-weight: 900;
+  font-size: clamp(2rem, 9vw, 5.6rem);
+  line-height: 1;
   text-transform: uppercase;
-  letter-spacing: 0.02em;
-  box-shadow: 0 0 0 0 var(--color-primary);
+  letter-spacing: -0.02em;
   opacity: 0;
-  transform: scale(0.6);
+  transform: scale(0.92);
   animation:
-    cta-pop 600ms cubic-bezier(0.34, 1.56, 0.64, 1) 4200ms forwards,
-    cta-glow 900ms ease-out 4800ms 2,
+    cta-pop 500ms cubic-bezier(0.34, 1.56, 0.64, 1) 4400ms forwards,
     cta-nudge 900ms ease-in-out 5200ms 2;
 }
 
 @keyframes cta-pop {
   0% {
     opacity: 0;
-    transform: scale(0.6);
-  }
-  60% {
-    opacity: 1;
-    transform: scale(1.12);
+    transform: scale(0.92);
   }
   100% {
     opacity: 1;
@@ -233,7 +276,7 @@ body {
 }
 
 /* A tiny post-landing nudge (not a scale change, so it never fights with
-   cta-pop's final transform) to keep the button feeling alive right before
+   cta-pop's final transform) to keep the card feeling alive right before
    the loop's last frame. */
 @keyframes cta-nudge {
   0%,
@@ -242,15 +285,5 @@ body {
   }
   50% {
     translate: 0 -0.6vh;
-  }
-}
-
-/* A short double "ping" halo right after the CTA lands, like a nudge. */
-@keyframes cta-glow {
-  0% {
-    box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-primary) 60%, transparent);
-  }
-  100% {
-    box-shadow: 0 0 0 2.2vw transparent;
   }
 }

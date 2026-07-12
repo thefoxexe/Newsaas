@@ -9,6 +9,7 @@ import type { LoadedTemplate } from "./load-template";
 type TemplateData = {
   colors: { primary: string; background: string; text: string };
   typography: { headingFamily: string; bodyFamily: string; fallbackStack: string };
+  angle: string;
   hook: string;
   body: string[];
   cta: string;
@@ -35,6 +36,7 @@ export function renderTemplateHtml(
       bodyFamily: brandKit.typography.bodyFamily,
       fallbackStack: brandKit.typography.fallbackStack,
     },
+    angle: concept.angle,
     hook: concept.hook,
     body: concept.body,
     cta: concept.cta,
