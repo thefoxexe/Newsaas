@@ -3,12 +3,15 @@ import type { AdConcept } from "../domain/ad-concept";
 import type { Result } from "../domain/result";
 import { ok, err } from "../domain/result";
 import { checkTextConstraints } from "../domain/text-constraints";
+import { deriveBrandName } from "../domain/brand-name";
 import { TemplateValidationError } from "./errors";
 import type { LoadedTemplate } from "./load-template";
 
 type TemplateData = {
   colors: { primary: string; background: string; text: string };
   typography: { headingFamily: string; bodyFamily: string; fallbackStack: string };
+  brandName: string;
+  logoUrl: string | null;
   angle: string;
   hook: string;
   body: string[];
@@ -36,6 +39,8 @@ export function renderTemplateHtml(
       bodyFamily: brandKit.typography.bodyFamily,
       fallbackStack: brandKit.typography.fallbackStack,
     },
+    brandName: deriveBrandName(brandKit.sourceUrl),
+    logoUrl: brandKit.logo?.url ?? null,
     angle: concept.angle,
     hook: concept.hook,
     body: concept.body,

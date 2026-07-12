@@ -6,10 +6,20 @@
   </head>
   <body>
     <div class="stage">
+      <div class="brand-badge" id="brand-badge">
+        <span class="brand-mark" id="brand-mark"></span>
+        <span class="brand-name" id="brand-name"></span>
+      </div>
       <div class="eyebrow" id="eyebrow"><span class="eyebrow-label" id="eyebrow-label"></span></div>
       <div class="hook" id="hook"></div>
       <div class="body-lines" id="body"></div>
-      <div class="cta" id="cta"></div>
+      <div class="cta" id="cta">
+        <span class="cta-text" id="cta-text"></span>
+        <div class="brand-badge" id="brand-badge-outro">
+          <span class="brand-mark" id="brand-mark-outro"></span>
+          <span class="brand-name" id="brand-name-outro"></span>
+        </div>
+      </div>
     </div>
     <script id="reeljolt-data" type="application/json">__REELJOLT_DATA__</script>
     <script>
@@ -27,6 +37,20 @@
           "--font-body",
           "'" + data.typography.bodyFamily + "', " + data.typography.fallbackStack,
         );
+
+        function fillBrandMark(markEl, nameEl) {
+          if (data.logoUrl) {
+            var img = document.createElement("img");
+            img.src = data.logoUrl;
+            markEl.appendChild(img);
+          } else {
+            markEl.textContent = data.brandName.charAt(0).toUpperCase();
+          }
+          nameEl.textContent = data.brandName;
+        }
+
+        fillBrandMark(document.getElementById("brand-mark"), document.getElementById("brand-name"));
+        fillBrandMark(document.getElementById("brand-mark-outro"), document.getElementById("brand-name-outro"));
 
         document.getElementById("eyebrow-label").textContent = data.angle;
 
@@ -46,7 +70,7 @@
           bodyEl.appendChild(p);
         });
 
-        document.getElementById("cta").textContent = data.cta;
+        document.getElementById("cta-text").textContent = data.cta;
 
         // Every Animation starts in its "before" phase immediately, so pausing
         // here (before any paint) and later seeking currentTime is enough to

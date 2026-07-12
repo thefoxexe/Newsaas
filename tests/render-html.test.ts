@@ -64,6 +64,21 @@ describe("renderTemplateHtml", () => {
     expect(result.value).toContain('"hook":"Short hook"');
     expect(result.value).toContain('"primary":"#FF0000"');
     expect(result.value).toContain('"angle":"test angle"');
+    expect(result.value).toContain('"brandName":"example.com"');
+    expect(result.value).toContain('"logoUrl":null');
+  });
+
+  it("passes through a logo URL and derives the brand name from the source URL's hostname", () => {
+    const result = renderTemplateHtml(
+      template,
+      { ...brandKit, sourceUrl: "https://www.vestedwear.com/shop", logo: { url: "https://vestedwear.com/logo.png", hasTransparency: true } },
+      makeConcept(),
+    );
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value).toContain('"brandName":"vestedwear.com"');
+    expect(result.value).toContain('"logoUrl":"https://vestedwear.com/logo.png"');
   });
 
   it("rejects a hook longer than the template's maxChars", () => {

@@ -87,6 +87,90 @@ body {
   }
 }
 
+/* Brand mark, shown top-left for the whole spot and again on the outro
+   card — this is what makes two renders of the same brand recognizably
+   "theirs" even before you read a word, the way a real logo sting does.
+   Falls back to a generated initial chip (brand's own primary color) when
+   no logo was extracted, so the frame never looks unbranded/blank. */
+.brand-badge {
+  position: absolute;
+  top: 6vw;
+  left: 6vw;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  gap: 0.9vw;
+  opacity: 0;
+  transform: translateY(-1.6vh);
+  animation: badge-in 400ms ease-out forwards;
+}
+
+.brand-mark {
+  width: clamp(28px, 4.2vw, 46px);
+  height: clamp(28px, 4.2vw, 46px);
+  border-radius: 22%;
+  background: var(--color-primary);
+  color: var(--color-background);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-family: var(--font-heading);
+  font-weight: 900;
+  font-size: clamp(0.9rem, 1.9vw, 1.3rem);
+  flex-shrink: 0;
+}
+
+.brand-mark img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.brand-name {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: clamp(0.8rem, 1.5vw, 1.05rem);
+  color: var(--color-text);
+  opacity: 0.9;
+  letter-spacing: 0.01em;
+}
+
+@keyframes badge-in {
+  0% {
+    opacity: 0;
+    transform: translateY(-1.6vh);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Outro variant: same badge, inverted onto the full-bleed card, parked
+   near the bottom like a closing signature. */
+.cta .brand-badge {
+  position: static;
+  margin-top: 4vh;
+  opacity: 0;
+  transform: translateY(1vh);
+  animation: badge-in 400ms ease-out 4700ms forwards;
+}
+
+.cta .brand-mark {
+  background: var(--color-background);
+  color: var(--color-primary);
+}
+
+.cta .brand-name {
+  color: var(--color-background);
+  opacity: 0.85;
+  text-transform: none;
+  letter-spacing: 0.01em;
+  font-size: clamp(0.75rem, 1.4vw, 1rem);
+}
+
 .eyebrow {
   display: flex;
   align-items: center;
@@ -245,11 +329,20 @@ body {
   inset: 0;
   z-index: 10;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 8vw;
   text-align: center;
   background: var(--color-primary);
+  opacity: 0;
+  transform: scale(0.92);
+  animation:
+    cta-pop 500ms cubic-bezier(0.34, 1.56, 0.64, 1) 4400ms forwards,
+    cta-nudge 900ms ease-in-out 5200ms 2;
+}
+
+.cta-text {
   color: var(--color-background);
   font-family: var(--font-heading);
   font-weight: 900;
@@ -257,11 +350,6 @@ body {
   line-height: 1;
   text-transform: uppercase;
   letter-spacing: -0.02em;
-  opacity: 0;
-  transform: scale(0.92);
-  animation:
-    cta-pop 500ms cubic-bezier(0.34, 1.56, 0.64, 1) 4400ms forwards,
-    cta-nudge 900ms ease-in-out 5200ms 2;
 }
 
 @keyframes cta-pop {

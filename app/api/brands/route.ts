@@ -4,18 +4,11 @@ import { eq } from "drizzle-orm";
 import { db } from "@/src/db/client";
 import { brands } from "@/src/db/schema";
 import { getCurrentSession } from "@/src/auth/get-session";
+import { deriveBrandName } from "@/src/domain/brand-name";
 
 const CreateBrandSchema = z.object({
   url: z.string().url(),
 });
-
-function nameFromUrl(url: string): string {
-  try {
-    return new URL(url).hostname.replace(/^www\./, "");
-  } catch {
-    return url;
-  }
-}
 
 // Anonymous submissions are allowed on purpose: the free DA analysis works
 // without an account (spec §8/§10) and is claimed after sign-up.
@@ -31,7 +24,7 @@ export async function POST(request: Request): Promise<Response> {
     .insert(brands)
     .values({
       userId: session?.user.id ?? null,
-      name: nameFromUrl(body.data.url),
+      name: deriveBrandName(body.data.url),
       sourceUrl: body.data.url,
       status: "pending",
     })
