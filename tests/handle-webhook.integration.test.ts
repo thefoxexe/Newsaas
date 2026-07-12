@@ -31,7 +31,7 @@ describe.skipIf(!databaseUrl)("handleStripeWebhook (real Postgres, signed test e
           current_period_start: 1_780_000_000,
           current_period_end: 1_782_600_000,
           metadata: { userId: user.id },
-          items: { data: [{ price: { lookup_key: "adforge_starter_monthly" } }] },
+          items: { data: [{ price: { lookup_key: "reeljolt_starter_monthly" } }] },
         },
       },
     });

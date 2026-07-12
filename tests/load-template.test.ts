@@ -12,7 +12,7 @@ describe("loadTemplate", () => {
 
     expect(template.manifest.id).toBe("kinetic-type");
     expect(template.manifest.formats).toContain("9:16");
-    expect(template.html).toContain("__ADFORGE_DATA__");
+    expect(template.html).toContain("__REELJOLT_DATA__");
     expect(template.css).toContain("@keyframes word-in");
   });
 });

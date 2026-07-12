@@ -1,4 +1,4 @@
-# ADFORGE
+# REELJOLT
 
 Générateur de pubs vidéo motion-design. Voir `docs/SPEC_REVIEW.md` pour la fiche technique complète et les décisions de conception.
 
@@ -88,7 +88,7 @@ Un seul appel Claude produit `BrandAnalysis` + 5 `AdConcept` en JSON strict. Le 
 
 ## Stripe
 
-**Le compte Stripe connecté (`BroNote.ch`) est en mode live**, avec des produits existants sans rapport avec ADFORGE (confirmé avant de créer quoi que ce soit). Les produits/prix `ADFORGE Starter/Growth/Scale` (mensuel + annuel, 2 mois offerts) ont été créés en mode live sur ce compte, décision explicitement validée par l'utilisateur — voir `docs/SPEC_REVIEW.md`. Aucun Checkout réel n'a été déclenché : seuls le catalogue (Products/Prices) existe pour l'instant, pas de transaction.
+**Le compte Stripe connecté (`BroNote.ch`) est en mode live**, avec des produits existants sans rapport avec REELJOLT (confirmé avant de créer quoi que ce soit). Les produits/prix `REELJOLT Starter/Growth/Scale` (mensuel + annuel, 2 mois offerts) ont été créés en mode live sur ce compte, décision explicitement validée par l'utilisateur — voir `docs/SPEC_REVIEW.md`. Aucun Checkout réel n'a été déclenché : seuls le catalogue (Products/Prices) existe pour l'instant, pas de transaction.
 
 Stripe reste la seule source de vérité de l'abonnement : `handleStripeWebhook` ne fait que mettre à jour un cache (`subscriptions`) à partir des événements `customer.subscription.*`, jamais l'inverse. Idempotence par `stripe_events.id` (`ON CONFLICT DO NOTHING`) — un événement rejoué (Stripe retente les webhooks) est un no-op, vérifié par test avec une vraie vérification de signature (`stripe.webhooks.generateTestHeaderString`).
 

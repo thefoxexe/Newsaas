@@ -11,7 +11,7 @@ import { PlaywrightFrameCapturer } from "./render/capture-frames.js";
 import { FfmpegVideoEncoder } from "./render/encode-video.js";
 import { renderVideo } from "./render/render-video.js";
 
-const logger = pino({ name: "adforge-cli" });
+const logger = pino({ name: "reeljolt-cli" });
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 async function main(): Promise<void> {
@@ -26,7 +26,7 @@ async function main(): Promise<void> {
   });
 
   if (values.brand === undefined || values.concept === undefined) {
-    logger.error("usage: adforge render --brand <file> --concept <file> [--format 9:16] [--out out.mp4]");
+    logger.error("usage: reeljolt render --brand <file> --concept <file> [--format 9:16] [--out out.mp4]");
     process.exitCode = 1;
     return;
   }

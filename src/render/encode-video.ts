@@ -22,7 +22,7 @@ export class FfmpegVideoEncoder implements VideoEncoder {
 
   async encode(frames: Buffer[], options: EncodeOptions): Promise<void> {
     await mkdir(path.dirname(options.outputPath), { recursive: true });
-    const frameDir = await mkdtemp(path.join(tmpdir(), "adforge-frames-"));
+    const frameDir = await mkdtemp(path.join(tmpdir(), "reeljolt-frames-"));
 
     try {
       await Promise.all(

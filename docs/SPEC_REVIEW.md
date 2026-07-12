@@ -1,4 +1,6 @@
-# Revue de la fiche technique ADFORGE
+# Revue de la fiche technique REELJOLT (anciennement ADFORGE)
+
+Le produit a été renommé **ReelJolt** (`reeljolt.com`) — le nom "Adforge" était déjà pris en `.com`. Le reste de ce document garde ses références historiques à "ADFORGE" telles quelles : c'est un journal, pas une page produit.
 
 J'ai lu l'intégralité du document `Fiche technique — Générateur de pubs vidéo motion-design`. Avant d'écrire la moindre ligne de code, voici ce qui me semble ambigu, risqué, ou nécessite une décision de ta part — comme demandé au §0 : *"tu le dis et tu proposes une alternative"*.
 

@@ -13,7 +13,7 @@ const baseSubscription = {
   current_period_start: 1_780_000_000,
   current_period_end: 1_782_600_000,
   metadata: { userId: "user-1" },
-  items: { data: [{ price: { lookup_key: "adforge_starter_monthly" } }] },
+  items: { data: [{ price: { lookup_key: "reeljolt_starter_monthly" } }] },
 };
 
 describe("parseWebhookEvent", () => {
@@ -43,7 +43,7 @@ describe("parseWebhookEvent", () => {
       items: {
         data: [
           {
-            price: { lookup_key: "adforge_growth_annual" },
+            price: { lookup_key: "reeljolt_growth_annual" },
             current_period_start: 1_780_000_000,
             current_period_end: 1_811_536_000,
           },
@@ -99,7 +99,7 @@ describe("parseWebhookEvent", () => {
     void _e;
     const event = fakeEvent("customer.subscription.created", {
       ...withoutRootPeriod,
-      items: { data: [{ price: { lookup_key: "adforge_starter_monthly" } }] },
+      items: { data: [{ price: { lookup_key: "reeljolt_starter_monthly" } }] },
     });
 
     const result = parseWebhookEvent(event);

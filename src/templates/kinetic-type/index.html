@@ -10,10 +10,10 @@
       <div class="body-lines" id="body"></div>
       <div class="cta" id="cta"></div>
     </div>
-    <script id="adforge-data" type="application/json">__ADFORGE_DATA__</script>
+    <script id="reeljolt-data" type="application/json">__REELJOLT_DATA__</script>
     <script>
       (function () {
-        var data = JSON.parse(document.getElementById("adforge-data").textContent);
+        var data = JSON.parse(document.getElementById("reeljolt-data").textContent);
         var root = document.documentElement;
         root.style.setProperty("--color-primary", data.colors.primary);
         root.style.setProperty("--color-background", data.colors.background);
@@ -52,12 +52,12 @@
           animation.pause();
         });
 
-        window.__adforgeSeek = function (ms) {
+        window.__reeljoltSeek = function (ms) {
           document.getAnimations().forEach(function (animation) {
             animation.currentTime = ms;
           });
         };
-        window.__adforgeReady = true;
+        window.__reeljoltReady = true;
       })();
     </script>
   </body>

@@ -3,7 +3,7 @@ import { lookupKeyFor, planForLookupKey } from "../src/billing/plan-prices.js";
 
 describe("plan-prices", () => {
   it("resolves a plan from a known lookup_key", () => {
-    expect(planForLookupKey("adforge_growth_annual")).toBe("growth");
+    expect(planForLookupKey("reeljolt_growth_annual")).toBe("growth");
   });
 
   it("returns null for an unknown lookup_key", () => {

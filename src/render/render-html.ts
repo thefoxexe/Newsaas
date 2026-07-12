@@ -48,7 +48,7 @@ export function renderTemplateHtml(
     `<style>${template.css}</style>`,
   );
 
-  const finalHtml = withInlineStyles.replace("__ADFORGE_DATA__", dataJson);
+  const finalHtml = withInlineStyles.replace("__REELJOLT_DATA__", dataJson);
 
   return ok(finalHtml);
 }

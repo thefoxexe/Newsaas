@@ -8,7 +8,7 @@ import { generateConcepts } from "./generate/generate-concepts.js";
 import { AnthropicLlmClient } from "./generate/llm-client.js";
 import { loadTemplate } from "./render/load-template.js";
 
-const logger = pino({ name: "adforge-generate-cli" });
+const logger = pino({ name: "reeljolt-generate-cli" });
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 async function main(): Promise<void> {
@@ -21,7 +21,7 @@ async function main(): Promise<void> {
   });
 
   if (values.brand === undefined) {
-    logger.error("usage: adforge generate --brand <file> [--out out/generation.json]");
+    logger.error("usage: reeljolt generate --brand <file> [--out out/generation.json]");
     process.exitCode = 1;
     return;
   }

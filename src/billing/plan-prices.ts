@@ -11,12 +11,12 @@ export type PriceLookup = {
 // Mirrors the real Prices created in Stripe (see docs/SPEC_REVIEW.md for the
 // account note) — lookup_key is the stable link between Stripe and our plans.
 export const PRICE_LOOKUPS: readonly PriceLookup[] = [
-  { plan: "starter", billingPeriod: "monthly", lookupKey: "adforge_starter_monthly" },
-  { plan: "starter", billingPeriod: "annual", lookupKey: "adforge_starter_annual" },
-  { plan: "growth", billingPeriod: "monthly", lookupKey: "adforge_growth_monthly" },
-  { plan: "growth", billingPeriod: "annual", lookupKey: "adforge_growth_annual" },
-  { plan: "scale", billingPeriod: "monthly", lookupKey: "adforge_scale_monthly" },
-  { plan: "scale", billingPeriod: "annual", lookupKey: "adforge_scale_annual" },
+  { plan: "starter", billingPeriod: "monthly", lookupKey: "reeljolt_starter_monthly" },
+  { plan: "starter", billingPeriod: "annual", lookupKey: "reeljolt_starter_annual" },
+  { plan: "growth", billingPeriod: "monthly", lookupKey: "reeljolt_growth_monthly" },
+  { plan: "growth", billingPeriod: "annual", lookupKey: "reeljolt_growth_annual" },
+  { plan: "scale", billingPeriod: "monthly", lookupKey: "reeljolt_scale_monthly" },
+  { plan: "scale", billingPeriod: "annual", lookupKey: "reeljolt_scale_annual" },
 ];
 
 export function planForLookupKey(lookupKey: string): Plan | null {

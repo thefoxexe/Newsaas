@@ -16,7 +16,7 @@ const template: LoadedTemplate = {
       cta: { maxChars: 10 },
     },
   },
-  html: '<html><head><link rel="stylesheet" href="./style.css" /></head><body>__ADFORGE_DATA__</body></html>',
+  html: '<html><head><link rel="stylesheet" href="./style.css" /></head><body>__REELJOLT_DATA__</body></html>',
   css: ".stage { color: red; }",
 };
 

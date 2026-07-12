@@ -5,7 +5,7 @@ import pino from "pino";
 import { extractBrandKit } from "./extract/extract-brand-kit.js";
 import { PlaywrightPageAnalyzer } from "./extract/analyze-page.js";
 
-const logger = pino({ name: "adforge-extract-cli" });
+const logger = pino({ name: "reeljolt-extract-cli" });
 
 async function main(): Promise<void> {
   const { values } = parseArgs({
@@ -16,7 +16,7 @@ async function main(): Promise<void> {
   });
 
   if (values.url === undefined) {
-    logger.error("usage: adforge extract --url <https://shop.example.com> [--out out/brand-kit.json]");
+    logger.error("usage: reeljolt extract --url <https://shop.example.com> [--out out/brand-kit.json]");
     process.exitCode = 1;
     return;
   }

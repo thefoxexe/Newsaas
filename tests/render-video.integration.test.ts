@@ -28,7 +28,7 @@ describe.skipIf(!chromiumAvailable)("renderVideo (kinetic-type, real browser + f
       JSON.parse(await readFile(path.join(root, "fixtures", "ad-concept.sample.json"), "utf-8")),
     );
 
-    const outDir = await mkdtemp(path.join(tmpdir(), "adforge-test-"));
+    const outDir = await mkdtemp(path.join(tmpdir(), "reeljolt-test-"));
 
     try {
       const outputs = await Promise.all(

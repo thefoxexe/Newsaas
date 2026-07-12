@@ -14,8 +14,8 @@ export interface FrameCapturer {
 
 declare global {
   interface Window {
-    __adforgeReady?: boolean;
-    __adforgeSeek?: (ms: number) => void;
+    __reeljoltReady?: boolean;
+    __reeljoltSeek?: (ms: number) => void;
   }
 }
 
@@ -35,14 +35,14 @@ export class PlaywrightFrameCapturer implements FrameCapturer {
         viewport: { width: options.width, height: options.height },
       });
       await page.setContent(html, { waitUntil: "load" });
-      await page.waitForFunction(() => window.__adforgeReady === true);
+      await page.waitForFunction(() => window.__reeljoltReady === true);
 
       const frameCount = Math.round((options.durationMs / 1000) * options.fps);
       const frames: Buffer[] = [];
 
       for (let i = 0; i < frameCount; i += 1) {
         const timeMs = Math.round((i * 1000) / options.fps);
-        await page.evaluate((ms) => window.__adforgeSeek?.(ms), timeMs);
+        await page.evaluate((ms) => window.__reeljoltSeek?.(ms), timeMs);
         frames.push(await page.screenshot({ type: "png" }));
       }
 
