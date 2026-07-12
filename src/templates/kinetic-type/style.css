@@ -56,13 +56,73 @@ body {
   }
 }
 
+/* A second, smaller flat disc for parallax depth. Axis-aligned fill (no
+   border stroke, no rotation) — a rotated bordered square was tried here
+   first and reintroduced the same non-determinism class as the
+   gradient/blur issue above (diagonal anti-aliased edges aren't bit-stable
+   across separate Chromium launches under load; caught by
+   render-video.integration.test.ts, not by eye). Translate + scale only. */
+.stage::after {
+  content: "";
+  position: absolute;
+  top: 8vh;
+  right: 4vw;
+  width: 14vw;
+  height: 14vw;
+  background: var(--color-primary);
+  border-radius: 50%;
+  opacity: 0.14;
+  transform: translateY(0) scale(1);
+  animation: chip-float 5000ms ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes chip-float {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(3vh) scale(1.12);
+  }
+}
+
 .hook {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1vh;
-  margin-bottom: 4vh;
+  margin-bottom: 5vh;
   text-align: center;
+}
+
+/* Underline punctuation that grows in once every word has landed, marking
+   the transition from hook to body copy. Flat fill, transform-only growth. */
+.hook::after {
+  content: "";
+  position: absolute;
+  bottom: -2.2vh;
+  left: 50%;
+  width: 14vw;
+  height: 0.5vh;
+  background: var(--color-primary);
+  border-radius: 999px;
+  transform: translateX(-50%) scaleX(0);
+  transform-origin: center;
+  opacity: 0;
+  animation: underline-grow 450ms cubic-bezier(0.16, 1, 0.3, 1) 1900ms forwards;
+}
+
+@keyframes underline-grow {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) scaleX(0);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) scaleX(1);
+  }
 }
 
 .hook .word {
@@ -138,6 +198,7 @@ body {
 }
 
 .cta {
+  position: relative;
   padding: 1.8vh 3.6vw;
   border-radius: 999px;
   background: var(--color-primary);
@@ -152,7 +213,8 @@ body {
   transform: scale(0.6);
   animation:
     cta-pop 600ms cubic-bezier(0.34, 1.56, 0.64, 1) 4200ms forwards,
-    cta-glow 900ms ease-out 4800ms 2;
+    cta-glow 900ms ease-out 4800ms 2,
+    cta-nudge 900ms ease-in-out 5200ms 2;
 }
 
 @keyframes cta-pop {
@@ -167,6 +229,19 @@ body {
   100% {
     opacity: 1;
     transform: scale(1);
+  }
+}
+
+/* A tiny post-landing nudge (not a scale change, so it never fights with
+   cta-pop's final transform) to keep the button feeling alive right before
+   the loop's last frame. */
+@keyframes cta-nudge {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -0.6vh;
   }
 }
 

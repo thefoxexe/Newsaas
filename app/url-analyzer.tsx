@@ -52,28 +52,35 @@ export function UrlAnalyzer() {
 
   return (
     <div className="mt-10">
-      <form onSubmit={handleSubmit} className="mx-auto flex max-w-xl gap-2">
+      <form
+        onSubmit={handleSubmit}
+        className="mx-auto flex max-w-xl flex-col gap-2 rounded-pill border border-border-strong bg-surface p-2 shadow-[0_20px_60px_-25px_rgb(0_0_0/0.7)] sm:flex-row"
+      >
         <input
           type="url"
           required
           value={url}
           onChange={(event) => setUrl(event.target.value)}
           placeholder="https://ta-boutique.com"
-          className="flex-1 rounded-pill border border-border bg-surface px-5 py-3 text-foreground outline-none focus:border-primary"
+          className="flex-1 rounded-pill bg-transparent px-5 py-3 text-foreground outline-none placeholder:text-muted"
         />
         <button
           type="submit"
           disabled={submitting}
-          className="rounded-pill bg-primary px-6 py-3 font-semibold text-primary-foreground disabled:opacity-50"
+          className="rounded-pill bg-primary px-6 py-3 font-semibold text-primary-foreground transition-transform hover:scale-[1.02] disabled:opacity-50"
         >
-          {submitting ? "..." : "Analyser"}
+          {submitting ? "Analyse..." : "Analyser gratuitement"}
         </button>
       </form>
+      <p className="mt-3 text-center text-xs text-muted">Aucune carte bancaire requise · résultat en quelques secondes</p>
 
       {brandId && (
         <div className="mx-auto mt-6 max-w-xl rounded-card border border-border bg-surface p-6 text-left">
           {!brand || brand.status === "pending" || brand.status === "extracting" ? (
-            <p className="text-muted">Analyse en cours...</p>
+            <div className="flex items-center gap-3 text-muted">
+              <span className="h-2 w-2 animate-pulse rounded-full bg-primary" />
+              Analyse de la direction artistique en cours...
+            </div>
           ) : brand.status === "failed" ? (
             <p className="text-danger">
               On n&apos;a pas réussi à analyser ce site. Réessaie avec une autre URL, ou crée un compte pour corriger
@@ -100,7 +107,7 @@ export function UrlAnalyzer() {
                 </p>
                 <Link
                   href="/sign-up"
-                  className="mt-4 inline-block rounded-pill bg-primary px-5 py-2 font-semibold text-primary-foreground"
+                  className="mt-4 inline-block rounded-pill bg-primary px-5 py-2 font-semibold text-primary-foreground transition-transform hover:scale-[1.02]"
                 >
                   Voir mes 5 pubs — créer un compte
                 </Link>
