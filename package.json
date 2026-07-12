@@ -4,9 +4,13 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "render": "tsx src/cli.ts",
-    "extract": "tsx src/extract-cli.ts",
-    "generate": "tsx src/generate-cli.ts",
+    "render": "tsx --env-file-if-exists=.env src/cli.ts",
+    "extract": "tsx --env-file-if-exists=.env src/extract-cli.ts",
+    "generate": "tsx --env-file-if-exists=.env src/generate-cli.ts",
+    "worker": "tsx --env-file-if-exists=.env src/worker.ts",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "lint": "eslint ."

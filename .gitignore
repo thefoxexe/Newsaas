@@ -5,3 +5,4 @@ out/
 *.log
 .next/
 tsconfig.tsbuildinfo
+public/renders/

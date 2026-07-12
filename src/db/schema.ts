@@ -10,7 +10,7 @@ export const templateIdEnum = pgEnum("template_id", [
 
 export const formatEnum = pgEnum("format", ["9:16", "1:1", "16:9"]);
 export const renderStatusEnum = pgEnum("render_status", ["queued", "rendering", "done", "failed"]);
-export const extractionStatusEnum = pgEnum("extraction_status", ["pending", "done", "failed"]);
+export const extractionStatusEnum = pgEnum("extraction_status", ["pending", "extracting", "done", "failed"]);
 export const planEnum = pgEnum("plan", ["free", "starter", "growth", "scale"]);
 
 // Better Auth owns this table's core fields (id, name, email, emailVerified,
