@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
+import { LanguageProvider } from "./i18n/language-context";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 const spaceGrotesk = Space_Grotesk({
@@ -11,15 +12,17 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "ReelJolt — 5 pubs vidéo motion-design en 30 secondes",
+  title: "ReelJolt — 5 motion-design video ads in 30 seconds",
   description:
-    "Colle l'URL de ta boutique. ReelJolt extrait ta direction artistique et génère 5 pubs vidéo motion-design prêtes pour Meta, TikTok et YouTube.",
+    "Paste your store's URL. ReelJolt extracts your real brand identity and generates 5 motion-design video ads ready for Meta, TikTok, and YouTube.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="fr" className={`${inter.variable} ${spaceGrotesk.variable}`}>
-      <body className="bg-grain">{children}</body>
+    <html lang="en" className={`${inter.variable} ${spaceGrotesk.variable}`}>
+      <body className="bg-grain">
+        <LanguageProvider>{children}</LanguageProvider>
+      </body>
     </html>
   );
 }

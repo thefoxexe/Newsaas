@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { PLAN_LIMITS } from "@/src/entitlements/plans";
-import { LanguageProvider, useLanguage } from "./i18n/language-context";
+import { useLanguage } from "./i18n/language-context";
 import { SiteNav } from "./site-nav";
 import { UrlAnalyzer } from "./url-analyzer";
 import { DemoCarousel } from "./demo-carousel";
@@ -234,9 +234,5 @@ function LandingContent() {
 }
 
 export default function LandingPage() {
-  return (
-    <LanguageProvider>
-      <LandingContent />
-    </LanguageProvider>
-  );
+  return <LandingContent />;
 }

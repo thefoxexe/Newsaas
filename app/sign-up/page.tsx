@@ -5,9 +5,11 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/src/supabase/client";
 import { claimPendingBrandIfAny } from "../claim-pending-brand";
+import { useLanguage } from "../i18n/language-context";
 
 export default function SignUpPage() {
   const router = useRouter();
+  const { t } = useLanguage();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -43,8 +45,8 @@ export default function SignUpPage() {
 
       const brandId = await claimPendingBrandIfAny();
       router.push(brandId ? `/app?brand=${brandId}` : "/app");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Une erreur inattendue est survenue.");
+    } catch {
+      setError(t.authPages.unexpectedError);
     } finally {
       setSubmitting(false);
     }
@@ -52,24 +54,29 @@ export default function SignUpPage() {
 
   if (checkEmail) {
     return (
-      <main className="mx-auto max-w-sm px-6 py-24 text-center">
-        <h1 className="text-2xl font-bold">Vérifie ta boîte mail</h1>
+      <main className="mx-auto flex min-h-screen max-w-sm flex-col justify-center px-6 py-24 text-center">
+        <h1 className="font-display text-2xl font-bold">{t.authPages.checkEmailTitle}</h1>
         <p className="mt-4 text-muted">
-          On a envoyé un lien de confirmation à <strong>{email}</strong>. Clique dessus pour activer ton compte.
+          {t.authPages.checkEmailBody} <strong className="text-foreground">{email}</strong>.
         </p>
       </main>
     );
   }
 
   return (
-    <main className="mx-auto max-w-sm px-6 py-24">
-      <h1 className="text-center text-2xl font-bold">Créer un compte</h1>
+    <main className="mx-auto flex min-h-screen max-w-sm flex-col justify-center px-6 py-24">
+      <Link href="/" className="mx-auto mb-8 flex items-center gap-2 font-display text-lg font-bold tracking-tight">
+        <span className="flex h-7 w-7 items-center justify-center rounded-md bg-primary text-primary-foreground">R</span>
+        ReelJolt
+      </Link>
+
+      <h1 className="text-center font-display text-2xl font-bold">{t.authPages.signUpTitle}</h1>
 
       <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-3">
         <input
           type="text"
           required
-          placeholder="Nom"
+          placeholder={t.authPages.name}
           value={name}
           onChange={(event) => setName(event.target.value)}
           className="rounded-pill border border-border bg-surface px-5 py-3 outline-none focus:border-primary"
@@ -77,7 +84,7 @@ export default function SignUpPage() {
         <input
           type="email"
           required
-          placeholder="Email"
+          placeholder={t.authPages.email}
           value={email}
           onChange={(event) => setEmail(event.target.value)}
           className="rounded-pill border border-border bg-surface px-5 py-3 outline-none focus:border-primary"
@@ -86,7 +93,7 @@ export default function SignUpPage() {
           type="password"
           required
           minLength={8}
-          placeholder="Mot de passe"
+          placeholder={t.authPages.password}
           value={password}
           onChange={(event) => setPassword(event.target.value)}
           className="rounded-pill border border-border bg-surface px-5 py-3 outline-none focus:border-primary"
@@ -95,16 +102,16 @@ export default function SignUpPage() {
         <button
           type="submit"
           disabled={submitting}
-          className="rounded-pill bg-primary px-5 py-3 font-semibold text-primary-foreground disabled:opacity-50"
+          className="rounded-pill bg-primary px-5 py-3 font-semibold text-primary-foreground transition-transform hover:scale-[1.02] disabled:opacity-50"
         >
-          {submitting ? "..." : "Créer mon compte"}
+          {submitting ? "..." : t.authPages.signUpButton}
         </button>
       </form>
 
       <p className="mt-6 text-center text-sm text-muted">
-        Déjà un compte ?{" "}
-        <Link href="/sign-in" className="underline">
-          Se connecter
+        {t.authPages.hasAccount}{" "}
+        <Link href="/sign-in" className="text-foreground underline">
+          {t.authPages.signInButton}
         </Link>
       </p>
     </main>

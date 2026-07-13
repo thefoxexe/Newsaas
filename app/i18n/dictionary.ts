@@ -50,8 +50,25 @@ type Dictionary = {
     quotaAlert: string;
     conceptsError: string;
     retry: string;
+    onboardingTitle: string;
+    onboardingBody: string;
+    onboardingCta: string;
   };
   libraryPage: { title: string; empty: string; inProgress: string; failed: string };
+  authPages: {
+    signInTitle: string;
+    signUpTitle: string;
+    name: string;
+    email: string;
+    password: string;
+    signInButton: string;
+    signUpButton: string;
+    noAccount: string;
+    hasAccount: string;
+    checkEmailTitle: string;
+    checkEmailBody: string;
+    unexpectedError: string;
+  };
   brandsPage: { title: string; empty: string };
   billingPage: {
     title: string;
@@ -203,12 +220,29 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
       quotaAlert: "Can't launch this render (quota reached?)",
       conceptsError: "Couldn't generate concepts. Try again.",
       retry: "Retry",
+      onboardingTitle: "Your 5 ads are ready.",
+      onboardingBody: "Pick a plan to render them in full HD, without watermark, and unlock more videos every month.",
+      onboardingCta: "See plans",
     },
     libraryPage: {
       title: "Library",
       empty: "No videos generated yet.",
       inProgress: "In progress...",
       failed: "Render failed",
+    },
+    authPages: {
+      signInTitle: "Sign in",
+      signUpTitle: "Create your account",
+      name: "Name",
+      email: "Email",
+      password: "Password",
+      signInButton: "Sign in",
+      signUpButton: "Create my account",
+      noAccount: "No account yet?",
+      hasAccount: "Already have an account?",
+      checkEmailTitle: "Check your inbox",
+      checkEmailBody: "We sent a confirmation link to",
+      unexpectedError: "Something went wrong. Please try again.",
     },
     brandsPage: { title: "Brands", empty: "No brand saved yet." },
     billingPage: {
@@ -359,12 +393,29 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
       quotaAlert: "Impossible de lancer ce rendu (quota atteint ?)",
       conceptsError: "Impossible de générer les concepts. Réessaie.",
       retry: "Réessayer",
+      onboardingTitle: "Tes 5 pubs sont prêtes.",
+      onboardingBody: "Choisis un plan pour les rendre en HD, sans filigrane, et débloquer plus de vidéos chaque mois.",
+      onboardingCta: "Voir les plans",
     },
     libraryPage: {
       title: "Bibliothèque",
       empty: "Aucune vidéo générée pour l'instant.",
       inProgress: "En cours...",
       failed: "Échec du rendu",
+    },
+    authPages: {
+      signInTitle: "Se connecter",
+      signUpTitle: "Créer ton compte",
+      name: "Nom",
+      email: "Email",
+      password: "Mot de passe",
+      signInButton: "Se connecter",
+      signUpButton: "Créer mon compte",
+      noAccount: "Pas encore de compte ?",
+      hasAccount: "Déjà un compte ?",
+      checkEmailTitle: "Vérifie ta boîte mail",
+      checkEmailBody: "On a envoyé un lien de confirmation à",
+      unexpectedError: "Une erreur inattendue est survenue. Réessaie.",
     },
     brandsPage: { title: "Marques", empty: "Aucune marque enregistrée pour l'instant." },
     billingPage: {
@@ -515,12 +566,29 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
       quotaAlert: "Dieses Rendering kann nicht gestartet werden (Kontingent erreicht?)",
       conceptsError: "Konzepte konnten nicht generiert werden. Versuch es erneut.",
       retry: "Erneut versuchen",
+      onboardingTitle: "Deine 5 Ads sind fertig.",
+      onboardingBody: "Wähle einen Plan, um sie in HD ohne Wasserzeichen zu rendern und jeden Monat mehr Videos freizuschalten.",
+      onboardingCta: "Pläne ansehen",
     },
     libraryPage: {
       title: "Bibliothek",
       empty: "Noch keine Videos generiert.",
       inProgress: "Läuft...",
       failed: "Rendering fehlgeschlagen",
+    },
+    authPages: {
+      signInTitle: "Anmelden",
+      signUpTitle: "Konto erstellen",
+      name: "Name",
+      email: "E-Mail",
+      password: "Passwort",
+      signInButton: "Anmelden",
+      signUpButton: "Konto erstellen",
+      noAccount: "Noch kein Konto?",
+      hasAccount: "Schon ein Konto?",
+      checkEmailTitle: "Prüfe dein Postfach",
+      checkEmailBody: "Wir haben einen Bestätigungslink gesendet an",
+      unexpectedError: "Etwas ist schiefgelaufen. Versuch es erneut.",
     },
     brandsPage: { title: "Marken", empty: "Noch keine Marke gespeichert." },
     billingPage: {

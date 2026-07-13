@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import type { Locale } from "../i18n/dictionary";
 import { DICTIONARY } from "../i18n/dictionary";
 
@@ -186,6 +187,21 @@ export function Generator({ initialBrandId, t }: { initialBrandId: string | null
               </div>
             )}
           </div>
+
+          {initialBrandId && concepts.length > 0 && (
+            <div className="reveal mt-6 flex flex-col items-start justify-between gap-4 rounded-card border border-primary/40 bg-primary/10 p-6 sm:flex-row sm:items-center">
+              <div>
+                <p className="font-display text-lg font-bold">{t.onboardingTitle}</p>
+                <p className="mt-1 text-sm text-muted">{t.onboardingBody}</p>
+              </div>
+              <Link
+                href="/app/billing"
+                className="shrink-0 whitespace-nowrap rounded-pill bg-primary px-5 py-2.5 font-semibold text-primary-foreground transition-transform hover:scale-[1.02]"
+              >
+                {t.onboardingCta}
+              </Link>
+            </div>
+          )}
 
           {concepts.length > 0 && (
             <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
