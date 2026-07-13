@@ -1,3 +1,6 @@
+import { mkdtemp, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import path from "node:path";
 import type { BrandKit } from "../domain/brand-kit";
 import type { AdConcept } from "../domain/ad-concept";
 import type { Format } from "../domain/format";
@@ -41,14 +44,16 @@ export async function renderVideo(
   const { width, height } = dimensionsFor(input.format);
   const { durationMs, fps } = input.template.manifest;
 
-  const frames = await input.frameCapturer.captureFrames(html.value, {
-    width,
-    height,
-    durationMs,
-    fps,
-  });
+  // Shared by both stages so frames are written to disk as they're
+  // captured and never all held in memory at once (see capture-frames.ts).
+  const frameDir = await mkdtemp(path.join(tmpdir(), "reeljolt-frames-"));
 
-  await input.videoEncoder.encode(frames, { fps, outputPath: input.outputPath });
+  try {
+    const frameCount = await input.frameCapturer.captureFrames(html.value, { width, height, durationMs, fps }, frameDir);
+    await input.videoEncoder.encode(frameDir, frameCount, { fps, outputPath: input.outputPath });
 
-  return ok({ outputPath: input.outputPath, frameCount: frames.length });
+    return ok({ outputPath: input.outputPath, frameCount });
+  } finally {
+    await rm(frameDir, { recursive: true, force: true });
+  }
 }

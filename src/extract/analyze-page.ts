@@ -42,7 +42,11 @@ export class PlaywrightPageAnalyzer implements PageAnalyzer {
   private async run(url: string): Promise<RawPageSignals> {
     const browser = await chromium.launch({
       ...(this.executablePath === undefined ? {} : { executablePath: this.executablePath }),
-      args: ["--disable-blink-features=AutomationControlled"],
+      // --disable-dev-shm-usage: most containers mount /dev/shm far smaller
+      // than a real host, a common cause of Chromium instability in
+      // containers — this makes it use /tmp instead. --disable-gpu: no real
+      // GPU exists in these containers anyway.
+      args: ["--disable-blink-features=AutomationControlled", "--disable-dev-shm-usage", "--disable-gpu"],
     });
 
     try {
