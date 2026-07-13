@@ -6,11 +6,21 @@ export interface PageAnalyzer {
   analyze(url: string): Promise<RawPageSignals>;
 }
 
-const TOTAL_BUDGET_MS = 20_000;
-const DOM_CONTENT_LOADED_TIMEOUT_MS = 15_000;
+const TOTAL_BUDGET_MS = 28_000;
+const DOM_CONTENT_LOADED_TIMEOUT_MS = 20_000;
 const NETWORK_IDLE_TIMEOUT_MS = 4_000;
 const SETTLE_MS = 500;
 const MAX_SCANNED_ELEMENTS = 3000;
+
+// Playwright's default Chromium UA/fingerprint gets flagged as a bot by
+// basic anti-scraping checks on a lot of real commercial sites (Cloudflare,
+// PerimeterX, etc.), which is the most common real-world cause of a
+// navigation timeout/failure here — not a bug in this code, but worth
+// looking as close to a normal desktop Chrome visit as possible since we're
+// only ever fetching a site's own public marketing page, the same thing a
+// link-preview or SEO crawler does.
+const DESKTOP_USER_AGENT =
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
 
 type BrowserSignals = Omit<RawPageSignals, "sourceUrl">;
 
@@ -30,12 +40,21 @@ export class PlaywrightPageAnalyzer implements PageAnalyzer {
   }
 
   private async run(url: string): Promise<RawPageSignals> {
-    const browser = await chromium.launch(
-      this.executablePath === undefined ? {} : { executablePath: this.executablePath },
-    );
+    const browser = await chromium.launch({
+      ...(this.executablePath === undefined ? {} : { executablePath: this.executablePath }),
+      args: ["--disable-blink-features=AutomationControlled"],
+    });
 
     try {
-      const page = await browser.newPage();
+      const page = await browser.newPage({ userAgent: DESKTOP_USER_AGENT });
+
+      // Basic headless-detection evasion: many real sites check
+      // navigator.webdriver and refuse to render for anything that reports
+      // true, which otherwise shows up here as a navigation timeout with no
+      // indication of the real cause.
+      await page.addInitScript({
+        content: "Object.defineProperty(navigator, 'webdriver', { get: () => undefined });",
+      });
 
       // tsx/esbuild compiles this file with `keepNames`, which wraps named
       // functions in a `__name(fn, "fn")` helper call to preserve `.name` —

@@ -71,7 +71,7 @@ async function processExtraction(brand: { id: string; sourceUrl: string }): Prom
   }
 
   if (!result.ok) {
-    await db.update(brands).set({ status: "failed", errorCode: result.error.name }).where(eq(brands.id, brand.id));
+    await db.update(brands).set({ status: "failed", errorCode: result.error.message }).where(eq(brands.id, brand.id));
     logger.error({ brandId: brand.id, error: result.error.message }, "extraction failed");
     return;
   }

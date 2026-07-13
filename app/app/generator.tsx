@@ -43,6 +43,7 @@ export function Generator({ initialBrandId, t }: { initialBrandId: string | null
   const [renders, setRenders] = useState<Record<string, RenderJob>>({});
   const [quotaError, setQuotaError] = useState<string | null>(null);
   const [conceptsError, setConceptsError] = useState(false);
+  const [conceptsErrorDetail, setConceptsErrorDetail] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(false);
 
@@ -103,14 +104,23 @@ export function Generator({ initialBrandId, t }: { initialBrandId: string | null
     if (!brand) return;
     setGenerating(true);
     setConceptsError(false);
-    const response = await fetch(`/api/brands/${brand.id}/concepts`, { method: "POST" });
-    setGenerating(false);
-    if (!response.ok) {
+    setConceptsErrorDetail(null);
+
+    try {
+      const response = await fetch(`/api/brands/${brand.id}/concepts`, { method: "POST" });
+      if (!response.ok) {
+        setConceptsError(true);
+        const body = (await response.json().catch(() => null)) as { error?: string } | null;
+        setConceptsErrorDetail(body?.error ?? null);
+        return;
+      }
+      const data = (await response.json()) as { concepts: Concept[] };
+      setConcepts(data.concepts);
+    } catch {
       setConceptsError(true);
-      return;
+    } finally {
+      setGenerating(false);
     }
-    const data = (await response.json()) as { concepts: Concept[] };
-    setConcepts(data.concepts);
   }
 
   async function launchRender(conceptId: string, format: (typeof FORMATS)[number]): Promise<void> {
@@ -217,7 +227,12 @@ export function Generator({ initialBrandId, t }: { initialBrandId: string | null
                 >
                   {generating ? t.generatingConcepts : conceptsError ? t.retry : t.generateConcepts}
                 </button>
-                {conceptsError && <p className="mt-2 text-sm text-danger">{t.conceptsError}</p>}
+                {conceptsError && (
+                  <div className="mt-2">
+                    <p className="text-sm text-danger">{t.conceptsError}</p>
+                    {conceptsErrorDetail && <p className="mt-1 font-mono text-xs text-danger/70">{conceptsErrorDetail}</p>}
+                  </div>
+                )}
               </div>
             )}
           </div>
