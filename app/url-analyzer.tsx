@@ -1,55 +1,41 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useLanguage } from "./i18n/language-context";
-
-type BrandPreview = {
-  status: "pending" | "extracting" | "done" | "failed";
-  name: string;
-  brandKit: {
-    colors: { primary: string; secondary: string; background: string; text: string };
-    typography: { headingFamily: string };
-    copy: { tagline: string | null };
-  } | null;
-};
-
-async function pollBrand(id: string, onUpdate: (brand: BrandPreview) => void): Promise<void> {
-  for (let attempt = 0; attempt < 20; attempt += 1) {
-    const response = await fetch(`/api/brands/${id}`);
-    if (!response.ok) return;
-    const { brand } = (await response.json()) as { brand: BrandPreview };
-    onUpdate(brand);
-    if (brand.status === "done" || brand.status === "failed") return;
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-  }
-}
 
 export function UrlAnalyzer() {
   const { t } = useLanguage();
+  const router = useRouter();
   const [url, setUrl] = useState("");
-  const [brandId, setBrandId] = useState<string | null>(null);
-  const [brand, setBrand] = useState<BrandPreview | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(false);
 
   async function handleSubmit(event: React.FormEvent): Promise<void> {
     event.preventDefault();
     setSubmitting(true);
-    setBrand(null);
+    setSubmitError(false);
 
-    const response = await fetch("/api/brands", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ url }),
-    });
+    try {
+      const response = await fetch("/api/brands", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url }),
+      });
 
-    setSubmitting(false);
-    if (!response.ok) return;
+      if (!response.ok) {
+        setSubmitError(true);
+        return;
+      }
 
-    const { id } = (await response.json()) as { id: string };
-    setBrandId(id);
-    window.localStorage.setItem("reeljolt:pending-brand-id", id);
-    void pollBrand(id, setBrand);
+      const { id } = (await response.json()) as { id: string };
+      window.localStorage.setItem("reeljolt:pending-brand-id", id);
+      router.push("/sign-up");
+    } catch {
+      setSubmitError(true);
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -76,44 +62,10 @@ export function UrlAnalyzer() {
       </form>
       <p className="mt-3 text-center text-xs text-muted">{t.hero.inputHint}</p>
 
-      {brandId && (
-        <div className="mx-auto mt-6 max-w-xl rounded-card border border-border bg-surface p-6 text-left">
-          {!brand || brand.status === "pending" || brand.status === "extracting" ? (
-            <div className="flex items-center gap-3 text-muted">
-              <span className="h-2 w-2 animate-pulse rounded-full bg-primary" />
-              {t.hero.analyzing}
-            </div>
-          ) : brand.status === "failed" ? (
-            <p className="text-danger">{t.hero.failed}</p>
-          ) : (
-            brand.brandKit && (
-              <>
-                <p className="text-sm text-muted">
-                  {t.hero.detected} {brand.name}
-                </p>
-                <div className="mt-3 flex gap-2">
-                  {[brand.brandKit.colors.primary, brand.brandKit.colors.secondary, brand.brandKit.colors.background].map(
-                    (color) => (
-                      <span
-                        key={color}
-                        className="h-8 w-8 rounded-full border border-border"
-                        style={{ backgroundColor: color }}
-                        title={color}
-                      />
-                    ),
-                  )}
-                </div>
-                <p className="mt-3 text-foreground">{brand.brandKit.copy.tagline ?? ""}</p>
-                <Link
-                  href="/sign-up"
-                  className="mt-4 inline-block rounded-pill bg-primary px-5 py-2 font-semibold text-primary-foreground transition-transform hover:scale-[1.02]"
-                >
-                  {t.hero.ctaClaim}
-                </Link>
-              </>
-            )
-          )}
-        </div>
+      {submitError && (
+        <p className="mx-auto mt-4 max-w-xl rounded-card border border-danger/40 bg-danger/10 px-4 py-3 text-center text-sm text-danger">
+          {t.hero.submitError}
+        </p>
       )}
     </div>
   );

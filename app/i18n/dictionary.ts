@@ -23,6 +23,7 @@ type Dictionary = {
     failed: string;
     detected: string;
     ctaClaim: string;
+    submitError: string;
   };
   stats: { time: string; timeLabel: string; concepts: string; conceptsLabel: string; formats: string; formatsLabel: string; deterministic: string; deterministicLabel: string };
   how: { eyebrow: string; title: string; steps: Array<{ title: string; body: string }> };
@@ -42,6 +43,7 @@ type Dictionary = {
     analyzing: string;
     extracting: string;
     failed: string;
+    submitError: string;
     brandKitLabel: string;
     generateConcepts: string;
     generatingConcepts: string;
@@ -113,6 +115,7 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
       failed: "We couldn't analyze this site. Try another URL, or create an account to fix the brand kit by hand.",
       detected: "Brand identity detected for",
       ctaClaim: "See my 5 ads — create an account",
+      submitError: "Something went wrong. Check your connection and try again.",
     },
     stats: {
       time: "30s",
@@ -212,6 +215,7 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
       analyzing: "Analyzing...",
       extracting: "Analyzing your brand identity...",
       failed: "The analysis failed for this brand.",
+      submitError: "Something went wrong submitting this URL. Check your connection and try again.",
       brandKitLabel: "Brand identity",
       generateConcepts: "Generate 5 concepts",
       generatingConcepts: "Generating...",
@@ -286,6 +290,7 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
       failed: "On n'a pas réussi à analyser ce site. Réessaie avec une autre URL, ou crée un compte pour corriger la DA à la main.",
       detected: "Direction artistique détectée pour",
       ctaClaim: "Voir mes 5 pubs — créer un compte",
+      submitError: "Un problème est survenu. Vérifie ta connexion et réessaie.",
     },
     stats: {
       time: "30s",
@@ -385,6 +390,7 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
       analyzing: "Analyse...",
       extracting: "Analyse de la direction artistique en cours...",
       failed: "L'analyse a échoué pour cette marque.",
+      submitError: "Un problème est survenu en envoyant cette URL. Vérifie ta connexion et réessaie.",
       brandKitLabel: "Direction artistique",
       generateConcepts: "Générer 5 concepts",
       generatingConcepts: "Génération...",
@@ -459,6 +465,7 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
       failed: "Diese Seite konnte nicht analysiert werden. Versuch eine andere URL oder erstelle ein Konto, um das Brand Kit manuell anzupassen.",
       detected: "Markenidentität erkannt für",
       ctaClaim: "Meine 5 Ads ansehen — Konto erstellen",
+      submitError: "Etwas ist schiefgelaufen. Prüfe deine Verbindung und versuch es erneut.",
     },
     stats: {
       time: "30s",
@@ -558,6 +565,7 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
       analyzing: "Analyse läuft...",
       extracting: "Markenidentität wird analysiert...",
       failed: "Die Analyse ist für diese Marke fehlgeschlagen.",
+      submitError: "Beim Senden dieser URL ist etwas schiefgelaufen. Prüfe deine Verbindung und versuch es erneut.",
       brandKitLabel: "Markenidentität",
       generateConcepts: "5 Konzepte generieren",
       generatingConcepts: "Generierung läuft...",

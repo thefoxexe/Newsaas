@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getCurrentSession } from "@/src/supabase/get-session";
 import { getDictionary } from "@/src/i18n/locale";
 import { AppLanguageSwitcher } from "./app-language-switcher";
+import { MobileNav } from "./mobile-nav";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const session = await getCurrentSession();
@@ -31,7 +32,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             <span className="hidden sm:inline">ReelJolt</span>
           </Link>
 
-          <nav className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto text-sm">
+          <nav className="hidden min-w-0 flex-1 items-center gap-1 text-sm sm:flex">
             {NAV.map((item) => (
               <Link
                 key={item.href}
@@ -43,8 +44,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             ))}
           </nav>
 
-          <div className="shrink-0">
+          <div className="flex shrink-0 items-center gap-2">
             <AppLanguageSwitcher locale={locale} />
+            <MobileNav items={NAV} />
           </div>
         </div>
       </header>

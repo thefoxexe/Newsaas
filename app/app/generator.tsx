@@ -42,6 +42,8 @@ export function Generator({ initialBrandId, t }: { initialBrandId: string | null
   const [renders, setRenders] = useState<Record<string, RenderJob>>({});
   const [quotaError, setQuotaError] = useState<string | null>(null);
   const [conceptsError, setConceptsError] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(false);
 
   useEffect(() => {
     if (initialBrandId) {
@@ -51,11 +53,19 @@ export function Generator({ initialBrandId, t }: { initialBrandId: string | null
 
   async function pollBrand(id: string): Promise<void> {
     for (let attempt = 0; attempt < 20; attempt += 1) {
-      const response = await fetch(`/api/brands/${id}`);
-      if (!response.ok) return;
-      const { brand: fetched } = (await response.json()) as { brand: Brand };
-      setBrand(fetched);
-      if (fetched.status === "done" || fetched.status === "failed") return;
+      try {
+        const response = await fetch(`/api/brands/${id}`);
+        if (!response.ok) {
+          setSubmitError(true);
+          return;
+        }
+        const { brand: fetched } = (await response.json()) as { brand: Brand };
+        setBrand(fetched);
+        if (fetched.status === "done" || fetched.status === "failed") return;
+      } catch {
+        setSubmitError(true);
+        return;
+      }
       await new Promise((resolve) => setTimeout(resolve, 1500));
     }
   }
@@ -65,16 +75,27 @@ export function Generator({ initialBrandId, t }: { initialBrandId: string | null
     setBrand(null);
     setConcepts([]);
     setQuotaError(null);
+    setSubmitError(false);
+    setSubmitting(true);
 
-    const response = await fetch("/api/brands", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ url }),
-    });
-    if (!response.ok) return;
+    try {
+      const response = await fetch("/api/brands", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url }),
+      });
+      if (!response.ok) {
+        setSubmitError(true);
+        return;
+      }
 
-    const { id } = (await response.json()) as { id: string };
-    await pollBrand(id);
+      const { id } = (await response.json()) as { id: string };
+      await pollBrand(id);
+    } catch {
+      setSubmitError(true);
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   async function generateConcepts(): Promise<void> {
@@ -136,9 +157,10 @@ export function Generator({ initialBrandId, t }: { initialBrandId: string | null
         />
         <button
           type="submit"
-          className="rounded-pill bg-primary px-6 py-3 font-semibold text-primary-foreground transition-transform hover:scale-[1.02]"
+          disabled={submitting}
+          className="rounded-pill bg-primary px-6 py-3 font-semibold text-primary-foreground transition-transform hover:scale-[1.02] disabled:opacity-50"
         >
-          {t.analyze}
+          {submitting ? t.analyzing : t.analyze}
         </button>
       </form>
 
@@ -150,6 +172,12 @@ export function Generator({ initialBrandId, t }: { initialBrandId: string | null
       )}
 
       {brand?.status === "failed" && <p className="mt-6 text-danger">{t.failed}</p>}
+
+      {submitError && (
+        <p className="mt-6 rounded-card border border-danger/40 bg-danger/10 px-4 py-3 text-sm text-danger">
+          {t.submitError}
+        </p>
+      )}
 
       {quotaError && (
         <p className="mt-6 rounded-card border border-danger/40 bg-danger/10 px-4 py-3 text-sm text-danger">
