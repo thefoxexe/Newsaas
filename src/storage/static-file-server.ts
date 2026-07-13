@@ -17,6 +17,16 @@ export function startStaticFileServer(dir: string, urlPrefix: string, port: numb
   const server = createServer((request, response) => {
     void (async () => {
       const url = new URL(request.url ?? "/", "http://localhost");
+
+      // Free hosts that spin a worker down after idle HTTP traffic (Render's
+      // free tier does this after 15 minutes) need something to ping to stay
+      // awake — a plain 200 here lets an external cron hit that instead of
+      // depending on a real render existing.
+      if (request.method === "GET" && url.pathname === "/healthz") {
+        response.writeHead(200, { "Content-Type": "text/plain" }).end("ok");
+        return;
+      }
+
       if (request.method !== "GET" || !url.pathname.startsWith(`${prefix}/`)) {
         response.writeHead(404).end();
         return;

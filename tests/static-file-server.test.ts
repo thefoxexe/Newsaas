@@ -43,4 +43,10 @@ describe("startStaticFileServer", () => {
     expect(await response.text()).toBe("2345");
     expect(response.headers.get("content-range")).toBe("bytes 2-5/10");
   });
+
+  it("responds 200 on /healthz for external keep-alive pings", async () => {
+    const response = await fetch(`http://localhost:${port}/healthz`);
+    expect(response.status).toBe(200);
+    expect(await response.text()).toBe("ok");
+  });
 });
