@@ -1,7 +1,7 @@
 import path from "node:path";
 import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { eq } from "drizzle-orm";
+import { and, eq, lt } from "drizzle-orm";
 import { createLogger } from "./logger";
 import { db } from "./db/client";
 import { brands, concepts, renders } from "./db/schema";
@@ -25,6 +25,23 @@ const TEMPLATES_DIR = path.join(process.cwd(), "src", "templates");
 const RENDER_STORAGE_DIR = process.env["RENDER_STORAGE_DIR"] ?? path.join(process.cwd(), "public", "renders");
 const RENDER_URL_PREFIX = "/renders";
 
+// A real render (180 frames on the kinetic-type template) measures ~20-30s
+// end to end locally. 3 minutes is generous headroom for a slower host
+// without leaving a hung render silent forever — this is what turns a
+// stuck "Rendering..." into an explicit "failed" the UI can show.
+const RENDER_TIMEOUT_MS = 3 * 60 * 1000;
+
+// Jobs stuck in an in-progress state (extraction or rendering) this long
+// are treated as orphaned: the only realistic cause is the worker process
+// that owned them crashing or being restarted mid-job (e.g. the SIGTERM
+// restart loop this host is prone to), since a live worker would otherwise
+// have already resolved them via the timeout above or a normal
+// success/failure path. "queued"/"pending" are deliberately excluded here —
+// sitting unclaimed while the worker is asleep or briefly down is normal
+// and self-resolves the moment the worker polls again, not a stuck state.
+const STALE_JOB_THRESHOLD_MS = 15 * 60 * 1000;
+const STALE_SWEEP_INTERVAL_MS = 2 * 60 * 1000;
+
 const storage = new LocalDiskStorage(
   RENDER_STORAGE_DIR,
   process.env["RENDER_PUBLIC_BASE_URL"] ?? RENDER_URL_PREFIX,
@@ -38,6 +55,28 @@ if (process.env["PORT"]) {
   const port = Number(process.env["PORT"]);
   startStaticFileServer(RENDER_STORAGE_DIR, RENDER_URL_PREFIX, port);
   logger.info({ port }, "serving rendered videos over HTTP");
+}
+
+class RenderTimeoutError extends Error {
+  constructor(ms: number) {
+    super(`render timed out after ${ms}ms`);
+    this.name = "RenderTimeoutError";
+  }
+}
+
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new RenderTimeoutError(ms)), ms);
+    promise
+      .then((value) => {
+        clearTimeout(timer);
+        resolve(value);
+      })
+      .catch((error: Error) => {
+        clearTimeout(timer);
+        reject(error);
+      });
+  });
 }
 
 async function claimOnePendingBrand() {
@@ -135,16 +174,19 @@ async function processRender(render: {
     const plan = await getUserPlan(db, render.userId);
 
     try {
-      const result = await renderVideo({
-        template,
-        brandKit,
-        concept: adConcept,
-        format: render.format,
-        outputPath: localPath,
-        frameCapturer: new PlaywrightFrameCapturer(),
-        videoEncoder: new FfmpegVideoEncoder(),
-        watermark: PLAN_LIMITS[plan].watermark,
-      });
+      const result = await withTimeout(
+        renderVideo({
+          template,
+          brandKit,
+          concept: adConcept,
+          format: render.format,
+          outputPath: localPath,
+          frameCapturer: new PlaywrightFrameCapturer(),
+          videoEncoder: new FfmpegVideoEncoder(),
+          watermark: PLAN_LIMITS[plan].watermark,
+        }),
+        RENDER_TIMEOUT_MS,
+      );
 
       if (!result.ok) {
         throw result.error;
@@ -173,6 +215,42 @@ async function processRender(render: {
   }
 }
 
+async function sweepStaleJobs(): Promise<void> {
+  const cutoff = new Date(Date.now() - STALE_JOB_THRESHOLD_MS);
+
+  const staleRenders = await db
+    .select()
+    .from(renders)
+    .where(and(eq(renders.status, "rendering"), lt(renders.createdAt, cutoff)));
+
+  for (const render of staleRenders) {
+    await db
+      .update(renders)
+      .set({ status: "failed", errorCode: "orphaned: worker restarted mid-render" })
+      .where(eq(renders.id, render.id));
+
+    if (render.usageId) {
+      await refundRenderCredit(db, render.usageId);
+    }
+
+    logger.error({ renderId: render.id }, "render orphaned by a worker restart, marked failed and refunded");
+  }
+
+  const staleBrands = await db
+    .select()
+    .from(brands)
+    .where(and(eq(brands.status, "extracting"), lt(brands.createdAt, cutoff)));
+
+  for (const brand of staleBrands) {
+    await db
+      .update(brands)
+      .set({ status: "failed", errorCode: "orphaned: worker restarted mid-extraction" })
+      .where(eq(brands.id, brand.id));
+
+    logger.error({ brandId: brand.id }, "extraction orphaned by a worker restart, marked failed");
+  }
+}
+
 async function tick(): Promise<void> {
   const brand = await claimOnePendingBrand();
   if (brand) {
@@ -188,8 +266,14 @@ async function tick(): Promise<void> {
 async function main(): Promise<void> {
   logger.info("reeljolt worker started, polling every %dms", POLL_INTERVAL_MS);
 
+  let lastSweepAt = 0;
+
   for (;;) {
     try {
+      if (Date.now() - lastSweepAt >= STALE_SWEEP_INTERVAL_MS) {
+        await sweepStaleJobs();
+        lastSweepAt = Date.now();
+      }
       await tick();
     } catch (error) {
       logger.error({ error }, "worker tick failed unexpectedly");

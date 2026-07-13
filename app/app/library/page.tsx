@@ -3,6 +3,7 @@ import { db } from "@/src/db/client";
 import { renders } from "@/src/db/schema";
 import { getCurrentSession } from "@/src/supabase/get-session";
 import { getDictionary } from "@/src/i18n/locale";
+import { DeleteRenderButton } from "./delete-render-button";
 
 export default async function LibraryPage() {
   const session = await getCurrentSession();
@@ -29,9 +30,16 @@ export default async function LibraryPage() {
               <video src={render.outputUrl} controls className="mt-2 w-full rounded-card" />
             ) : (
               <p className="mt-2 text-sm text-muted">
-                {render.status === "failed" ? t.libraryPage.failed : t.libraryPage.inProgress}
+                {render.status === "failed"
+                  ? [t.libraryPage.failed, render.errorCode].filter(Boolean).join(": ")
+                  : t.libraryPage.inProgress}
               </p>
             )}
+            <DeleteRenderButton
+              renderId={render.id}
+              label={t.libraryPage.deleteButton}
+              confirmLabel={t.libraryPage.deleteConfirm}
+            />
           </div>
         ))}
       </div>

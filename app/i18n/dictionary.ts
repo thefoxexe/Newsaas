@@ -56,7 +56,14 @@ type Dictionary = {
     onboardingBody: string;
     onboardingCta: string;
   };
-  libraryPage: { title: string; empty: string; inProgress: string; failed: string };
+  libraryPage: {
+    title: string;
+    empty: string;
+    inProgress: string;
+    failed: string;
+    deleteButton: string;
+    deleteConfirm: string;
+  };
   authPages: {
     signInTitle: string;
     signUpTitle: string;
@@ -247,6 +254,8 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
       empty: "No videos generated yet.",
       inProgress: "In progress...",
       failed: "Render failed",
+      deleteButton: "Delete",
+      deleteConfirm: "Delete this render?",
     },
     authPages: {
       signInTitle: "Sign in",
@@ -436,6 +445,8 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
       empty: "Aucune vidéo générée pour l'instant.",
       inProgress: "En cours...",
       failed: "Échec du rendu",
+      deleteButton: "Supprimer",
+      deleteConfirm: "Supprimer ce rendu ?",
     },
     authPages: {
       signInTitle: "Se connecter",
@@ -625,6 +636,8 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
       empty: "Noch keine Videos generiert.",
       inProgress: "Läuft...",
       failed: "Rendering fehlgeschlagen",
+      deleteButton: "Löschen",
+      deleteConfirm: "Diesen Render löschen?",
     },
     authPages: {
       signInTitle: "Anmelden",
