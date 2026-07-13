@@ -32,5 +32,13 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|demos/).*)"],
+  // api/webhooks/ is deliberately excluded: Stripe (and any other webhook
+  // sender) signs the exact raw request body, and middleware touching the
+  // request before the route handler reads it is a well-documented way to
+  // end up with a body that no longer matches the signature — exactly the
+  // "No signatures found matching the expected signature for payload" error
+  // Stripe returns when this happens. Webhook requests never carry a
+  // Supabase session cookie to refresh anyway, so there's nothing this
+  // middleware needs to do for them.
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|demos/|api/webhooks/).*)"],
 };
