@@ -2,6 +2,8 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getCurrentSession } from "@/src/supabase/get-session";
 import { getDictionary } from "@/src/i18n/locale";
+import { db } from "@/src/db/client";
+import { hasCompletedPlanSelection } from "@/src/entitlements/get-user-plan";
 import { AppLanguageSwitcher } from "./app-language-switcher";
 import { MobileNav } from "./mobile-nav";
 
@@ -9,6 +11,10 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const session = await getCurrentSession();
   if (!session) {
     redirect("/sign-in");
+  }
+
+  if (!(await hasCompletedPlanSelection(db, session.user.id))) {
+    redirect("/onboarding/plan");
   }
 
   const { locale, t } = await getDictionary();

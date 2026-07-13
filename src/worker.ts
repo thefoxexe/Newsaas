@@ -14,6 +14,8 @@ import { PlaywrightFrameCapturer } from "./render/capture-frames";
 import { FfmpegVideoEncoder } from "./render/encode-video";
 import { renderVideo } from "./render/render-video";
 import { refundRenderCredit } from "./entitlements/reserve-credit";
+import { getUserPlan } from "./entitlements/get-user-plan";
+import { PLAN_LIMITS } from "./entitlements/plans";
 import { LocalDiskStorage } from "./storage/video-storage";
 import { startStaticFileServer } from "./storage/static-file-server";
 
@@ -98,6 +100,7 @@ async function claimOneQueuedRender() {
 
 async function processRender(render: {
   id: string;
+  userId: string;
   brandId: string;
   conceptId: string;
   templateId: string;
@@ -129,6 +132,7 @@ async function processRender(render: {
     const template = await loadTemplate(path.join(TEMPLATES_DIR, render.templateId));
     const workDir = await mkdtemp(path.join(tmpdir(), "reeljolt-render-"));
     const localPath = path.join(workDir, `${render.id}.mp4`);
+    const plan = await getUserPlan(db, render.userId);
 
     try {
       const result = await renderVideo({
@@ -139,6 +143,7 @@ async function processRender(render: {
         outputPath: localPath,
         frameCapturer: new PlaywrightFrameCapturer(),
         videoEncoder: new FfmpegVideoEncoder(),
+        watermark: PLAN_LIMITS[plan].watermark,
       });
 
       if (!result.ok) {

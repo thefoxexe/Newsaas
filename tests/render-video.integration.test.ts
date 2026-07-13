@@ -62,4 +62,50 @@ describe.skipIf(!chromiumAvailable)("renderVideo (kinetic-type, real browser + f
       await rm(outDir, { recursive: true, force: true });
     }
   }, 60_000);
+
+  it("produces a bit-identical MP4 across two runs with the watermark enabled", async () => {
+    const root = path.join(__dirname, "..");
+    const template = await loadTemplate(path.join(root, "src", "templates", "kinetic-type"));
+    const brandKit = BrandKitSchema.parse(
+      JSON.parse(await readFile(path.join(root, "fixtures", "brand-kit.sample.json"), "utf-8")),
+    );
+    const concept = AdConceptSchema.parse(
+      JSON.parse(await readFile(path.join(root, "fixtures", "ad-concept.sample.json"), "utf-8")),
+    );
+
+    const outDir = await mkdtemp(path.join(tmpdir(), "reeljolt-watermark-test-"));
+
+    try {
+      const outputs = await Promise.all(
+        ["run-a.mp4", "run-b.mp4"].map((name) =>
+          renderVideo({
+            template,
+            brandKit,
+            concept,
+            format: "9:16",
+            outputPath: path.join(outDir, name),
+            frameCapturer: new PlaywrightFrameCapturer(),
+            videoEncoder: new FfmpegVideoEncoder(),
+            watermark: true,
+          }),
+        ),
+      );
+
+      for (const result of outputs) {
+        expect(result.ok).toBe(true);
+      }
+
+      const [bufferA, bufferB] = await Promise.all([
+        readFile(path.join(outDir, "run-a.mp4")),
+        readFile(path.join(outDir, "run-b.mp4")),
+      ]);
+
+      const hashA = createHash("md5").update(bufferA).digest("hex");
+      const hashB = createHash("md5").update(bufferB).digest("hex");
+
+      expect(hashA).toBe(hashB);
+    } finally {
+      await rm(outDir, { recursive: true, force: true });
+    }
+  }, 60_000);
 });

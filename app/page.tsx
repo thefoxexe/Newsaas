@@ -6,12 +6,7 @@ import { useLanguage } from "./i18n/language-context";
 import { SiteNav } from "./site-nav";
 import { UrlAnalyzer } from "./url-analyzer";
 import { DemoCarousel } from "./demo-carousel";
-
-const PLANS: Array<{ id: "starter" | "growth" | "scale"; price: number; highlight?: boolean }> = [
-  { id: "starter", price: 29 },
-  { id: "growth", price: 79, highlight: true },
-  { id: "scale", price: 199 },
-];
+import { DISPLAY_PLANS as PLANS } from "./plans-display";
 
 function LandingContent() {
   const { t } = useLanguage();
@@ -148,7 +143,7 @@ function LandingContent() {
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-                      {limits.maxBrands === Infinity
+                      {limits.maxBrands === null
                         ? t.pricing.unlimitedBrands
                         : `${limits.maxBrands} ${t.pricing.brand}`}
                     </li>

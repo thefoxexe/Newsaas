@@ -84,6 +84,8 @@ type Dictionary = {
     annual: string;
     checkoutError: string;
     manageError: string;
+    freeBannerTitle: string;
+    freeBannerBody: string;
   };
   settingsPage: {
     title: string;
@@ -94,6 +96,18 @@ type Dictionary = {
     deleteWarning: string;
     confirmDelete: string;
     cancel: string;
+    manageBilling: string;
+  };
+  onboardingPlanPage: {
+    title: string;
+    subtitle: string;
+    continueFree: string;
+  };
+  brandsPageExtra: {
+    addBusiness: string;
+    addBusinessPlaceholder: string;
+    limitReached: string;
+    upgradeCta: string;
   };
 };
 
@@ -203,7 +217,7 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
       generator: "Generator",
       library: "Library",
       brands: "Brands",
-      billing: "Billing",
+      billing: "Plan",
       settings: "Settings",
       signOut: "Sign out",
     },
@@ -261,6 +275,8 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
       annual: "Annual",
       checkoutError: "Couldn't start checkout. Try again in a moment.",
       manageError: "No Stripe subscription to manage yet.",
+      freeBannerTitle: "You're on the free plan.",
+      freeBannerBody: "1 video/month, 1 business, watermarked. Upgrade below for more videos, more businesses, and no watermark.",
     },
     settingsPage: {
       title: "Settings",
@@ -271,6 +287,18 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
       deleteWarning: "This action is permanent.",
       confirmDelete: "Confirm deletion",
       cancel: "Cancel",
+      manageBilling: "Manage billing & plan",
+    },
+    onboardingPlanPage: {
+      title: "Choose your plan",
+      subtitle: "Pick the plan that fits how many businesses you'll be creating ads for.",
+      continueFree: "Continue with the free plan (1 video/month, 1 business, watermarked)",
+    },
+    brandsPageExtra: {
+      addBusiness: "Add a business",
+      addBusinessPlaceholder: "https://your-store.com",
+      limitReached: "You've reached your plan's business limit.",
+      upgradeCta: "Upgrade to add more businesses",
     },
   },
   fr: {
@@ -378,7 +406,7 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
       generator: "Générateur",
       library: "Bibliothèque",
       brands: "Marques",
-      billing: "Abonnement",
+      billing: "Plan",
       settings: "Réglages",
       signOut: "Se déconnecter",
     },
@@ -436,6 +464,8 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
       annual: "Annuel",
       checkoutError: "Impossible de lancer le paiement. Réessaie dans un instant.",
       manageError: "Aucun abonnement Stripe à gérer pour l'instant.",
+      freeBannerTitle: "Tu es sur le plan gratuit.",
+      freeBannerBody: "1 vidéo/mois, 1 entreprise, avec filigrane. Passe à un plan supérieur ci-dessous pour plus de vidéos, plus d'entreprises et sans filigrane.",
     },
     settingsPage: {
       title: "Réglages",
@@ -446,6 +476,18 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
       deleteWarning: "Cette action est définitive.",
       confirmDelete: "Confirmer la suppression",
       cancel: "Annuler",
+      manageBilling: "Gérer la facturation et le plan",
+    },
+    onboardingPlanPage: {
+      title: "Choisis ton plan",
+      subtitle: "Choisis le plan adapté au nombre d'entreprises pour lesquelles tu vas créer des pubs.",
+      continueFree: "Continuer avec le plan gratuit (1 vidéo/mois, 1 entreprise, avec filigrane)",
+    },
+    brandsPageExtra: {
+      addBusiness: "Ajouter une entreprise",
+      addBusinessPlaceholder: "https://ta-boutique.com",
+      limitReached: "Tu as atteint la limite d'entreprises de ton plan.",
+      upgradeCta: "Passer à un plan supérieur pour en ajouter",
     },
   },
   de: {
@@ -553,7 +595,7 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
       generator: "Generator",
       library: "Bibliothek",
       brands: "Marken",
-      billing: "Abo",
+      billing: "Plan",
       settings: "Einstellungen",
       signOut: "Abmelden",
     },
@@ -611,6 +653,8 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
       annual: "Jährlich",
       checkoutError: "Zahlung konnte nicht gestartet werden. Versuch es gleich nochmal.",
       manageError: "Noch kein Stripe-Abo zum Verwalten.",
+      freeBannerTitle: "Du bist im kostenlosen Plan.",
+      freeBannerBody: "1 Video/Monat, 1 Unternehmen, mit Wasserzeichen. Upgrade unten für mehr Videos, mehr Unternehmen und ohne Wasserzeichen.",
     },
     settingsPage: {
       title: "Einstellungen",
@@ -621,6 +665,18 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
       deleteWarning: "Diese Aktion ist endgültig.",
       confirmDelete: "Löschung bestätigen",
       cancel: "Abbrechen",
+      manageBilling: "Abrechnung & Plan verwalten",
+    },
+    onboardingPlanPage: {
+      title: "Wähle deinen Plan",
+      subtitle: "Wähle den Plan passend zur Anzahl der Unternehmen, für die du Ads erstellen wirst.",
+      continueFree: "Mit dem kostenlosen Plan fortfahren (1 Video/Monat, 1 Unternehmen, mit Wasserzeichen)",
+    },
+    brandsPageExtra: {
+      addBusiness: "Unternehmen hinzufügen",
+      addBusinessPlaceholder: "https://dein-shop.com",
+      limitReached: "Du hast das Unternehmenslimit deines Plans erreicht.",
+      upgradeCta: "Upgrade, um mehr Unternehmen hinzuzufügen",
     },
   },
 };

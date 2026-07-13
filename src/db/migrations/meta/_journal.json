@@ -29,6 +29,13 @@
       "when": 1783895000000,
       "tag": "0003_supabase_auth",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1783935600000,
+      "tag": "0004_plan_selections",
+      "breakpoints": true
     }
   ]
 }

@@ -32,6 +32,13 @@ export default async function BillingPage() {
     <div>
       <h1 className="font-display text-2xl font-bold sm:text-3xl">{t.billingPage.title}</h1>
 
+      {plan === "free" && (
+        <div className="reveal mt-6 rounded-card border border-primary/40 bg-primary/10 p-6">
+          <p className="font-display text-lg font-bold">{t.billingPage.freeBannerTitle}</p>
+          <p className="mt-1 text-sm text-muted">{t.billingPage.freeBannerBody}</p>
+        </div>
+      )}
+
       <div className="mt-6 rounded-card border border-border bg-surface p-6">
         <p className="text-xs font-semibold uppercase tracking-widest text-primary">{t.billingPage.currentPlan}</p>
         <p className="mt-1 font-display text-2xl font-extrabold capitalize">{plan}</p>

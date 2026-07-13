@@ -133,4 +133,25 @@ describe("renderTemplateHtml", () => {
     expect(result.value).not.toContain("</script>bad");
     expect(result.value).toContain("<\\/script>bad");
   });
+
+  it("omits the watermark badge by default", () => {
+    const result = renderTemplateHtml(template, brandKit, makeConcept());
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value).not.toContain("Made with ReelJolt");
+  });
+
+  it("injects a watermark badge before </body> when requested, with a high explicit z-index", () => {
+    const result = renderTemplateHtml(template, brandKit, makeConcept(), true);
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value).toContain("Made with ReelJolt");
+    expect(result.value.indexOf("Made with ReelJolt")).toBeLessThan(result.value.indexOf("</body>"));
+    // Being last in the DOM isn't enough on its own — the real kinetic-type
+    // template has a full-screen CTA card beat at z-index: 10, which
+    // covered the badge during that beat until this was added explicitly.
+    expect(result.value).toContain("z-index:999");
+  });
 });

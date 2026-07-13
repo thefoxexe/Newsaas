@@ -10,7 +10,7 @@ const databaseUrl = process.env["DATABASE_URL"];
 describe.skipIf(!databaseUrl)("reserveRenderCredit / refundRenderCredit (real Postgres)", () => {
   it("decrements once per reservation, serializes concurrent reservations, and refunds correctly", async () => {
     const { db } = await import("../src/db/client");
-    const { authUsers, usage } = await import("../src/db/schema");
+    const { authUsers, subscriptions, usage } = await import("../src/db/schema");
     const { reserveRenderCredit, refundRenderCredit } = await import("../src/entitlements/reserve-credit");
 
     // Identity lives in Supabase Auth's auth.users, which this test doesn't
@@ -18,9 +18,24 @@ describe.skipIf(!databaseUrl)("reserveRenderCredit / refundRenderCredit (real Po
     const [user] = await db.insert(authUsers).values({ id: randomUUID() }).returning();
     if (!user) throw new Error("failed to create test user");
 
-    try {
-      const now = new Date("2026-07-15T00:00:00Z");
+    const now = new Date("2026-07-15T00:00:00Z");
 
+    // A real subscription (not the free default) so this test's headroom —
+    // and thus its assertions below — doesn't depend on the exact free-tier
+    // credit count, a business rule that changes independently of what this
+    // test actually exercises (transactional concurrency + refund). The
+    // boundary/exhaustion behavior itself is covered exhaustively by
+    // can-generate.test.ts's pure-logic tests.
+    await db.insert(subscriptions).values({
+      userId: user.id,
+      stripeCustomerId: "cus_test",
+      plan: "starter",
+      status: "active",
+      currentPeriodStart: new Date("2026-07-01T00:00:00Z"),
+      currentPeriodEnd: new Date("2026-08-01T00:00:00Z"),
+    });
+
+    try {
       const results = await Promise.all([
         reserveRenderCredit(db, user.id, now),
         reserveRenderCredit(db, user.id, now),
@@ -28,11 +43,6 @@ describe.skipIf(!databaseUrl)("reserveRenderCredit / refundRenderCredit (real Po
       ]);
 
       expect(results.filter((r) => r.ok)).toHaveLength(3);
-
-      const fourth = await reserveRenderCredit(db, user.id, now);
-      expect(fourth.ok).toBe(false);
-      if (fourth.ok) return;
-      expect(fourth.error.code).toBe("credits_exhausted");
 
       const firstUsageId = results[0]?.ok ? results[0].value.usageId : undefined;
       if (firstUsageId === undefined) throw new Error("expected the first reservation to succeed");

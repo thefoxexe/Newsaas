@@ -115,3 +115,16 @@ export const stripeEvents = pgTable("stripe_events", {
   type: text("type").notNull(),
   processedAt: timestamp("processed_at", { withTimezone: true }).notNull().defaultNow(),
 });
+
+// Marks that a user has been through the mandatory onboarding plan picker —
+// nothing more. This is deliberately separate from `subscriptions`, which
+// stays Stripe-webhook-only (see handle-webhook.ts): a user who explicitly
+// picks the free tier never gets a real Stripe subscription, so there'd be
+// no other row anywhere recording that they've completed this step.
+export const planSelections = pgTable("plan_selections", {
+  userId: uuid("user_id")
+    .primaryKey()
+    .references(() => authUsers.id, { onDelete: "cascade" }),
+  plan: planEnum("plan").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});

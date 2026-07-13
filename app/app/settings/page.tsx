@@ -1,6 +1,7 @@
 import { getCurrentSession } from "@/src/supabase/get-session";
 import { getDictionary } from "@/src/i18n/locale";
 import { SignOutButton, DeleteAccountButton } from "./account-actions";
+import { ManageSubscriptionButton } from "../billing/billing-actions";
 
 export default async function SettingsPage() {
   const session = await getCurrentSession();
@@ -16,6 +17,9 @@ export default async function SettingsPage() {
         <p className="font-semibold">{session.user.name}</p>
         <p className="mt-4 text-sm text-muted">{t.settingsPage.email}</p>
         <p className="font-semibold">{session.user.email}</p>
+        <div className="mt-4">
+          <ManageSubscriptionButton label={t.settingsPage.manageBilling} errorLabel={t.billingPage.manageError} />
+        </div>
       </div>
 
       <div className="mt-6 flex flex-wrap items-center justify-between gap-4">

@@ -22,6 +22,7 @@ export function renderTemplateHtml(
   template: LoadedTemplate,
   brandKit: BrandKit,
   concept: AdConcept,
+  watermark = false,
 ): Result<string, TemplateValidationError> {
   const validation = validateTextConstraints(template, concept);
   if (!validation.ok) {
@@ -55,7 +56,22 @@ export function renderTemplateHtml(
     `<style>${template.css}</style>`,
   );
 
-  const finalHtml = withInlineStyles.replace("__REELJOLT_DATA__", dataJson);
+  const withData = withInlineStyles.replace("__REELJOLT_DATA__", dataJson);
+
+  // Flat solid background, plain text, fixed position, modest (non-circular)
+  // border-radius — matching the safe-for-determinism patterns established
+  // for this renderer (see docs/SPEC_REVIEW.md): fully rounded/pill shapes
+  // sit closer to the documented risky family (GPU-dependent sub-pixel
+  // anti-aliasing at the curve under load) than a plain rounded rectangle.
+  // z-index: 999 because the template's full-screen CTA card beat sits at
+  // z-index: 10 — without going higher, the watermark would be covered
+  // during that beat despite being later in the DOM.
+  const finalHtml = watermark
+    ? withData.replace(
+        "</body>",
+        `<div style="position:fixed;z-index:999;bottom:20px;right:20px;padding:8px 16px;border-radius:8px;background:#000000;color:#ffffff;font-family:system-ui,sans-serif;font-size:16px;font-weight:700;">Made with ReelJolt</div></body>`,
+      )
+    : withData;
 
   return ok(finalHtml);
 }

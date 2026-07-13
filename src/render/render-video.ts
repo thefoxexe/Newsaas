@@ -18,6 +18,7 @@ export type RenderVideoInput = {
   outputPath: string;
   frameCapturer: FrameCapturer;
   videoEncoder: VideoEncoder;
+  watermark?: boolean;
 };
 
 export type RenderVideoOutput = {
@@ -32,7 +33,7 @@ export async function renderVideo(
     return err(new UnsupportedFormatError(input.format, input.template.manifest.id));
   }
 
-  const html = renderTemplateHtml(input.template, input.brandKit, input.concept);
+  const html = renderTemplateHtml(input.template, input.brandKit, input.concept, input.watermark ?? false);
   if (!html.ok) {
     return html;
   }
