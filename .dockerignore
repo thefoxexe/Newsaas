@@ -1,0 +1,11 @@
+node_modules
+.next
+.git
+public
+app
+out
+*.md
+tests
+fixtures
+.env
+.env.*

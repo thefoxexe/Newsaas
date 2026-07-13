@@ -51,7 +51,11 @@ Les tests d'intégration (`tests/*.integration.test.ts`) ne tournent que si `PLA
 
 - **App web (Next.js) → Netlify.** `netlify.toml` + `@netlify/plugin-nextjs` sont déjà configurés. Étapes : connecter ce repo GitHub dans le dashboard Netlify (Add new site → Import an existing project), définir les variables d'environnement listées dans `.env.example` (`DATABASE_URL`, `NEXT_PUBLIC_SUPABASE_URL`/`NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `NEXT_PUBLIC_APP_URL` = l'URL Netlify, `ANTHROPIC_API_KEY`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`), puis déployer.
 - **Auth = Supabase Auth**, pas un système maison. Google/GitHub se configurent entièrement dans le dashboard Supabase (Authentication > Providers) — pas de client id/secret côté Netlify.
-- **Worker (`npm run worker`) → un hôte qui garde un processus vivant** (Fly.io, Railway, un petit VPS, un conteneur). Il lui faut `DATABASE_URL`, `ANTHROPIC_API_KEY`, et un Chromium installé (`npx playwright install chromium --with-deps`).
+- **Worker (`npm run worker`) → un hôte qui garde un processus vivant** (Fly.io, Railway, un petit VPS, un conteneur) — **ce n'est pas encore déployé nulle part**, et sans lui rien ne se passe : les URLs soumises restent en `pending` pour toujours (pas d'extraction, pas de rendu), ce qui ressemble exactement à « l'app ne fait rien ». `Dockerfile.worker` (à la racine) empaquette tout ce qu'il faut (Node, Chromium via l'image Playwright officielle, ffmpeg) — construit et testé dans cette session (`docker build -f Dockerfile.worker .`, puis un vrai job d'extraction lancé dans le conteneur, passé de `pending` à `done`). Déploiement le plus rapide sur Railway :
+  1. Nouveau projet Railway → « Deploy from GitHub repo » → ce repo.
+  2. Settings → Build → Dockerfile Path : `Dockerfile.worker`.
+  3. Variables : `DATABASE_URL`, `ANTHROPIC_API_KEY` (mêmes valeurs que Netlify).
+  4. Pas de port à exposer — ce process ne sert pas de HTTP, il ne fait qu'interroger la base toutes les 3 secondes.
 - **Stockage vidéo.** `src/storage/video-storage.ts` écrit sur disque local pour l'instant (`LocalDiskStorage`) — ça ne survit pas à un redéploiement et ne fonctionne que si le worker et le serveur qui sert les fichiers sont la même machine. Remplacer par Cloudflare R2 (ou S3) avant un vrai lancement — nécessite des identifiants que je n'ai pas.
 
 ## Structure

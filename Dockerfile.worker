@@ -1,0 +1,29 @@
+# Standalone render worker (Playwright + ffmpeg) — deploy this separately
+# from the Next.js web app on Netlify. Playwright/ffmpeg don't run on
+# serverless functions, so this needs a host that keeps a process alive
+# (Railway, Fly.io, a small VPS...). See README.md "Architecture de
+# déploiement" for why the split exists.
+#
+# Build & run:
+#   docker build -f Dockerfile.worker -t reeljolt-worker .
+#   docker run --env-file .env reeljolt-worker
+#
+# On Railway/Fly.io: point the service at this Dockerfile, set the same
+# env vars as the web app needs server-side (DATABASE_URL, ANTHROPIC_API_KEY,
+# and optionally RENDER_STORAGE_DIR/RENDER_PUBLIC_BASE_URL once real object
+# storage is wired up), no exposed port needed — this process doesn't serve
+# HTTP, it just polls the database.
+FROM mcr.microsoft.com/playwright:v1.61.1-noble
+
+RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev --ignore-scripts && npm install --no-save tsx
+
+COPY src ./src
+COPY drizzle.config.ts ./
+
+CMD ["npx", "tsx", "src/worker.ts"]
