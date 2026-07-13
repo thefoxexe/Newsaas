@@ -15,15 +15,28 @@ import { FfmpegVideoEncoder } from "./render/encode-video";
 import { renderVideo } from "./render/render-video";
 import { refundRenderCredit } from "./entitlements/reserve-credit";
 import { LocalDiskStorage } from "./storage/video-storage";
+import { startStaticFileServer } from "./storage/static-file-server";
 
 const logger = createLogger("reeljolt-worker");
 const POLL_INTERVAL_MS = 3000;
 const TEMPLATES_DIR = path.join(process.cwd(), "src", "templates");
+const RENDER_STORAGE_DIR = process.env["RENDER_STORAGE_DIR"] ?? path.join(process.cwd(), "public", "renders");
+const RENDER_URL_PREFIX = "/renders";
 
 const storage = new LocalDiskStorage(
-  process.env["RENDER_STORAGE_DIR"] ?? path.join(process.cwd(), "public", "renders"),
-  process.env["RENDER_PUBLIC_BASE_URL"] ?? "/renders",
+  RENDER_STORAGE_DIR,
+  process.env["RENDER_PUBLIC_BASE_URL"] ?? RENDER_URL_PREFIX,
 );
+
+// On a shared-disk local dev setup, Next.js already serves public/renders
+// statically — nothing extra to do. On a real deployment the worker runs on
+// its own host with no shared disk, so it must serve its own render output;
+// Railway (and most container hosts) inject PORT for exactly this purpose.
+if (process.env["PORT"]) {
+  const port = Number(process.env["PORT"]);
+  startStaticFileServer(RENDER_STORAGE_DIR, RENDER_URL_PREFIX, port);
+  logger.info({ port }, "serving rendered videos over HTTP");
+}
 
 async function claimOnePendingBrand() {
   return db.transaction(async (tx) => {
