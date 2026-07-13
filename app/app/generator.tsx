@@ -9,6 +9,7 @@ type Brand = {
   id: string;
   name: string;
   status: "pending" | "extracting" | "done" | "failed";
+  errorCode: string | null;
   brandKit: {
     colors: { primary: string; secondary: string; background: string; text: string };
     copy: { tagline: string | null };
@@ -171,7 +172,12 @@ export function Generator({ initialBrandId, t }: { initialBrandId: string | null
         </div>
       )}
 
-      {brand?.status === "failed" && <p className="mt-6 text-danger">{t.failed}</p>}
+      {brand?.status === "failed" && (
+        <div className="mt-6 rounded-card border border-danger/40 bg-danger/10 px-4 py-3">
+          <p className="text-sm text-danger">{t.failed}</p>
+          {brand.errorCode && <p className="mt-1 font-mono text-xs text-danger/70">{brand.errorCode}</p>}
+        </div>
+      )}
 
       {submitError && (
         <p className="mt-6 rounded-card border border-danger/40 bg-danger/10 px-4 py-3 text-sm text-danger">
