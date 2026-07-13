@@ -33,6 +33,49 @@ type Dictionary = {
   faq: { eyebrow: string; title: string; items: Array<{ q: string; a: string }> };
   finalCta: { title: string; body: string; button: string };
   footer: { rights: string; signIn: string };
+  appNav: { generator: string; library: string; brands: string; billing: string; settings: string; signOut: string };
+  generator: {
+    title: string;
+    subtitle: string;
+    inputPlaceholder: string;
+    analyze: string;
+    analyzing: string;
+    extracting: string;
+    failed: string;
+    brandKitLabel: string;
+    generateConcepts: string;
+    generatingConcepts: string;
+    renderPending: string;
+    renderFailed: string;
+    quotaAlert: string;
+    conceptsError: string;
+    retry: string;
+  };
+  libraryPage: { title: string; empty: string; inProgress: string; failed: string };
+  brandsPage: { title: string; empty: string };
+  billingPage: {
+    title: string;
+    currentPlan: string;
+    creditsUsed: string;
+    renewsOn: string;
+    managePlan: string;
+    choosePlan: string;
+    videosPerMonth: string;
+    monthly: string;
+    annual: string;
+    checkoutError: string;
+    manageError: string;
+  };
+  settingsPage: {
+    title: string;
+    name: string;
+    email: string;
+    signOut: string;
+    deleteAccount: string;
+    deleteWarning: string;
+    confirmDelete: string;
+    cancel: string;
+  };
 };
 
 export const DICTIONARY: Record<Locale, Dictionary> = {
@@ -136,6 +179,61 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
       button: "Try it free",
     },
     footer: { rights: "All rights reserved.", signIn: "Sign in" },
+    appNav: {
+      generator: "Generator",
+      library: "Library",
+      brands: "Brands",
+      billing: "Billing",
+      settings: "Settings",
+      signOut: "Sign out",
+    },
+    generator: {
+      title: "Generator",
+      subtitle: "Paste a URL, validate the brand identity, pick your concepts, launch the render.",
+      inputPlaceholder: "https://your-store.com",
+      analyze: "Analyze",
+      analyzing: "Analyzing...",
+      extracting: "Analyzing your brand identity...",
+      failed: "The analysis failed for this brand.",
+      brandKitLabel: "Brand identity",
+      generateConcepts: "Generate 5 concepts",
+      generatingConcepts: "Generating...",
+      renderPending: "Rendering...",
+      renderFailed: "The render failed.",
+      quotaAlert: "Can't launch this render (quota reached?)",
+      conceptsError: "Couldn't generate concepts. Try again.",
+      retry: "Retry",
+    },
+    libraryPage: {
+      title: "Library",
+      empty: "No videos generated yet.",
+      inProgress: "In progress...",
+      failed: "Render failed",
+    },
+    brandsPage: { title: "Brands", empty: "No brand saved yet." },
+    billingPage: {
+      title: "Billing",
+      currentPlan: "Current plan",
+      creditsUsed: "credits used this month",
+      renewsOn: "Renews on",
+      managePlan: "Manage subscription",
+      choosePlan: "Choose",
+      videosPerMonth: "videos/month",
+      monthly: "Monthly",
+      annual: "Annual",
+      checkoutError: "Couldn't start checkout. Try again in a moment.",
+      manageError: "No Stripe subscription to manage yet.",
+    },
+    settingsPage: {
+      title: "Settings",
+      name: "Name",
+      email: "Email",
+      signOut: "Sign out",
+      deleteAccount: "Delete my account",
+      deleteWarning: "This action is permanent.",
+      confirmDelete: "Confirm deletion",
+      cancel: "Cancel",
+    },
   },
   fr: {
     nav: { demos: "Démos", how: "Comment ça marche", pricing: "Tarifs", signIn: "Se connecter", cta: "Essayer gratuitement" },
@@ -237,6 +335,61 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
       button: "Essayer gratuitement",
     },
     footer: { rights: "Tous droits réservés.", signIn: "Se connecter" },
+    appNav: {
+      generator: "Générateur",
+      library: "Bibliothèque",
+      brands: "Marques",
+      billing: "Abonnement",
+      settings: "Réglages",
+      signOut: "Se déconnecter",
+    },
+    generator: {
+      title: "Générateur",
+      subtitle: "Colle une URL, valide la DA, choisis tes concepts, lance le rendu.",
+      inputPlaceholder: "https://ta-boutique.com",
+      analyze: "Analyser",
+      analyzing: "Analyse...",
+      extracting: "Analyse de la direction artistique en cours...",
+      failed: "L'analyse a échoué pour cette marque.",
+      brandKitLabel: "Direction artistique",
+      generateConcepts: "Générer 5 concepts",
+      generatingConcepts: "Génération...",
+      renderPending: "Rendu en cours...",
+      renderFailed: "Le rendu a échoué.",
+      quotaAlert: "Impossible de lancer ce rendu (quota atteint ?)",
+      conceptsError: "Impossible de générer les concepts. Réessaie.",
+      retry: "Réessayer",
+    },
+    libraryPage: {
+      title: "Bibliothèque",
+      empty: "Aucune vidéo générée pour l'instant.",
+      inProgress: "En cours...",
+      failed: "Échec du rendu",
+    },
+    brandsPage: { title: "Marques", empty: "Aucune marque enregistrée pour l'instant." },
+    billingPage: {
+      title: "Abonnement",
+      currentPlan: "Plan actuel",
+      creditsUsed: "crédits utilisés ce mois",
+      renewsOn: "Renouvellement le",
+      managePlan: "Gérer l'abonnement",
+      choosePlan: "Choisir",
+      videosPerMonth: "vidéos/mois",
+      monthly: "Mensuel",
+      annual: "Annuel",
+      checkoutError: "Impossible de lancer le paiement. Réessaie dans un instant.",
+      manageError: "Aucun abonnement Stripe à gérer pour l'instant.",
+    },
+    settingsPage: {
+      title: "Réglages",
+      name: "Nom",
+      email: "Email",
+      signOut: "Se déconnecter",
+      deleteAccount: "Supprimer mon compte",
+      deleteWarning: "Cette action est définitive.",
+      confirmDelete: "Confirmer la suppression",
+      cancel: "Annuler",
+    },
   },
   de: {
     nav: { demos: "Demos", how: "So funktioniert's", pricing: "Preise", signIn: "Anmelden", cta: "Kostenlos testen" },
@@ -338,5 +491,60 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
       button: "Kostenlos testen",
     },
     footer: { rights: "Alle Rechte vorbehalten.", signIn: "Anmelden" },
+    appNav: {
+      generator: "Generator",
+      library: "Bibliothek",
+      brands: "Marken",
+      billing: "Abo",
+      settings: "Einstellungen",
+      signOut: "Abmelden",
+    },
+    generator: {
+      title: "Generator",
+      subtitle: "URL einfügen, Markenidentität prüfen, Konzepte wählen, Rendering starten.",
+      inputPlaceholder: "https://dein-shop.com",
+      analyze: "Analysieren",
+      analyzing: "Analyse läuft...",
+      extracting: "Markenidentität wird analysiert...",
+      failed: "Die Analyse ist für diese Marke fehlgeschlagen.",
+      brandKitLabel: "Markenidentität",
+      generateConcepts: "5 Konzepte generieren",
+      generatingConcepts: "Generierung läuft...",
+      renderPending: "Rendering läuft...",
+      renderFailed: "Das Rendering ist fehlgeschlagen.",
+      quotaAlert: "Dieses Rendering kann nicht gestartet werden (Kontingent erreicht?)",
+      conceptsError: "Konzepte konnten nicht generiert werden. Versuch es erneut.",
+      retry: "Erneut versuchen",
+    },
+    libraryPage: {
+      title: "Bibliothek",
+      empty: "Noch keine Videos generiert.",
+      inProgress: "Läuft...",
+      failed: "Rendering fehlgeschlagen",
+    },
+    brandsPage: { title: "Marken", empty: "Noch keine Marke gespeichert." },
+    billingPage: {
+      title: "Abo",
+      currentPlan: "Aktueller Plan",
+      creditsUsed: "Credits diesen Monat verwendet",
+      renewsOn: "Verlängerung am",
+      managePlan: "Abo verwalten",
+      choosePlan: "Wählen",
+      videosPerMonth: "Videos/Monat",
+      monthly: "Monatlich",
+      annual: "Jährlich",
+      checkoutError: "Zahlung konnte nicht gestartet werden. Versuch es gleich nochmal.",
+      manageError: "Noch kein Stripe-Abo zum Verwalten.",
+    },
+    settingsPage: {
+      title: "Einstellungen",
+      name: "Name",
+      email: "E-Mail",
+      signOut: "Abmelden",
+      deleteAccount: "Konto löschen",
+      deleteWarning: "Diese Aktion ist endgültig.",
+      confirmDelete: "Löschung bestätigen",
+      cancel: "Abbrechen",
+    },
   },
 };
