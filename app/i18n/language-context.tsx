@@ -21,14 +21,13 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>("en");
 
   useEffect(() => {
+    // English is the default for every visitor. We only ever switch away
+    // from it if the user explicitly picked another language before
+    // (persisted below) — never from browser/OS locale auto-detection,
+    // which used to silently flip French/German browsers to that language.
     const stored = window.localStorage.getItem(STORAGE_KEY);
     if (stored !== null && isLocale(stored)) {
       setLocaleState(stored);
-      return;
-    }
-    const browserLang = window.navigator.language.slice(0, 2);
-    if (isLocale(browserLang)) {
-      setLocaleState(browserLang);
     }
   }, []);
 
