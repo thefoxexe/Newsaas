@@ -38,7 +38,18 @@ export class PlaywrightFrameCapturer implements FrameCapturer {
 
   async captureFrames(html: string, options: CaptureOptions, frameDir: string): Promise<number> {
     const browser = await chromium.launch({
-      ...(this.executablePath === undefined ? {} : { executablePath: this.executablePath }),
+      // The "headless shell" build strips the parts of Chromium only needed
+      // for a real browser window (full UI, extensions, devtools chrome) —
+      // Playwright installs it side-by-side with regular Chromium by
+      // default, and it measured at roughly half the combined RSS of a full
+      // Chromium instance for this same render (~800MB -> ~460MB), which is
+      // the difference between fitting in a 512MB container or not.
+      // executablePath (set locally for sandbox-specific browser paths)
+      // takes priority when present; channel is what production actually
+      // uses.
+      ...(this.executablePath === undefined
+        ? { channel: "chromium-headless-shell" }
+        : { executablePath: this.executablePath }),
       // --disable-dev-shm-usage: most containers (Docker/Render/etc.) mount
       // /dev/shm far smaller than a real host, which is the single most
       // common cause of Chromium instability/crashes in containers —
