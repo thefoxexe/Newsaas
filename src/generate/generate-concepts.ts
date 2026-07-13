@@ -36,22 +36,36 @@ async function tryOnce(
     return parsed;
   }
 
+  // The model is asked for several independent concepts per call; one of
+  // them drifting a few characters past a limit (French body copy runs long)
+  // shouldn't cost the whole batch a retry when the others are fine. Only
+  // the concepts that actually violate a constraint are dropped — the batch
+  // as a whole only fails if none of them survive.
+  const validConcepts: (typeof parsed.value.concepts)[number][] = [];
+  let firstViolation: LlmConstraintViolationError | undefined;
+
   for (const concept of parsed.value.concepts) {
     const textCheck = checkTextConstraints(textConstraints, concept);
     if (!textCheck.ok) {
-      return err(new LlmConstraintViolationError(concept.id, textCheck.error.field, textCheck.error.reason));
+      firstViolation ??= new LlmConstraintViolationError(concept.id, textCheck.error.field, textCheck.error.reason);
+      continue;
     }
 
     if (concept.productImageIndex !== null && concept.productImageIndex >= productCount) {
-      return err(
-        new LlmConstraintViolationError(
-          concept.id,
-          "productImageIndex",
-          `index ${concept.productImageIndex} is out of range for ${productCount} products`,
-        ),
+      firstViolation ??= new LlmConstraintViolationError(
+        concept.id,
+        "productImageIndex",
+        `index ${concept.productImageIndex} is out of range for ${productCount} products`,
       );
+      continue;
     }
+
+    validConcepts.push(concept);
   }
 
-  return ok(parsed.value);
+  if (validConcepts.length === 0) {
+    return err(firstViolation ?? new LlmConstraintViolationError("unknown", "concepts", "no concepts returned"));
+  }
+
+  return ok({ ...parsed.value, concepts: validConcepts });
 }

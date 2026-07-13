@@ -111,6 +111,25 @@ describe("generateConcepts", () => {
     expect(result.error.name).toBe("LlmConstraintViolationError");
   });
 
+  it("drops only the concept that violates a constraint, keeping the rest of the batch", async () => {
+    const tooLongBody = JSON.stringify({
+      analysis: validPayload.analysis,
+      concepts: [
+        { ...validPayload.concepts[0], id: "concept-1" },
+        { ...validPayload.concepts[0], id: "concept-2", body: ["Cette ligne est beaucoup trop longue pour tenir"] },
+        { ...validPayload.concepts[0], id: "concept-3" },
+      ],
+    });
+
+    const client = new ScriptedLlmClient([tooLongBody]);
+    const result = await generateConcepts(brandKit, client, textConstraints);
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value.concepts.map((c) => c.id)).toEqual(["concept-1", "concept-3"]);
+    expect(client.calls).toBe(1);
+  });
+
   it("rejects a productImageIndex that is out of range for the brand's products", async () => {
     const outOfRange = JSON.stringify({
       analysis: validPayload.analysis,
