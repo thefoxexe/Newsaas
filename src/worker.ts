@@ -1,4 +1,5 @@
 import path from "node:path";
+import { createServer } from "node:http";
 import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { and, eq, lt } from "drizzle-orm";
@@ -16,19 +17,19 @@ import { renderVideo } from "./render/render-video";
 import { refundRenderCredit } from "./entitlements/reserve-credit";
 import { getUserPlan } from "./entitlements/get-user-plan";
 import { PLAN_LIMITS } from "./entitlements/plans";
-import { LocalDiskStorage } from "./storage/video-storage";
-import { startStaticFileServer } from "./storage/static-file-server";
+import { LocalDiskStorage, type VideoStorage } from "./storage/video-storage";
+import { SupabaseVideoStorage } from "./storage/supabase-video-storage";
+import { createAdminClient } from "./supabase/admin";
 
 const logger = createLogger("reeljolt-worker");
 const POLL_INTERVAL_MS = 3000;
 const TEMPLATES_DIR = path.join(process.cwd(), "src", "templates");
-const RENDER_STORAGE_DIR = process.env["RENDER_STORAGE_DIR"] ?? path.join(process.cwd(), "public", "renders");
-const RENDER_URL_PREFIX = "/renders";
 
-// A real render (180 frames on the kinetic-type template) measures ~20-30s
-// end to end locally. 3 minutes is generous headroom for a slower host
-// without leaving a hung render silent forever — this is what turns a
-// stuck "Rendering..." into an explicit "failed" the UI can show.
+// A real render (450 frames at 15s/30fps on any of the 3 templates)
+// measures ~35-70s end to end locally, up from ~20-30s at the old 6s
+// duration. 3 minutes is generous headroom for a slower host without
+// leaving a hung render silent forever — this is what turns a stuck
+// "Rendering..." into an explicit "failed" the UI can show.
 const RENDER_TIMEOUT_MS = 3 * 60 * 1000;
 
 // Jobs stuck in an in-progress state (extraction or rendering) this long
@@ -42,6 +43,12 @@ const RENDER_TIMEOUT_MS = 3 * 60 * 1000;
 const STALE_JOB_THRESHOLD_MS = 15 * 60 * 1000;
 const STALE_SWEEP_INTERVAL_MS = 2 * 60 * 1000;
 
+// User-facing retention: renders older than this are deleted (storage
+// object + DB row) rather than kept forever. Hourly is plenty of
+// resolution for a 7-day window.
+const RENDER_RETENTION_MS = 7 * 24 * 60 * 60 * 1000;
+const RETENTION_SWEEP_INTERVAL_MS = 60 * 60 * 1000;
+
 // Measured peak RSS for one render (headless-shell Chromium + ffmpeg) is
 // ~460MB; 2 at once is ~920MB, comfortably under the 2GB host this worker
 // now runs on while leaving headroom for Node/Postgres/OS overhead and the
@@ -51,19 +58,34 @@ const STALE_SWEEP_INTERVAL_MS = 2 * 60 * 1000;
 // worse than leaving some throughput on the table.
 const MAX_CONCURRENT_RENDERS = 2;
 
-const storage = new LocalDiskStorage(
-  RENDER_STORAGE_DIR,
-  process.env["RENDER_PUBLIC_BASE_URL"] ?? RENDER_URL_PREFIX,
-);
+// Real deployments have no persistent disk of their own — a worker
+// restart/redeploy previously wiped every rendered file that only ever
+// lived on local disk, even though the DB row still said "done" (outputUrl
+// pointed at a file that no longer existed). SUPABASE_SERVICE_ROLE_KEY
+// being set is what distinguishes "real deployment, durable storage
+// configured" from "local dev" — LocalDiskStorage stays the fallback for
+// local dev, where Next.js already serves public/renders statically and
+// there's no restart/redeploy wiping anything mid-session.
+const RENDER_STORAGE_DIR = process.env["RENDER_STORAGE_DIR"] ?? path.join(process.cwd(), "public", "renders");
+const storage: VideoStorage = process.env["SUPABASE_SERVICE_ROLE_KEY"]
+  ? new SupabaseVideoStorage(createAdminClient(), process.env["SUPABASE_STORAGE_BUCKET"] ?? "renders")
+  : new LocalDiskStorage(RENDER_STORAGE_DIR, process.env["RENDER_PUBLIC_BASE_URL"] ?? "/renders");
 
-// On a shared-disk local dev setup, Next.js already serves public/renders
-// statically — nothing extra to do. On a real deployment the worker runs on
-// its own host with no shared disk, so it must serve its own render output;
-// Railway (and most container hosts) inject PORT for exactly this purpose.
+// Free hosts (e.g. Render's free tier) spin a worker down after idle HTTP
+// traffic — /healthz gives an external cron something to ping to keep it
+// awake. This is all the worker's own HTTP server does now; rendered
+// videos are served by Supabase Storage's own public URLs, not by the
+// worker itself (see storage above).
 if (process.env["PORT"]) {
   const port = Number(process.env["PORT"]);
-  startStaticFileServer(RENDER_STORAGE_DIR, RENDER_URL_PREFIX, port);
-  logger.info({ port }, "serving rendered videos over HTTP");
+  createServer((request, response) => {
+    if (request.method === "GET" && request.url === "/healthz") {
+      response.writeHead(200, { "Content-Type": "text/plain" }).end("ok");
+      return;
+    }
+    response.writeHead(404).end();
+  }).listen(port);
+  logger.info({ port }, "listening for keep-alive pings");
 }
 
 class RenderTimeoutError extends Error {
@@ -281,6 +303,33 @@ async function sweepStaleJobs(): Promise<void> {
   }
 }
 
+async function sweepExpiredRenders(): Promise<void> {
+  const cutoff = new Date(Date.now() - RENDER_RETENTION_MS);
+
+  const expired = await db
+    .select()
+    .from(renders)
+    .where(and(eq(renders.status, "done"), lt(renders.createdAt, cutoff)));
+
+  for (const render of expired) {
+    try {
+      await storage.remove(`${render.id}.mp4`);
+    } catch (error) {
+      // Still delete the DB row below even if the storage object is
+      // already gone or unreachable — an orphaned file with no DB row
+      // pointing at it is harmless; a DB row surviving with a dead link
+      // is exactly the confusing state this sweep exists to prevent.
+      logger.warn({ renderId: render.id, error }, "failed to remove expired render from storage, deleting DB row anyway");
+    }
+
+    await db.delete(renders).where(eq(renders.id, render.id));
+  }
+
+  if (expired.length > 0) {
+    logger.info({ count: expired.length }, "swept expired renders past the 7-day retention window");
+  }
+}
+
 async function tick(activeRenders: Set<Promise<void>>): Promise<void> {
   // Extraction stays sequential (one at a time, blocking) — it uses full
   // Chromium rather than the lighter headless-shell build (see
@@ -308,6 +357,7 @@ async function main(): Promise<void> {
   );
 
   let lastSweepAt = 0;
+  let lastRetentionSweepAt = 0;
   const activeRenders = new Set<Promise<void>>();
 
   for (;;) {
@@ -315,6 +365,10 @@ async function main(): Promise<void> {
       if (Date.now() - lastSweepAt >= STALE_SWEEP_INTERVAL_MS) {
         await sweepStaleJobs();
         lastSweepAt = Date.now();
+      }
+      if (Date.now() - lastRetentionSweepAt >= RETENTION_SWEEP_INTERVAL_MS) {
+        await sweepExpiredRenders();
+        lastRetentionSweepAt = Date.now();
       }
       await tick(activeRenders);
     } catch (error) {

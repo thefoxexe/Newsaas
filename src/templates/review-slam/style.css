@@ -277,7 +277,10 @@ body {
   transform: scale(0.92);
   animation:
     cta-pop 500ms cubic-bezier(0.34, 1.56, 0.64, 1) 4400ms forwards,
-    cta-nudge 900ms ease-in-out 5200ms 2;
+    /* Loops indefinitely (not a fixed count) so the card stays gently
+       alive through the ~10s hold after it lands — video is 15s total,
+       every other beat lands well before 5s. */
+    cta-nudge 900ms ease-in-out 5200ms infinite;
 }
 
 .cta-text {

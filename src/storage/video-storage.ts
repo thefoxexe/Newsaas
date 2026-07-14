@@ -1,11 +1,15 @@
 export interface VideoStorage {
   upload(localFilePath: string, key: string): Promise<string>;
+  // Used by the 7-day retention sweep (see worker.ts) to actually free the
+  // stored file once its DB row is deleted, not just orphan it in storage.
+  remove(key: string): Promise<void>;
 }
 
-// Placeholder used until real object storage (Cloudflare R2 per spec §4) is
-// wired up — needs credentials only the account owner can create. Serves
-// files by writing them under a directory the web app can expose statically;
-// fine for local/demo use, not for a real multi-instance deployment.
+// Local-dev-only fallback — real deployments use SupabaseVideoStorage (see
+// supabase-video-storage.ts). Serves files by writing them under a
+// directory the web app can expose statically; fine when the worker and
+// the web app share a disk (local dev), not for a real multi-instance
+// deployment with no shared disk between them.
 export class LocalDiskStorage implements VideoStorage {
   constructor(
     private readonly targetDir: string,
@@ -21,5 +25,11 @@ export class LocalDiskStorage implements VideoStorage {
     await copyFile(localFilePath, destination);
 
     return `${this.publicBaseUrl.replace(/\/$/, "")}/${key}`;
+  }
+
+  async remove(key: string): Promise<void> {
+    const { rm } = await import("node:fs/promises");
+    const path = await import("node:path");
+    await rm(path.join(this.targetDir, key), { force: true });
   }
 }

@@ -16,9 +16,11 @@ import { AdConceptSchema } from "../src/domain/ad-concept";
 const chromiumAvailable = Boolean(process.env["PLAYWRIGHT_CHROMIUM_EXECUTABLE"]);
 
 // Known, narrow residual flakiness (roughly 1 in 5-6 runs under real CPU
-// load, e.g. two concurrent renders sharing a CPU-constrained host): the
-// very first captured frame occasionally differs by a handful of
-// anti-aliased pixels at a real embedded font's glyph edges — root-caused
+// load, e.g. two concurrent renders sharing a CPU-constrained host): a
+// single captured frame (usually frame 0, but confirmed to occasionally
+// land elsewhere too — e.g. frame 82 once during the 6s -> 15s duration
+// bump's re-verification) differs by a handful of anti-aliased pixels at
+// a real embedded font's glyph edges — root-caused
 // to document.fonts.ready resolving once a font finishes *parsing*, not
 // once the page has necessarily *repainted* with it, which two Chromium
 // processes competing for CPU can occasionally still race. A double
@@ -78,7 +80,7 @@ describe.skipIf(!chromiumAvailable)("renderVideo (kinetic-type, real browser + f
     } finally {
       await rm(outDir, { recursive: true, force: true });
     }
-  }, 60_000);
+  }, 180_000);
 
   it("produces a bit-identical MP4 across two runs with the watermark enabled", async () => {
     const root = path.join(__dirname, "..");
@@ -124,5 +126,5 @@ describe.skipIf(!chromiumAvailable)("renderVideo (kinetic-type, real browser + f
     } finally {
       await rm(outDir, { recursive: true, force: true });
     }
-  }, 60_000);
+  }, 180_000);
 });

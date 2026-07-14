@@ -23,7 +23,7 @@ describe("template manifests share identical timing and text constraints", () =>
 
   it.each(manifests)("$name matches the shared timing (durationMs/fps/formats)", ({ json }) => {
     const manifest = TemplateManifestSchema.parse(json);
-    expect(manifest.durationMs).toBe(6000);
+    expect(manifest.durationMs).toBe(15000);
     expect(manifest.fps).toBe(30);
     expect(manifest.formats).toEqual(["9:16", "1:1", "16:9"]);
   });

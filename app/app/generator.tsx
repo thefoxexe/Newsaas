@@ -86,6 +86,59 @@ export function Generator({ brandId, t }: { brandId: string; t: GeneratorText })
     };
   }, [brandId]);
 
+  // Concepts/renders were only ever kept in in-memory state — refreshing
+  // the page (or the worker restarting mid-render and the user coming
+  // back later) always reset to a blank slate even though the DB still
+  // had everything. Restore both on mount instead.
+  useEffect(() => {
+    let cancelled = false;
+
+    async function restore(): Promise<void> {
+      const conceptsResponse = await fetch(`/api/brands/${brandId}/concepts`);
+      if (!conceptsResponse.ok || cancelled) return;
+      const { concepts: fetchedConcepts } = (await conceptsResponse.json()) as { concepts: Concept[] };
+      if (cancelled || fetchedConcepts.length === 0) return;
+      setConcepts(fetchedConcepts);
+
+      const rendersResponse = await fetch("/api/renders");
+      if (!rendersResponse.ok || cancelled) return;
+      const { renders: allRenders } = (await rendersResponse.json()) as {
+        renders: Array<RenderJob & { conceptId: string; brandId: string; createdAt: string }>;
+      };
+      if (cancelled) return;
+
+      const latestByConceptId = new Map<string, (typeof allRenders)[number]>();
+      for (const render of allRenders) {
+        if (render.brandId !== brandId) continue;
+        const existing = latestByConceptId.get(render.conceptId);
+        if (!existing || new Date(render.createdAt) > new Date(existing.createdAt)) {
+          latestByConceptId.set(render.conceptId, render);
+        }
+      }
+
+      const restoredRenders: Record<string, RenderJob> = {};
+      for (const [conceptId, render] of latestByConceptId) {
+        restoredRenders[conceptId] = {
+          id: render.id,
+          status: render.status,
+          outputUrl: render.outputUrl,
+          errorCode: render.errorCode,
+          progress: render.progress,
+        };
+        if (render.status === "queued" || render.status === "rendering") {
+          void pollRender(conceptId, render.id);
+        }
+      }
+      setRenders(restoredRenders);
+    }
+
+    void restore();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [brandId]);
+
   async function generateConcepts(): Promise<void> {
     setGenerating(true);
     setConceptsError(false);

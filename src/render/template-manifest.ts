@@ -24,7 +24,7 @@ export type TemplateManifest = z.infer<typeof TemplateManifestSchema>;
 // can't be imported by them directly, only compared against in
 // tests/template-manifests.test.ts.
 export const SHARED_TEMPLATE_TIMING = {
-  durationMs: 6000,
+  durationMs: 15000,
   fps: 30,
   formats: ["9:16", "1:1", "16:9"],
 };

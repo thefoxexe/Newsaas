@@ -61,5 +61,5 @@ describe.skipIf(!chromiumAvailable)("renderVideo (review-slam, real browser + ff
     } finally {
       await rm(outDir, { recursive: true, force: true });
     }
-  }, 60_000);
+  }, 180_000);
 });

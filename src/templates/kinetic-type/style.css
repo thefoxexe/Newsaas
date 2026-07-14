@@ -396,7 +396,7 @@ body {
   transform: scale(0.92);
   animation:
     cta-pop 500ms cubic-bezier(0.34, 1.56, 0.64, 1) 4400ms forwards,
-    cta-nudge 900ms ease-in-out 5200ms 2;
+    cta-nudge 900ms ease-in-out 5200ms infinite;
 }
 
 .cta-text {
@@ -421,8 +421,9 @@ body {
 }
 
 /* A tiny post-landing nudge (not a scale change, so it never fights with
-   cta-pop's final transform) to keep the card feeling alive right before
-   the loop's last frame. */
+   cta-pop's final transform), looping indefinitely so the CTA card stays
+   gently alive through the ~10s hold after the last scripted beat lands
+   (video is 15s total; every other beat above lands well before 5s). */
 @keyframes cta-nudge {
   0%,
   100% {

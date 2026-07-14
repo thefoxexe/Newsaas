@@ -1,6 +1,6 @@
 {
   "id": "product-reveal",
-  "durationMs": 6000,
+  "durationMs": 15000,
   "fps": 30,
   "formats": ["9:16", "1:1", "16:9"],
   "textConstraints": {

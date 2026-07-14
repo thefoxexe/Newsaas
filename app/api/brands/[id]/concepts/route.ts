@@ -52,7 +52,17 @@ export async function POST(_request: Request, context: { params: Promise<{ id: s
 }
 
 export async function GET(_request: Request, context: { params: Promise<{ id: string }> }): Promise<Response> {
+  const session = await getCurrentSession();
+  if (!session) {
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  }
+
   const { id } = await context.params;
+  const [brand] = await db.select().from(brands).where(eq(brands.id, id));
+  if (!brand || brand.userId !== session.user.id) {
+    return NextResponse.json({ error: "not found" }, { status: 404 });
+  }
+
   const rows = await db.select().from(concepts).where(eq(concepts.brandId, id));
   return NextResponse.json({ concepts: rows });
 }
