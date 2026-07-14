@@ -15,16 +15,22 @@ type Brand = {
   } | null;
 };
 
-type TemplateId = "kinetic-type" | "product-reveal" | "review-slam";
+type TemplateId = "dark-neon" | "light-gradient";
+
+type SceneRole = "hook" | "proof" | "feature" | "cta";
+
+type Scene = {
+  role: SceneRole;
+  text: string;
+  highlight: string | null;
+  productImageIndex: number | null;
+};
 
 type Concept = {
   id: string;
   angle: string;
-  hook: string;
-  body: string[];
-  cta: string;
   templateId: TemplateId;
-  productImageIndex: number | null;
+  scenes: Scene[];
 };
 
 type RenderJob = {
@@ -44,12 +50,15 @@ const COLOR_ROLES = ["primary", "secondary", "background", "text"] as const;
 // time. As more templates ship, add an entry here and drop its preview
 // PNG in public/template-previews/.
 const TEMPLATES: Array<{ id: TemplateId; previewSrc: string }> = [
-  { id: "kinetic-type", previewSrc: "/template-previews/kinetic-type.png" },
-  { id: "product-reveal", previewSrc: "/template-previews/product-reveal.png" },
-  { id: "review-slam", previewSrc: "/template-previews/review-slam.png" },
+  { id: "dark-neon", previewSrc: "/template-previews/dark-neon.png" },
+  { id: "light-gradient", previewSrc: "/template-previews/light-gradient.png" },
 ];
 
 type GeneratorText = (typeof DICTIONARY)[Locale]["generator"];
+
+function sceneText(concept: Concept, role: SceneRole): string | undefined {
+  return concept.scenes.find((s) => s.role === role)?.text;
+}
 
 // The generator is always scoped to a specific, already-saved brand now
 // (see app/app/brands/[id]/generate/page.tsx) — there's no URL-to-analyze
@@ -297,9 +306,9 @@ export function Generator({ brandId, t }: { brandId: string; t: GeneratorText })
             return (
               <div key={concept.id} className="card-hover rounded-card border border-border bg-surface p-5">
                 <p className="text-xs font-semibold uppercase tracking-widest text-primary">{concept.angle}</p>
-                <p className="mt-2 font-display text-lg font-bold">{concept.hook}</p>
-                <p className="mt-1 text-sm text-muted">{concept.body.join(" · ")}</p>
-                <p className="mt-2 text-sm font-semibold text-primary">{concept.cta}</p>
+                <p className="mt-2 font-display text-lg font-bold">{sceneText(concept, "hook")}</p>
+                <p className="mt-1 text-sm text-muted">{sceneText(concept, "proof")}</p>
+                <p className="mt-2 text-sm font-semibold text-primary">{sceneText(concept, "cta")}</p>
 
                 {!render && (
                   <div className="mt-4">
@@ -357,12 +366,7 @@ function GenerationModal({
   onSubmit: (templateId: TemplateId, format: (typeof FORMATS)[number]) => void;
 }) {
   const [step, setStep] = useState<"template" | "format">("template");
-  // Falls back to kinetic-type instead of preselecting a disabled card in
-  // the (should-be-impossible-post-generation-validation, but not
-  // DB-enforced) case of a product-reveal concept with no product.
-  const [selectedTemplateId, setSelectedTemplateId] = useState<TemplateId>(
-    concept.templateId === "product-reveal" && concept.productImageIndex === null ? "kinetic-type" : concept.templateId,
-  );
+  const [selectedTemplateId, setSelectedTemplateId] = useState<TemplateId>(concept.templateId);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 p-4 backdrop-blur-sm" onClick={onClose}>
@@ -383,21 +387,19 @@ function GenerationModal({
         </div>
 
         {step === "template" && (
-          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
             {TEMPLATES.map((template) => {
-              const disabled = template.id === "product-reveal" && concept.productImageIndex === null;
               const recommended = template.id === concept.templateId;
               const selected = template.id === selectedTemplateId;
               return (
                 <button
                   key={template.id}
-                  disabled={disabled}
                   onClick={() => setSelectedTemplateId(template.id)}
-                  className={`relative overflow-hidden rounded-card border p-2 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${
+                  className={`relative overflow-hidden rounded-card border p-2 text-left transition-colors ${
                     selected ? "border-primary ring-2 ring-primary/40" : "border-border hover:border-border-strong"
                   }`}
                 >
-                  {recommended && !disabled && (
+                  {recommended && (
                     <span className="absolute left-3 top-3 z-10 rounded-pill bg-primary px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary-foreground">
                       {t.templatePicker.recommended}
                     </span>
@@ -407,13 +409,12 @@ function GenerationModal({
                       src={template.previewSrc}
                       alt={t.templatePicker.names[template.id]}
                       fill
-                      sizes="(max-width: 640px) 90vw, 220px"
+                      sizes="(max-width: 640px) 90vw, 320px"
                       className="object-cover"
                     />
                   </div>
                   <p className="mt-2 text-sm font-semibold">{t.templatePicker.names[template.id]}</p>
                   <p className="mt-0.5 text-xs text-muted">{t.templatePicker.descriptions[template.id]}</p>
-                  {disabled && <p className="mt-1 text-xs text-danger">{t.templatePicker.needsProduct}</p>}
                 </button>
               );
             })}

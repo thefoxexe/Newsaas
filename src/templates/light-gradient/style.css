@@ -1,0 +1,231 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* This template is deliberately light regardless of the brand's own
+   --color-background (which could be dark) — --surface/--ink are heavily
+   color-mixed toward white/black respectively so they land light/dark no
+   matter the source color's own polarity, while still carrying a real
+   tint of the brand's actual palette rather than being generic fixed
+   colors. Flat color-mix computations only (already proven safe this
+   session) — no linear-gradient/radial-gradient anywhere: the "risky"
+   family already documented for this renderer includes gradients (GPU-
+   dependent rendering, same class of risk as blur), so the "soft
+   gradient" mood here comes from an animated shift between two flat
+   mixed tints instead of an actual CSS gradient. */
+.stage {
+  --surface: color-mix(in srgb, var(--color-background) 10%, white 90%);
+  --surface-shift: color-mix(in srgb, var(--color-primary) 8%, white 92%);
+  --ink: color-mix(in srgb, var(--color-text) 20%, black 80%);
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  font-family: var(--font-body);
+  overflow: hidden;
+  background-color: var(--surface);
+  animation: stage-bg-shift 15000ms ease-in-out forwards;
+}
+
+@keyframes stage-bg-shift {
+  0%,
+  60% {
+    background-color: var(--surface);
+  }
+  100% {
+    background-color: var(--surface-shift);
+  }
+}
+
+.brand-badge {
+  position: fixed;
+  top: 6vw;
+  left: 6vw;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 0.9vw;
+}
+
+.brand-mark {
+  width: clamp(28px, 4.2vw, 46px);
+  height: clamp(28px, 4.2vw, 46px);
+  border-radius: 22%;
+  background: var(--color-primary);
+  color: var(--color-background);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: clamp(0.9rem, 1.9vw, 1.3rem);
+  flex-shrink: 0;
+}
+
+.brand-mark img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.brand-name {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: clamp(0.85rem, 1.6vw, 1.1rem);
+  color: var(--ink);
+}
+
+/* Every scene is a full-viewport stack; only the currently-active one has
+   non-zero opacity at any given seek time (see index.html). Same
+   translateY + opacity only mechanic already proven safe — no rotation,
+   no blur. */
+.scene {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2vh;
+  padding: 10vw 9vw;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(2vh);
+}
+
+/* Mixed case, medium weight — deliberately the opposite typographic
+   treatment from dark-neon's tight uppercase 900-weight stack, so the two
+   templates read as genuinely different design languages rather than
+   reskins of each other. */
+.scene-text {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: clamp(1.8rem, 7.5vw, 4.4rem);
+  line-height: 1.15;
+  color: var(--ink);
+}
+
+.scene-text .hl {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+@keyframes scene-in {
+  0% {
+    opacity: 0;
+    transform: translateY(2vh);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scene-out {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-2vh);
+  }
+}
+
+/* Timeline (15000ms total, 4 scenes): hook 0-3500, proof 3500-7000,
+   feature 7000-10500, cta 10500-15000 (holds to the end, no scene-out). */
+#scene-hook {
+  animation:
+    scene-in 450ms ease-out 0ms forwards,
+    scene-out 350ms ease-in 3150ms forwards;
+}
+
+#scene-proof {
+  animation:
+    scene-in 450ms ease-out 3500ms forwards,
+    scene-out 350ms ease-in 6650ms forwards;
+}
+
+#scene-feature {
+  animation:
+    scene-in 450ms ease-out 7000ms forwards,
+    scene-out 350ms ease-in 10150ms forwards;
+}
+
+#scene-cta {
+  animation: scene-in 450ms ease-out 10500ms forwards;
+}
+
+/* Empirically verified this session (3x repeated render, byte-identical
+   frames under concurrent load) before relying on it: a static box-shadow
+   blur radius on a translate/scale/opacity-animated element is stable,
+   unlike a blur() filter or a gradient background-image. */
+.feature-card {
+  position: relative;
+  width: 66vw;
+  max-width: 460px;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.18);
+  padding: 4vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2vh;
+}
+
+.feature-photo {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.feature-chip {
+  background: var(--color-primary);
+  color: var(--color-background);
+  font-weight: 700;
+  padding: 0.8vh 4vw;
+  border-radius: 8px;
+  font-size: clamp(1rem, 3vw, 1.4rem);
+}
+
+/* Modest border-radius (not a pill) — fully rounded shapes sit closer to
+   the documented risky family (GPU-dependent anti-aliasing at the curve
+   under load) than a plain rounded rectangle. */
+.cta-pill {
+  margin-top: 1vh;
+  display: inline-flex;
+  align-items: center;
+  background: var(--color-primary);
+  color: var(--color-background);
+  font-weight: 700;
+  font-size: clamp(1rem, 3vw, 1.4rem);
+  padding: 1.6vh 6vw;
+  border-radius: 10px;
+  opacity: 0;
+  transform: scale(0.9);
+  animation: pill-pop 400ms cubic-bezier(0.34, 1.56, 0.64, 1) 11000ms forwards;
+}
+
+@keyframes pill-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

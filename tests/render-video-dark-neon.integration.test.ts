@@ -17,18 +17,18 @@ const chromiumAvailable = Boolean(process.env["PLAYWRIGHT_CHROMIUM_EXECUTABLE"])
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-describe.skipIf(!chromiumAvailable)("renderVideo (review-slam, real browser + ffmpeg)", () => {
+describe.skipIf(!chromiumAvailable)("renderVideo (dark-neon, real browser + ffmpeg)", () => {
   it("produces a bit-identical MP4 across two runs of the same input", async () => {
     const root = path.join(__dirname, "..");
-    const template = await loadTemplate(path.join(root, "src", "templates", "review-slam"));
+    const template = await loadTemplate(path.join(root, "src", "templates", "dark-neon"));
     const brandKit = BrandKitSchema.parse(
-      JSON.parse(await readFile(path.join(root, "fixtures", "brand-kit.sample.json"), "utf-8")),
+      JSON.parse(await readFile(path.join(root, "fixtures", "scene-brand-kit.sample.json"), "utf-8")),
     );
     const concept = AdConceptSchema.parse(
-      JSON.parse(await readFile(path.join(root, "fixtures", "review-slam-concept.sample.json"), "utf-8")),
+      JSON.parse(await readFile(path.join(root, "fixtures", "dark-neon-concept.sample.json"), "utf-8")),
     );
 
-    const outDir = await mkdtemp(path.join(tmpdir(), "reeljolt-review-slam-test-"));
+    const outDir = await mkdtemp(path.join(tmpdir(), "reeljolt-dark-neon-test-"));
 
     try {
       const outputs = await Promise.all(

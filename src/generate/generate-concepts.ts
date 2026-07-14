@@ -1,6 +1,7 @@
 import type { BrandKit } from "../domain/brand-kit";
 import type { TextConstraints } from "../domain/text-constraints";
 import { checkTextConstraints } from "../domain/text-constraints";
+import { SCENE_ROLES } from "../domain/ad-concept";
 import type { Result } from "../domain/result";
 import { ok, err } from "../domain/result";
 import type { LlmClient } from "./llm-client";
@@ -37,7 +38,7 @@ async function tryOnce(
   }
 
   // The model is asked for several independent concepts per call; one of
-  // them drifting a few characters past a limit (French body copy runs long)
+  // them drifting a few characters past a limit (French copy runs long)
   // shouldn't cost the whole batch a retry when the others are fine. Only
   // the concepts that actually violate a constraint are dropped — the batch
   // as a whole only fails if none of them survive.
@@ -45,34 +46,47 @@ async function tryOnce(
   let firstViolation: LlmConstraintViolationError | undefined;
 
   for (const concept of parsed.value.concepts) {
-    const textCheck = checkTextConstraints(textConstraints, concept);
+    const textCheck = checkTextConstraints(textConstraints, concept.scenes);
     if (!textCheck.ok) {
       firstViolation ??= new LlmConstraintViolationError(concept.id, textCheck.error.field, textCheck.error.reason);
       continue;
     }
 
-    if (concept.productImageIndex !== null && concept.productImageIndex >= productCount) {
+    const roleCounts = new Map<string, number>();
+    for (const scene of concept.scenes) {
+      roleCounts.set(scene.role, (roleCounts.get(scene.role) ?? 0) + 1);
+    }
+    const hasExactlyOneOfEachRole = SCENE_ROLES.every((role) => roleCounts.get(role) === 1);
+    if (!hasExactlyOneOfEachRole) {
+      firstViolation ??= new LlmConstraintViolationError(
+        concept.id,
+        "scenes",
+        `expected exactly one of each role (${SCENE_ROLES.join(", ")}), got: ${concept.scenes.map((s) => s.role).join(", ")}`,
+      );
+      continue;
+    }
+
+    const featureScene = concept.scenes.find((s) => s.role === "feature");
+    if (featureScene?.productImageIndex != null && featureScene.productImageIndex >= productCount) {
       firstViolation ??= new LlmConstraintViolationError(
         concept.id,
         "productImageIndex",
-        `index ${concept.productImageIndex} is out of range for ${productCount} products`,
+        `index ${featureScene.productImageIndex} is out of range for ${productCount} products`,
       );
       continue;
     }
 
-    // product-reveal has nothing to show without a product photo — drop it
-    // the same way as any other constraint violation rather than letting it
-    // through to render a template with a blank image slot.
-    if (concept.recommendedTemplate === "product-reveal" && concept.productImageIndex === null) {
-      firstViolation ??= new LlmConstraintViolationError(
-        concept.id,
-        "recommendedTemplate",
-        "product-reveal requires a productImageIndex, got null",
-      );
-      continue;
-    }
+    // Normalized rather than rejected: a highlight that isn't an exact
+    // substring, or a productImageIndex on a non-"feature" scene, is the
+    // model being slightly sloppy — not a reason to throw away an
+    // otherwise-good concept the way an out-of-range index is.
+    const normalizedScenes = concept.scenes.map((scene) => ({
+      ...scene,
+      highlight: scene.highlight !== null && scene.text.includes(scene.highlight) ? scene.highlight : null,
+      productImageIndex: scene.role === "feature" ? scene.productImageIndex : null,
+    }));
 
-    validConcepts.push(concept);
+    validConcepts.push({ ...concept, scenes: normalizedScenes });
   }
 
   if (validConcepts.length === 0) {

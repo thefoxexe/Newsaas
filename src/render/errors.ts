@@ -1,8 +1,8 @@
 export class TemplateValidationError extends Error {
-  readonly field: "hook" | "body" | "cta";
+  readonly field: "scene";
   readonly reason: string;
 
-  constructor(field: "hook" | "body" | "cta", reason: string) {
+  constructor(field: "scene", reason: string) {
     super(`template validation failed on "${field}": ${reason}`);
     this.name = "TemplateValidationError";
     this.field = field;

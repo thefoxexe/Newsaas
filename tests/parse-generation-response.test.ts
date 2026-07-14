@@ -13,11 +13,13 @@ const validPayload = {
     {
       id: "concept-1",
       angle: "lever l'objection prix",
-      hook: "Ta veste te lache",
-      body: ["Tient 4 saisons"],
-      cta: "Decouvrir",
-      recommendedTemplate: "kinetic-type",
-      productImageIndex: 0,
+      recommendedTemplate: "dark-neon",
+      scenes: [
+        { role: "hook", text: "Ta veste te lache", highlight: null, productImageIndex: null },
+        { role: "proof", text: "Coupe impeccable", highlight: "impeccable", productImageIndex: null },
+        { role: "feature", text: "Tient 4 saisons", highlight: null, productImageIndex: 0 },
+        { role: "cta", text: "Decouvrir", highlight: null, productImageIndex: null },
+      ],
     },
   ],
 };

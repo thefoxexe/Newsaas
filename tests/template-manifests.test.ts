@@ -1,9 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { TemplateManifestSchema } from "../src/render/template-manifest";
 import { SHARED_TEMPLATE_TEXT_CONSTRAINTS } from "../src/domain/text-constraints";
-import kineticTypeManifestJson from "../src/templates/kinetic-type/manifest.json";
-import productRevealManifestJson from "../src/templates/product-reveal/manifest.json";
-import reviewSlamManifestJson from "../src/templates/review-slam/manifest.json";
+import darkNeonManifestJson from "../src/templates/dark-neon/manifest.json";
+import lightGradientManifestJson from "../src/templates/light-gradient/manifest.json";
 
 // Manifests are static JSON (see template-registry.ts) so they can't import
 // the shared constants directly — this is the guard against silent drift
@@ -11,9 +10,8 @@ import reviewSlamManifestJson from "../src/templates/review-slam/manifest.json";
 // (see build-prompt.ts) depends on.
 describe("template manifests share identical timing and text constraints", () => {
   const manifests = [
-    { name: "kinetic-type", json: kineticTypeManifestJson },
-    { name: "product-reveal", json: productRevealManifestJson },
-    { name: "review-slam", json: reviewSlamManifestJson },
+    { name: "dark-neon", json: darkNeonManifestJson },
+    { name: "light-gradient", json: lightGradientManifestJson },
   ];
 
   it.each(manifests)("$name matches the shared text constraints", ({ json }) => {

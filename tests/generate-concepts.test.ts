@@ -4,11 +4,10 @@ import type { LlmClient, Prompt } from "../src/generate/llm-client";
 import type { GenerationResponse } from "../src/generate/parse-generation-response";
 import type { BrandKit } from "../src/domain/brand-kit";
 import type { TextConstraints } from "../src/domain/text-constraints";
+import type { Scene } from "../src/domain/ad-concept";
 
 const textConstraints: TextConstraints = {
-  hook: { maxChars: 40 },
-  body: { maxLines: 3, maxCharsPerLine: 28 },
-  cta: { maxChars: 20 },
+  scene: { maxChars: 40 },
 };
 
 const brandKit: BrandKit = {
@@ -33,6 +32,16 @@ const brandKit: BrandKit = {
   services: [],
 };
 
+function validScenes(overrides: Partial<Record<Scene["role"], Partial<Scene>>> = {}): Scene[] {
+  const base: Record<Scene["role"], Scene> = {
+    hook: { role: "hook", text: "Ta veste te lache", highlight: null, productImageIndex: null },
+    proof: { role: "proof", text: "Coupe impeccable", highlight: "impeccable", productImageIndex: null },
+    feature: { role: "feature", text: "Tient 4 saisons", highlight: null, productImageIndex: 0 },
+    cta: { role: "cta", text: "Decouvrir", highlight: null, productImageIndex: null },
+  };
+  return (["hook", "proof", "feature", "cta"] as const).map((role) => ({ ...base[role], ...overrides[role] }));
+}
+
 const validPayload: GenerationResponse = {
   analysis: {
     audience: "urbains 25-35",
@@ -45,11 +54,8 @@ const validPayload: GenerationResponse = {
     {
       id: "concept-1",
       angle: "lever l'objection prix",
-      hook: "Ta veste te lache",
-      body: ["Tient 4 saisons"],
-      cta: "Decouvrir",
-      recommendedTemplate: "kinetic-type",
-      productImageIndex: 0,
+      recommendedTemplate: "dark-neon",
+      scenes: validScenes(),
     },
   ],
 };
@@ -96,11 +102,14 @@ describe("generateConcepts", () => {
     expect(client.calls).toBe(2);
   });
 
-  it("rejects a concept whose hook exceeds the template's constraints, even if the JSON is valid", async () => {
+  it("rejects a concept whose hook exceeds the shared per-scene constraint, even if the JSON is valid", async () => {
     const tooLongHook = JSON.stringify({
       analysis: validPayload.analysis,
       concepts: [
-        { ...validPayload.concepts[0], hook: "Cette accroche est beaucoup trop longue pour le template" },
+        {
+          ...validPayload.concepts[0],
+          scenes: validScenes({ hook: { text: "Cette accroche est beaucoup trop longue pour tenir dans une scene" } }),
+        },
       ],
     });
 
@@ -113,47 +122,16 @@ describe("generateConcepts", () => {
   });
 
   it("drops only the concept that violates a constraint, keeping the rest of the batch", async () => {
-    const tooLongBody = JSON.stringify({
-      analysis: validPayload.analysis,
-      concepts: [
-        { ...validPayload.concepts[0], id: "concept-1" },
-        { ...validPayload.concepts[0], id: "concept-2", body: ["Cette ligne est beaucoup trop longue pour tenir"] },
-        { ...validPayload.concepts[0], id: "concept-3" },
-      ],
-    });
-
-    const client = new ScriptedLlmClient([tooLongBody]);
-    const result = await generateConcepts(brandKit, client, textConstraints);
-
-    expect(result.ok).toBe(true);
-    if (!result.ok) return;
-    expect(result.value.concepts.map((c) => c.id)).toEqual(["concept-1", "concept-3"]);
-    expect(client.calls).toBe(1);
-  });
-
-  it("rejects a productImageIndex that is out of range for the brand's products", async () => {
-    const outOfRange = JSON.stringify({
-      analysis: validPayload.analysis,
-      concepts: [{ ...validPayload.concepts[0], productImageIndex: 5 }],
-    });
-
-    const client = new ScriptedLlmClient([outOfRange, outOfRange]);
-    const result = await generateConcepts(brandKit, client, textConstraints);
-
-    expect(result.ok).toBe(false);
-  });
-
-  it("drops a product-reveal concept that has no productImageIndex, keeping the rest", async () => {
     const mixed = JSON.stringify({
       analysis: validPayload.analysis,
       concepts: [
-        { ...validPayload.concepts[0], id: "concept-1", recommendedTemplate: "kinetic-type" },
+        { ...validPayload.concepts[0], id: "concept-1" },
         {
           ...validPayload.concepts[0],
           id: "concept-2",
-          recommendedTemplate: "product-reveal",
-          productImageIndex: null,
+          scenes: validScenes({ proof: { text: "Cette ligne est beaucoup trop longue pour tenir dans une scene" } }),
         },
+        { ...validPayload.concepts[0], id: "concept-3" },
       ],
     });
 
@@ -162,6 +140,75 @@ describe("generateConcepts", () => {
 
     expect(result.ok).toBe(true);
     if (!result.ok) return;
-    expect(result.value.concepts.map((c) => c.id)).toEqual(["concept-1"]);
+    expect(result.value.concepts.map((c) => c.id)).toEqual(["concept-1", "concept-3"]);
+    expect(client.calls).toBe(1);
+  });
+
+  it("rejects a feature scene's productImageIndex that is out of range for the brand's products", async () => {
+    const outOfRange = JSON.stringify({
+      analysis: validPayload.analysis,
+      concepts: [{ ...validPayload.concepts[0], scenes: validScenes({ feature: { productImageIndex: 5 } }) }],
+    });
+
+    const client = new ScriptedLlmClient([outOfRange, outOfRange]);
+    const result = await generateConcepts(brandKit, client, textConstraints);
+
+    expect(result.ok).toBe(false);
+  });
+
+  it("rejects a concept missing one of the 4 fixed scene roles", async () => {
+    const missingRole = JSON.stringify({
+      analysis: validPayload.analysis,
+      concepts: [
+        { ...validPayload.concepts[0], scenes: validScenes().map((s) => (s.role === "cta" ? { ...s, role: "proof" } : s)) },
+      ],
+    });
+
+    const client = new ScriptedLlmClient([missingRole, missingRole]);
+    const result = await generateConcepts(brandKit, client, textConstraints);
+
+    expect(result.ok).toBe(false);
+  });
+
+  it("keeps a concept but nulls out a highlight that isn't an exact substring of its scene's text", async () => {
+    const badHighlight = JSON.stringify({
+      analysis: validPayload.analysis,
+      concepts: [{ ...validPayload.concepts[0], scenes: validScenes({ hook: { highlight: "not in the text" } }) }],
+    });
+
+    const client = new ScriptedLlmClient([badHighlight]);
+    const result = await generateConcepts(brandKit, client, textConstraints);
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    const hookScene = result.value.concepts[0]?.scenes.find((s) => s.role === "hook");
+    expect(hookScene?.highlight).toBeNull();
+  });
+
+  it("keeps a concept but nulls out a productImageIndex on a non-feature scene", async () => {
+    const strayIndex = JSON.stringify({
+      analysis: validPayload.analysis,
+      concepts: [{ ...validPayload.concepts[0], scenes: validScenes({ hook: { productImageIndex: 0 } }) }],
+    });
+
+    const client = new ScriptedLlmClient([strayIndex]);
+    const result = await generateConcepts(brandKit, client, textConstraints);
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    const hookScene = result.value.concepts[0]?.scenes.find((s) => s.role === "hook");
+    expect(hookScene?.productImageIndex).toBeNull();
+  });
+
+  it("accepts a feature scene with no productImageIndex (no product tie-in)", async () => {
+    const noProduct = JSON.stringify({
+      analysis: validPayload.analysis,
+      concepts: [{ ...validPayload.concepts[0], scenes: validScenes({ feature: { productImageIndex: null } }) }],
+    });
+
+    const client = new ScriptedLlmClient([noProduct]);
+    const result = await generateConcepts(brandKit, client, textConstraints);
+
+    expect(result.ok).toBe(true);
   });
 });

@@ -1,0 +1,11 @@
+{
+  "id": "concept-dark-neon",
+  "angle": "lever l'objection prix",
+  "recommendedTemplate": "dark-neon",
+  "scenes": [
+    { "role": "hook", "text": "Ta veste te lache deja ?", "highlight": "lache", "productImageIndex": null },
+    { "role": "proof", "text": "Coupe impeccable, dit Sarah", "highlight": "impeccable", "productImageIndex": null },
+    { "role": "feature", "text": "Veste technique Aro", "highlight": "Aro", "productImageIndex": 0 },
+    { "role": "cta", "text": "Decouvrir la collection", "highlight": "collection", "productImageIndex": null }
+  ]
+}

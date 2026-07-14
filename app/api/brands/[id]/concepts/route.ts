@@ -26,7 +26,7 @@ export async function POST(_request: Request, context: { params: Promise<{ id: s
   }
 
   const brandKit = BrandKitSchema.parse(brand.brandKit);
-  const manifest = getTemplateManifest("kinetic-type");
+  const manifest = getTemplateManifest("dark-neon");
 
   const result = await generateConcepts(brandKit, new AnthropicLlmClient(), manifest.textConstraints);
   if (!result.ok) {
@@ -39,11 +39,8 @@ export async function POST(_request: Request, context: { params: Promise<{ id: s
       result.value.concepts.map((concept) => ({
         brandId: brand.id,
         angle: concept.angle,
-        hook: concept.hook,
-        body: concept.body,
-        cta: concept.cta,
+        scenes: concept.scenes,
         templateId: concept.recommendedTemplate,
-        productImageIndex: concept.productImageIndex,
       })),
     )
     .returning();

@@ -16,7 +16,7 @@ async function main(): Promise<void> {
     options: {
       brand: { type: "string" },
       out: { type: "string", default: "out/generation.json" },
-      template: { type: "string", default: "kinetic-type" },
+      template: { type: "string", default: "dark-neon" },
     },
   });
 

@@ -4,13 +4,12 @@ import type { Prompt } from "./llm-client";
 
 const CONCEPT_COUNT = 5;
 
-// All 3 templates share identical text constraints/timing (see
+// Both templates deliberately share identical text constraints/timing (see
 // SHARED_TEMPLATE_TEXT_CONSTRAINTS in ../domain/text-constraints) — the
 // model only has to pick *which one* fits each concept's angle, not worry
 // about different limits per template.
-const TEMPLATE_GUIDE = `- "kinetic-type" : typographie animee plein ecran, percutante. Choix par defaut, marche pour n'importe quel angle.
-- "product-reveal" : met en avant une vraie photo produit + prix. A utiliser uniquement si un produit pertinent existe dans la liste ci-dessous (productImageIndex obligatoire, pas null) et que l'angle beneficie de montrer le produit.
-- "review-slam" : met en avant une citation/avis client en grand format. A privilegier quand l'angle s'appuie sur un avis client ou une preuve sociale.`;
+const TEMPLATE_GUIDE = `- "dark-neon" : fond sombre, typographie tres grasse, accent neon. Direction percutante/directe. Choix par defaut, marche pour n'importe quel angle.
+- "light-gradient" : fond clair avec degrade doux, typographie fine, cartes flottantes. Direction premium/epuree. A privilegier pour un positionnement haut de gamme ou tech.`;
 
 const SYSTEM_PROMPT = `Tu es un strategiste publicitaire specialise en direct-to-consumer e-commerce.
 Tu ne rediges jamais une publicite directement : tu analyses le positionnement d'une marque,
@@ -40,13 +39,19 @@ Tache :
    (ex: lever une objection, exploiter un avis client, jouer sur l'urgence, comparer, etc).
 3. Pour chaque concept, choisis le template le plus adapte a son angle :
 ${TEMPLATE_GUIDE}
+4. Chaque concept est decoupe en exactement 4 scenes courtes qui s'enchainent (pas une seule
+   composition qui dure) : "hook" (accroche), "proof" (avis client ou argument choc), "feature"
+   (met en avant un produit precis si un produit pertinent existe, sinon un deuxieme argument
+   fort), "cta" (appel a l'action final avec le nom de la marque).
 
-Contraintes de format pour chaque concept (le rendu echouera si elles sont depassees) :
-- hook : maximum ${textConstraints.hook.maxChars} caracteres, phrase d'accroche qui arrete le scroll.
-- body : ${textConstraints.body.maxLines} lignes maximum, chaque ligne fait au plus ${textConstraints.body.maxCharsPerLine} caracteres.
-- cta : maximum ${textConstraints.cta.maxChars} caracteres.
-- recommendedTemplate : "kinetic-type", "product-reveal" ou "review-slam" (voir description ci-dessus).
-- productImageIndex : un index valide du tableau de produits ci-dessus, ou null si aucun produit ne s'applique. Obligatoire (pas null) si recommendedTemplate vaut "product-reveal".
+Contraintes de format pour chaque scene (le rendu echouera si elles sont depassees) :
+- text : maximum ${textConstraints.scene.maxChars} caracteres, une seule phrase courte et percutante.
+- highlight : optionnel, un mot ou groupe de mots qui doit etre un extrait EXACT de "text" (pas de
+  reformulation) pour etre mis en couleur accent - null si aucun mot ne doit ressortir.
+- productImageIndex : uniquement sur la scene "feature". Un index valide du tableau de produits
+  ci-dessus si l'angle beneficie de montrer un produit precis, sinon null. Toujours null sur les
+  3 autres scenes.
+- recommendedTemplate : "dark-neon" ou "light-gradient" (voir description ci-dessus).
 
 Reponds avec exactement cet objet JSON (pas de markdown, pas de commentaire) :
 {
@@ -61,11 +66,13 @@ Reponds avec exactement cet objet JSON (pas de markdown, pas de commentaire) :
     {
       "id": string,
       "angle": string,
-      "hook": string,
-      "body": string[],
-      "cta": string,
-      "recommendedTemplate": "kinetic-type" | "product-reveal" | "review-slam",
-      "productImageIndex": number | null
+      "recommendedTemplate": "dark-neon" | "light-gradient",
+      "scenes": [
+        { "role": "hook", "text": string, "highlight": string | null, "productImageIndex": null },
+        { "role": "proof", "text": string, "highlight": string | null, "productImageIndex": null },
+        { "role": "feature", "text": string, "highlight": string | null, "productImageIndex": number | null },
+        { "role": "cta", "text": string, "highlight": string | null, "productImageIndex": null }
+      ]
     }
   ]
 }`;

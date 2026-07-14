@@ -66,9 +66,8 @@ type Dictionary = {
       recommended: string;
       chooseTemplate: string;
       chooseFormat: string;
-      needsProduct: string;
-      names: Record<"kinetic-type" | "product-reveal" | "review-slam", string>;
-      descriptions: Record<"kinetic-type" | "product-reveal" | "review-slam", string>;
+      names: Record<"dark-neon" | "light-gradient", string>;
+      descriptions: Record<"dark-neon" | "light-gradient", string>;
     };
   };
   libraryPage: {
@@ -301,16 +300,13 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
         recommended: "Recommended",
         chooseTemplate: "Pick a design",
         chooseFormat: "Pick a format",
-        needsProduct: "Needs a product photo",
         names: {
-          "kinetic-type": "Kinetic type",
-          "product-reveal": "Product reveal",
-          "review-slam": "Review slam",
+          "dark-neon": "Dark neon",
+          "light-gradient": "Light gradient",
         },
         descriptions: {
-          "kinetic-type": "Bold animated typography, works for any angle.",
-          "product-reveal": "Your product photo front and center, with the price.",
-          "review-slam": "A customer quote blown up big, with stars.",
+          "dark-neon": "Bold dark scenes with a punchy accent color, one word at a time.",
+          "light-gradient": "Soft light scenes with a floating product card, clean and premium.",
         },
       },
     },
@@ -538,16 +534,13 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
         recommended: "Recommandé",
         chooseTemplate: "Choisis un style",
         chooseFormat: "Choisis un format",
-        needsProduct: "Nécessite une photo produit",
         names: {
-          "kinetic-type": "Typographie animée",
-          "product-reveal": "Mise en avant produit",
-          "review-slam": "Avis client",
+          "dark-neon": "Sombre néon",
+          "light-gradient": "Clair dégradé",
         },
         descriptions: {
-          "kinetic-type": "Typographie animée percutante, marche pour n'importe quel angle.",
-          "product-reveal": "Ta photo produit en avant, avec le prix.",
-          "review-slam": "Un avis client en très grand, avec les étoiles.",
+          "dark-neon": "Scènes sombres percutantes, un mot en couleur à la fois.",
+          "light-gradient": "Scènes claires en douceur, carte produit flottante, épuré et premium.",
         },
       },
     },
@@ -775,16 +768,13 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
         recommended: "Empfohlen",
         chooseTemplate: "Design wählen",
         chooseFormat: "Format wählen",
-        needsProduct: "Benötigt ein Produktfoto",
         names: {
-          "kinetic-type": "Animierte Typografie",
-          "product-reveal": "Produkt-Präsentation",
-          "review-slam": "Kundenbewertung",
+          "dark-neon": "Dunkel neon",
+          "light-gradient": "Hell verlauf",
         },
         descriptions: {
-          "kinetic-type": "Wirkungsvolle animierte Typografie, passt zu jedem Winkel.",
-          "product-reveal": "Dein Produktfoto im Mittelpunkt, mit Preis.",
-          "review-slam": "Eine Kundenbewertung riesig groß, mit Sternen.",
+          "dark-neon": "Wirkungsvolle dunkle Szenen, ein Wort nach dem anderen in Akzentfarbe.",
+          "light-gradient": "Sanfte helle Szenen mit schwebender Produktkarte, clean und hochwertig.",
         },
       },
     },

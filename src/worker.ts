@@ -212,11 +212,8 @@ async function processRender(render: {
     const adConcept = AdConceptSchema.parse({
       id: concept.id,
       angle: concept.angle,
-      hook: concept.hook,
-      body: concept.body,
-      cta: concept.cta,
       recommendedTemplate: concept.templateId,
-      productImageIndex: concept.productImageIndex,
+      scenes: concept.scenes,
     });
 
     const template = await loadTemplate(path.join(TEMPLATES_DIR, render.templateId));

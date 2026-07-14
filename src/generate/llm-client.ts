@@ -10,7 +10,14 @@ export interface LlmClient {
 }
 
 const DEFAULT_MODEL = "claude-haiku-4-5-20251001";
-const MAX_TOKENS = 4096;
+// The 4-scene-per-concept format (see build-prompt.ts) is significantly
+// more verbose per concept than the old flat hook/body/cta shape — 4096
+// measured too tight for a full 5-concept batch (silently truncated to 3
+// concepts, still valid JSON since the model closed the array early
+// rather than getting cut off mid-object). Bumped with real headroom
+// rather than the exact minimum measured, since French copy runs longer
+// than English.
+const MAX_TOKENS = 8192;
 
 export class AnthropicLlmClient implements LlmClient {
   private readonly client: Anthropic;

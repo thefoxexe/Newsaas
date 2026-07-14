@@ -8,12 +8,7 @@ export const TemplateManifestSchema = z.object({
   fps: z.number().int().positive(),
   formats: z.array(FormatSchema).min(1),
   textConstraints: z.object({
-    hook: z.object({ maxChars: z.number().int().positive() }),
-    body: z.object({
-      maxLines: z.number().int().positive(),
-      maxCharsPerLine: z.number().int().positive(),
-    }),
-    cta: z.object({ maxChars: z.number().int().positive() }),
+    scene: z.object({ maxChars: z.number().int().positive() }),
   }),
 });
 

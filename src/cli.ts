@@ -21,7 +21,7 @@ async function main(): Promise<void> {
       concept: { type: "string" },
       format: { type: "string", default: "9:16" },
       out: { type: "string", default: "out/ad.mp4" },
-      template: { type: "string", default: "kinetic-type" },
+      template: { type: "string", default: "dark-neon" },
     },
   });
 

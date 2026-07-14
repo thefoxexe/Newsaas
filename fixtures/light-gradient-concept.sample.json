@@ -1,0 +1,11 @@
+{
+  "id": "concept-light-gradient",
+  "angle": "positionnement premium",
+  "recommendedTemplate": "light-gradient",
+  "scenes": [
+    { "role": "hook", "text": "Ta veste merite mieux", "highlight": "mieux", "productImageIndex": null },
+    { "role": "proof", "text": "Coupe impeccable, dit Sarah", "highlight": "impeccable", "productImageIndex": null },
+    { "role": "feature", "text": "Veste technique Aro", "highlight": "Aro", "productImageIndex": 0 },
+    { "role": "cta", "text": "Decouvre la collection", "highlight": "collection", "productImageIndex": null }
+  ]
+}

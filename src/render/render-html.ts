@@ -20,12 +20,16 @@ type TemplateData = {
   brandName: string;
   logoUrl: string | null;
   angle: string;
-  hook: string;
-  body: string[];
-  cta: string;
-  // Only non-null when the concept named a valid product index — used by
-  // product-reveal; other templates simply ignore this field.
-  product: { title: string; price: string | null; imageUrl: string; description: string | null } | null;
+  // Fixed 4-entry sequence (hook/proof/feature/cta) — each scene resolves
+  // its own product independently (only ever populated on the "feature"
+  // role in practice, but templates just check whether it's non-null
+  // rather than special-casing the role name).
+  scenes: Array<{
+    role: string;
+    text: string;
+    highlight: string | null;
+    product: { title: string; price: string | null; imageUrl: string; description: string | null } | null;
+  }>;
 };
 
 export function renderTemplateHtml(
@@ -60,10 +64,12 @@ export function renderTemplateHtml(
     brandName: deriveBrandName(brandKit.sourceUrl),
     logoUrl: brandKit.logo?.url ?? null,
     angle: concept.angle,
-    hook: concept.hook,
-    body: concept.body,
-    cta: concept.cta,
-    product: concept.productImageIndex !== null ? brandKit.products[concept.productImageIndex] ?? null : null,
+    scenes: concept.scenes.map((scene) => ({
+      role: scene.role,
+      text: scene.text,
+      highlight: scene.highlight,
+      product: scene.productImageIndex !== null ? brandKit.products[scene.productImageIndex] ?? null : null,
+    })),
   };
 
   // "</" would close the surrounding <script> tag early if left unescaped.
@@ -84,9 +90,10 @@ export function renderTemplateHtml(
   // for this renderer (see docs/SPEC_REVIEW.md): fully rounded/pill shapes
   // sit closer to the documented risky family (GPU-dependent sub-pixel
   // anti-aliasing at the curve under load) than a plain rounded rectangle.
-  // z-index: 999 because the template's full-screen CTA card beat sits at
-  // z-index: 10 — without going higher, the watermark would be covered
-  // during that beat despite being later in the DOM.
+  // z-index: 999 because the templates' final "cta" scene sits at a lower
+  // z-index while covering the full viewport — without going higher, the
+  // watermark would be covered during that beat despite being later in
+  // the DOM.
   const finalHtml = watermark
     ? withData.replace(
         "</body>",
@@ -101,7 +108,7 @@ function validateTextConstraints(
   template: LoadedTemplate,
   concept: AdConcept,
 ): Result<true, TemplateValidationError> {
-  const violation = checkTextConstraints(template.manifest.textConstraints, concept);
+  const violation = checkTextConstraints(template.manifest.textConstraints, concept.scenes);
   if (violation.ok) {
     return ok(true);
   }

@@ -2,18 +2,16 @@ import { describe, expect, it } from "vitest";
 import { renderTemplateHtml } from "../src/render/render-html";
 import type { LoadedTemplate } from "../src/render/load-template";
 import type { BrandKit } from "../src/domain/brand-kit";
-import type { AdConcept } from "../src/domain/ad-concept";
+import type { AdConcept, Scene } from "../src/domain/ad-concept";
 
 const template: LoadedTemplate = {
   manifest: {
-    id: "kinetic-type",
-    durationMs: 6000,
+    id: "dark-neon",
+    durationMs: 15000,
     fps: 30,
     formats: ["9:16", "1:1", "16:9"],
     textConstraints: {
-      hook: { maxChars: 20 },
-      body: { maxLines: 2, maxCharsPerLine: 15 },
-      cta: { maxChars: 10 },
+      scene: { maxChars: 20 },
     },
   },
   html: '<html><head><link rel="stylesheet" href="./style.css" /></head><body>__REELJOLT_DATA__</body></html>',
@@ -42,16 +40,22 @@ const brandKit: BrandKit = {
   services: [],
 };
 
-function makeConcept(overrides: Partial<AdConcept> = {}): AdConcept {
+function makeScenes(overrides: Partial<Record<Scene["role"], Partial<Scene>>> = {}): Scene[] {
+  const base: Record<Scene["role"], Scene> = {
+    hook: { role: "hook", text: "Short hook", highlight: null, productImageIndex: null },
+    proof: { role: "proof", text: "Good review", highlight: null, productImageIndex: null },
+    feature: { role: "feature", text: "Nice thing", highlight: null, productImageIndex: null },
+    cta: { role: "cta", text: "Go now", highlight: null, productImageIndex: null },
+  };
+  return (["hook", "proof", "feature", "cta"] as const).map((role) => ({ ...base[role], ...overrides[role] }));
+}
+
+function makeConcept(sceneOverrides: Partial<Record<Scene["role"], Partial<Scene>>> = {}): AdConcept {
   return {
     id: "concept-1",
     angle: "test angle",
-    hook: "Short hook",
-    body: ["Body line"],
-    cta: "Go now",
-    recommendedTemplate: "kinetic-type",
-    productImageIndex: null,
-    ...overrides,
+    recommendedTemplate: "dark-neon",
+    scenes: makeScenes(sceneOverrides),
   };
 }
 
@@ -62,7 +66,7 @@ describe("renderTemplateHtml", () => {
     expect(result.ok).toBe(true);
     if (!result.ok) return;
     expect(result.value).toContain("<style>.stage { color: red; }</style>");
-    expect(result.value).toContain('"hook":"Short hook"');
+    expect(result.value).toContain('"text":"Short hook"');
     expect(result.value).toContain('"primary":"#FF0000"');
     expect(result.value).toContain('"angle":"test angle"');
     expect(result.value).toContain('"brandName":"example.com"');
@@ -82,52 +86,33 @@ describe("renderTemplateHtml", () => {
     expect(result.value).toContain('"logoUrl":"https://vestedwear.com/logo.png"');
   });
 
-  it("rejects a hook longer than the template's maxChars", () => {
+  it("resolves a scene's product from the brand kit's products array via productImageIndex", () => {
+    const result = renderTemplateHtml(
+      template,
+      { ...brandKit, products: [{ title: "Veste", price: "CHF 99", imageUrl: "https://example.com/v.jpg", description: null }] },
+      makeConcept({ feature: { productImageIndex: 0 } }),
+    );
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value).toContain('"title":"Veste"');
+    expect(result.value).toContain('"price":"CHF 99"');
+  });
+
+  it("rejects a scene whose text exceeds the template's maxChars", () => {
     const result = renderTemplateHtml(
       template,
       brandKit,
-      makeConcept({ hook: "This hook is definitely too long" }),
+      makeConcept({ hook: { text: "This hook is definitely too long" } }),
     );
 
     expect(result.ok).toBe(false);
     if (result.ok) return;
-    expect(result.error.field).toBe("hook");
-  });
-
-  it("rejects more body lines than the template supports", () => {
-    const result = renderTemplateHtml(
-      template,
-      brandKit,
-      makeConcept({ body: ["Line one", "Line two", "Line three"] }),
-    );
-
-    expect(result.ok).toBe(false);
-    if (result.ok) return;
-    expect(result.error.field).toBe("body");
-  });
-
-  it("rejects a body line longer than maxCharsPerLine", () => {
-    const result = renderTemplateHtml(
-      template,
-      brandKit,
-      makeConcept({ body: ["This line is way too long"] }),
-    );
-
-    expect(result.ok).toBe(false);
-    if (result.ok) return;
-    expect(result.error.field).toBe("body");
-  });
-
-  it("rejects a CTA longer than maxChars", () => {
-    const result = renderTemplateHtml(template, brandKit, makeConcept({ cta: "Way too long a CTA" }));
-
-    expect(result.ok).toBe(false);
-    if (result.ok) return;
-    expect(result.error.field).toBe("cta");
+    expect(result.error.field).toBe("scene");
   });
 
   it("escapes closing script tags inside injected text to avoid breaking out of the data script", () => {
-    const result = renderTemplateHtml(template, brandKit, makeConcept({ hook: "</script>bad" }));
+    const result = renderTemplateHtml(template, brandKit, makeConcept({ hook: { text: "</script>bad" } }));
 
     expect(result.ok).toBe(true);
     if (!result.ok) return;
@@ -150,8 +135,8 @@ describe("renderTemplateHtml", () => {
     if (!result.ok) return;
     expect(result.value).toContain("Made with ReelJolt");
     expect(result.value.indexOf("Made with ReelJolt")).toBeLessThan(result.value.indexOf("</body>"));
-    // Being last in the DOM isn't enough on its own — the real kinetic-type
-    // template has a full-screen CTA card beat at z-index: 10, which
+    // Being last in the DOM isn't enough on its own — the templates' final
+    // "cta" scene covers the full viewport at its own z-index, which
     // covered the badge during that beat until this was added explicitly.
     expect(result.value).toContain("z-index:999");
   });

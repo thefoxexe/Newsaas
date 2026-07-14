@@ -1,11 +1,17 @@
 import { pgTable, pgSchema, uuid, text, timestamp, jsonb, integer, boolean, pgEnum, uniqueIndex, index } from "drizzle-orm/pg-core";
 
+// "kinetic-type"/"product-reveal"/"split-claim"/"review-slam"/"price-drop"
+// are retired (superseded by the 4-scene "dark-neon"/"light-gradient"
+// templates) but stay listed here — Postgres enums can't cleanly drop
+// values, so the old members just sit unused rather than being removed.
 export const templateIdEnum = pgEnum("template_id", [
   "kinetic-type",
   "product-reveal",
   "split-claim",
   "review-slam",
   "price-drop",
+  "dark-neon",
+  "light-gradient",
 ]);
 
 export const formatEnum = pgEnum("format", ["9:16", "1:1", "16:9"]);
@@ -51,17 +57,15 @@ export const concepts = pgTable(
       .notNull()
       .references(() => brands.id, { onDelete: "cascade" }),
     angle: text("angle").notNull(),
-    hook: text("hook").notNull(),
-    body: jsonb("body").notNull().$type<string[]>(),
-    cta: text("cta").notNull(),
+    // Fixed 4-scene sequence (hook/proof/feature/cta — see
+    // src/domain/ad-concept.ts) replacing the old flat hook/body/cta
+    // columns: each scene is its own short beat instead of one continuous
+    // composition, which is what actually fills the full render duration
+    // with movement instead of a long static hold.
+    scenes: jsonb("scenes")
+      .notNull()
+      .$type<Array<{ role: string; text: string; highlight: string | null; productImageIndex: number | null }>>(),
     templateId: templateIdEnum("template_id").notNull(),
-    // Index into the brand's BrandKit.products[] this concept was written
-    // for (product-reveal needs it to know which photo/price to show); null
-    // for concepts with no product tie-in. Previously computed by the LLM
-    // and validated at generation time but never actually persisted here —
-    // the render worker read this column back as always null, so
-    // product-reveal renders silently never got a product.
-    productImageIndex: integer("product_image_index"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [index("concepts_brand_id_idx").on(table.brandId)],

@@ -8,10 +8,9 @@ import { FormatSchema } from "@/src/domain/format";
 import { reserveRenderCredit } from "@/src/entitlements/reserve-credit";
 
 // Restricted to the templates that actually have a directory under
-// src/templates/ — narrower than the full TemplateIdSchema enum (which
-// still reserves ids for templates not built yet), so a manipulated
-// request can't ask the worker to render something that doesn't exist.
-const BuildableTemplateIdSchema = z.enum(["kinetic-type", "product-reveal", "review-slam"]);
+// src/templates/ — matches TemplateIdSchema today, but kept separate in
+// case a template id is ever reserved before it's actually built again.
+const BuildableTemplateIdSchema = z.enum(["dark-neon", "light-gradient"]);
 
 const CreateRenderSchema = z.object({
   conceptId: z.string().uuid(),
@@ -51,10 +50,11 @@ export async function POST(request: Request): Promise<Response> {
     return NextResponse.json({ error: "not found" }, { status: 404 });
   }
 
+  // No per-template product requirement anymore: both templates' "feature"
+  // scene gracefully falls back to a text-only beat when the concept has
+  // no product tie-in, so either template works regardless of the
+  // concept's data (see generate-concepts.ts).
   const templateId = body.data.templateId ?? concept.templateId;
-  if (templateId === "product-reveal" && concept.productImageIndex === null) {
-    return NextResponse.json({ error: "product-reveal requires a product" }, { status: 400 });
-  }
 
   const pendingCountRows = await db
     .select({ count: sql<number>`count(*)::int` })

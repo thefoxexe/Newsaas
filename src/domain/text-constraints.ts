@@ -2,66 +2,43 @@ import type { Result } from "./result";
 import { ok, err } from "./result";
 
 export type TextConstraints = {
-  hook: { maxChars: number };
-  body: { maxLines: number; maxCharsPerLine: number };
-  cta: { maxChars: number };
+  scene: { maxChars: number };
 };
 
-// All templates deliberately share identical text constraints (and, per
-// each template's manifest.json, identical durationMs/fps/formats) — this
-// keeps a single 5-concept generation batch simple even once concepts can
-// recommend different templates (see build-prompt.ts), since there's no
-// per-template branching needed anywhere in the generation/validation path.
-// Manifests are static JSON (see template-registry.ts for why) so they
-// can't import this directly — tests/template-manifests.test.ts asserts
-// each manifest's numbers match this so they can't silently drift.
+// Both templates deliberately share identical text constraints (and, per
+// each template's manifest.json, identical durationMs/fps/formats) — one
+// short punchy line per scene, same budget regardless of which of the 4
+// roles it fills or which template ends up rendering it. Manifests are
+// static JSON (see template-registry.ts for why) so they can't import this
+// directly — tests/template-manifests.test.ts asserts each manifest's
+// numbers match this so they can't silently drift.
+//
+// 40 (copied from the old single "hook" budget when this became a
+// per-scene constraint) measured too tight in practice: every one of the 4
+// scenes is now a full short sentence rather than just a hook, and real
+// generations were routinely losing a whole concept to one scene running
+// 1-2 chars over on natural French copy. Bumped to 48 after observing this
+// directly against a live model call.
 export const SHARED_TEMPLATE_TEXT_CONSTRAINTS: TextConstraints = {
-  hook: { maxChars: 40 },
-  body: { maxLines: 3, maxCharsPerLine: 28 },
-  cta: { maxChars: 20 },
+  scene: { maxChars: 48 },
 };
 
 export type TextConstraintViolation = {
-  field: "hook" | "body" | "cta";
+  field: "scene";
   reason: string;
 };
 
-export type ConceptText = {
-  hook: string;
-  body: string[];
-  cta: string;
-};
+export type SceneText = { role: string; text: string };
 
 export function checkTextConstraints(
   constraints: TextConstraints,
-  concept: ConceptText,
+  scenes: SceneText[],
 ): Result<true, TextConstraintViolation> {
-  if (concept.hook.length > constraints.hook.maxChars) {
+  const tooLong = scenes.find((scene) => scene.text.length > constraints.scene.maxChars);
+  if (tooLong !== undefined) {
     return err({
-      field: "hook",
-      reason: `"${concept.hook}" is ${concept.hook.length} chars, max is ${constraints.hook.maxChars}`,
-    });
-  }
-
-  if (concept.body.length > constraints.body.maxLines) {
-    return err({
-      field: "body",
-      reason: `${concept.body.length} lines, max is ${constraints.body.maxLines}`,
-    });
-  }
-
-  const tooLongLine = concept.body.find((line) => line.length > constraints.body.maxCharsPerLine);
-  if (tooLongLine !== undefined) {
-    return err({
-      field: "body",
-      reason: `"${tooLongLine}" is longer than ${constraints.body.maxCharsPerLine} chars`,
-    });
-  }
-
-  if (concept.cta.length > constraints.cta.maxChars) {
-    return err({
-      field: "cta",
-      reason: `"${concept.cta}" is ${concept.cta.length} chars, max is ${constraints.cta.maxChars}`,
+      field: "scene",
+      reason: `"${tooLong.text}" (${tooLong.role}) is ${tooLong.text.length} chars, max is ${constraints.scene.maxChars}`,
     });
   }
 

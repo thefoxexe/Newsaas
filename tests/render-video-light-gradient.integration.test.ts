@@ -17,22 +17,18 @@ const chromiumAvailable = Boolean(process.env["PLAYWRIGHT_CHROMIUM_EXECUTABLE"])
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-describe.skipIf(!chromiumAvailable)("renderVideo (product-reveal, real browser + ffmpeg)", () => {
-  it("produces a bit-identical MP4 across two runs of the same input, including a real product photo", async () => {
+describe.skipIf(!chromiumAvailable)("renderVideo (light-gradient, real browser + ffmpeg)", () => {
+  it("produces a bit-identical MP4 across two runs of the same input", async () => {
     const root = path.join(__dirname, "..");
-    const template = await loadTemplate(path.join(root, "src", "templates", "product-reveal"));
-    // Fixture's product imageUrl is a data: URI on purpose — unlike the logo
-    // case (documented as an accepted gap, tested with logo: null), this
-    // actually exercises a real <img> load in the strict determinism test
-    // instead of skipping it, with no live network dependency.
+    const template = await loadTemplate(path.join(root, "src", "templates", "light-gradient"));
     const brandKit = BrandKitSchema.parse(
-      JSON.parse(await readFile(path.join(root, "fixtures", "product-reveal-brand-kit.sample.json"), "utf-8")),
+      JSON.parse(await readFile(path.join(root, "fixtures", "scene-brand-kit.sample.json"), "utf-8")),
     );
     const concept = AdConceptSchema.parse(
-      JSON.parse(await readFile(path.join(root, "fixtures", "product-reveal-concept.sample.json"), "utf-8")),
+      JSON.parse(await readFile(path.join(root, "fixtures", "light-gradient-concept.sample.json"), "utf-8")),
     );
 
-    const outDir = await mkdtemp(path.join(tmpdir(), "reeljolt-product-reveal-test-"));
+    const outDir = await mkdtemp(path.join(tmpdir(), "reeljolt-light-gradient-test-"));
 
     try {
       const outputs = await Promise.all(

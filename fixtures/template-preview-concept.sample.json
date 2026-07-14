@@ -1,9 +1,11 @@
 {
   "id": "preview",
   "angle": "AA",
-  "hook": "AAAA AAAA AAAA",
-  "body": ["BBBB BBBB BBBB BBBB", "BBBB BBBB BBBB"],
-  "cta": "CCCC CCCC",
-  "recommendedTemplate": "kinetic-type",
-  "productImageIndex": 0
+  "recommendedTemplate": "dark-neon",
+  "scenes": [
+    { "role": "hook", "text": "Aaaa Aaaa Aaaa", "highlight": "Aaaa", "productImageIndex": null },
+    { "role": "proof", "text": "Bbbb bbbb bbbb", "highlight": "bbbb", "productImageIndex": null },
+    { "role": "feature", "text": "Cccc cccc", "highlight": null, "productImageIndex": 0 },
+    { "role": "cta", "text": "Dddd dddd", "highlight": "dddd", "productImageIndex": null }
+  ]
 }
