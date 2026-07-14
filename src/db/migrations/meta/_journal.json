@@ -64,6 +64,13 @@
       "when": 1784275200000,
       "tag": "0008_concept_scenes",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1784361600000,
+      "tag": "0009_more_templates",
+      "breakpoints": true
     }
   ]
 }

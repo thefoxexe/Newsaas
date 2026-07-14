@@ -1,0 +1,229 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.stage {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  font-family: var(--font-body);
+  overflow: hidden;
+}
+
+/* A persistent structural split (two flat rectangles, not a gradient) —
+   unlike color-blocks, where the flat color changes per scene, here the
+   split itself stays constant across the whole video and only the text
+   moves between the two zones (hook/proof/feature live in the upper
+   zone, cta drops into the lower one) — the compositional device itself
+   is what differs from every other template, not a per-scene color swap. */
+.split-top {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 58vh;
+  background: var(--color-background);
+  z-index: 1;
+}
+
+.split-bottom {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 42vh;
+  background: var(--color-primary);
+  z-index: 1;
+}
+
+.brand-badge {
+  position: fixed;
+  top: 6vw;
+  left: 6vw;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 0.9vw;
+}
+
+.brand-mark {
+  width: clamp(24px, 3.6vw, 38px);
+  height: clamp(24px, 3.6vw, 38px);
+  border-radius: 22%;
+  background: var(--color-primary);
+  color: var(--color-background);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: clamp(0.8rem, 1.6vw, 1.1rem);
+  flex-shrink: 0;
+}
+
+.brand-mark img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.brand-name {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: clamp(0.75rem, 1.4vw, 1rem);
+  color: var(--color-text);
+}
+
+.scene {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2vh;
+  padding: 9vw;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(2vh);
+}
+
+/* hook/proof/feature sit inside the upper (background-colored) zone. */
+.scene-upper {
+  justify-content: flex-end;
+  padding-bottom: calc(42vh + 6vh);
+}
+
+.scene-upper .scene-text {
+  color: var(--color-text);
+}
+
+/* cta drops into the lower (primary-colored) zone instead. */
+.scene-lower {
+  justify-content: flex-start;
+  padding-top: calc(58vh + 4vh);
+}
+
+.scene-lower .scene-text {
+  color: var(--color-background);
+}
+
+.scene-text {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: clamp(1.9rem, 8vw, 4.8rem);
+  line-height: 1.1;
+}
+
+/* Bracket-tag emphasis: the word's own color is untouched, just
+   bracketed either side by accent-colored glyphs — a fourth distinct
+   technique from the other 3 templates' color/box/italic mechanics. */
+.scene-text .hl::before {
+  content: "[ ";
+  color: var(--color-primary);
+}
+.scene-text .hl::after {
+  content: " ]";
+  color: var(--color-primary);
+}
+
+.scene-lower .scene-text .hl::before,
+.scene-lower .scene-text .hl::after {
+  color: var(--color-background);
+}
+
+@keyframes scene-in {
+  0% {
+    opacity: 0;
+    transform: translateY(2vh);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scene-out {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-2vh);
+  }
+}
+
+/* Timeline (15000ms total, 4 scenes): hook 0-3500, proof 3500-7000,
+   feature 7000-10500, cta 10500-15000 (holds to the end). */
+#scene-hook {
+  animation:
+    scene-in 450ms ease-out 0ms forwards,
+    scene-out 350ms ease-in 3150ms forwards;
+}
+
+#scene-proof {
+  animation:
+    scene-in 450ms ease-out 3500ms forwards,
+    scene-out 350ms ease-in 6650ms forwards;
+}
+
+#scene-feature {
+  animation:
+    scene-in 450ms ease-out 7000ms forwards,
+    scene-out 350ms ease-in 10150ms forwards;
+}
+
+.feature-photo-frame {
+  width: 44vw;
+  height: 44vw;
+  max-width: 300px;
+  max-height: 300px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.feature-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.feature-chip {
+  background: var(--color-primary);
+  color: var(--color-background);
+  font-weight: 700;
+  padding: 0.8vh 3vw;
+  border-radius: 8px;
+  font-size: clamp(1rem, 3vw, 1.4rem);
+}
+
+#scene-cta {
+  z-index: 10;
+  animation:
+    scene-in 450ms ease-out 10500ms forwards,
+    cta-nudge 900ms ease-in-out 11500ms infinite;
+}
+
+@keyframes cta-nudge {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -0.6vh;
+  }
+}

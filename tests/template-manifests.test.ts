@@ -3,6 +3,9 @@ import { TemplateManifestSchema } from "../src/render/template-manifest";
 import { SHARED_TEMPLATE_TEXT_CONSTRAINTS } from "../src/domain/text-constraints";
 import darkNeonManifestJson from "../src/templates/dark-neon/manifest.json";
 import lightGradientManifestJson from "../src/templates/light-gradient/manifest.json";
+import colorBlocksManifestJson from "../src/templates/color-blocks/manifest.json";
+import editorialManifestJson from "../src/templates/editorial/manifest.json";
+import splitDuotoneManifestJson from "../src/templates/split-duotone/manifest.json";
 
 // Manifests are static JSON (see template-registry.ts) so they can't import
 // the shared constants directly — this is the guard against silent drift
@@ -12,6 +15,9 @@ describe("template manifests share identical timing and text constraints", () =>
   const manifests = [
     { name: "dark-neon", json: darkNeonManifestJson },
     { name: "light-gradient", json: lightGradientManifestJson },
+    { name: "color-blocks", json: colorBlocksManifestJson },
+    { name: "editorial", json: editorialManifestJson },
+    { name: "split-duotone", json: splitDuotoneManifestJson },
   ];
 
   it.each(manifests)("$name matches the shared text constraints", ({ json }) => {

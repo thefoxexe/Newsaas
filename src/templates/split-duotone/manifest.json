@@ -1,0 +1,9 @@
+{
+  "id": "split-duotone",
+  "durationMs": 15000,
+  "fps": 30,
+  "formats": ["9:16", "1:1", "16:9"],
+  "textConstraints": {
+    "scene": { "maxChars": 48 }
+  }
+}

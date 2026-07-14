@@ -1,0 +1,229 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.stage {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  font-family: var(--font-body);
+  overflow: hidden;
+  background-color: var(--color-background);
+}
+
+.brand-badge {
+  position: fixed;
+  top: 6vw;
+  left: 6vw;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 0.9vw;
+  /* Self-contained flat chip (own background) so it stays legible
+     regardless of which scene's own flat color is showing behind it —
+     the badge never depends on the current scene's colors. */
+  background: var(--color-background);
+  padding: 1.2vw 2.4vw;
+  border-radius: 10px;
+}
+
+.brand-mark {
+  width: clamp(24px, 3.6vw, 38px);
+  height: clamp(24px, 3.6vw, 38px);
+  border-radius: 22%;
+  background: var(--color-primary);
+  color: var(--color-background);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-family: var(--font-heading);
+  font-weight: 900;
+  font-size: clamp(0.8rem, 1.6vw, 1.1rem);
+  flex-shrink: 0;
+}
+
+.brand-mark img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.brand-name {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: clamp(0.75rem, 1.4vw, 1rem);
+  color: var(--color-text);
+}
+
+/* Every scene is a full-viewport stack, each with its OWN flat
+   background-color (unlike dark-neon/light-gradient, which share one
+   stage background) — that per-scene color swap is what gives this
+   template its "color-blocking" cut feel between beats. translateY +
+   opacity only, same proven mechanic. */
+.scene {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2vh;
+  padding: 10vw 9vw;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(2vh);
+}
+
+.scene-text {
+  font-family: var(--font-heading);
+  font-weight: 900;
+  font-size: clamp(2rem, 9vw, 5.4rem);
+  line-height: 1.05;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+}
+
+/* Highlighter-marker box: filled with the scene's own text color, with
+   the word itself flipped to the scene's own background color — an
+   already-proven-to-contrast pair swapped, not a new undetermined color. */
+.scene-text .hl {
+  padding: 0 0.15em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+.scene-hook {
+  background-color: var(--color-background);
+}
+.scene-hook .scene-text {
+  color: var(--color-text);
+}
+.scene-hook .scene-text .hl {
+  background: var(--color-text);
+  color: var(--color-background);
+}
+
+.scene-proof {
+  background-color: var(--color-secondary);
+}
+.scene-proof .scene-text {
+  color: var(--color-background);
+}
+.scene-proof .scene-text .hl {
+  background: var(--color-background);
+  color: var(--color-secondary);
+}
+
+.scene-feature {
+  background-color: var(--color-primary);
+}
+.scene-feature .scene-text {
+  color: var(--color-background);
+}
+.scene-feature .scene-text .hl {
+  background: var(--color-background);
+  color: var(--color-primary);
+}
+
+/* A blended flat tone (not animated — one computed color-mix value, same
+   family as the flat color-mix shifts already proven this session) so the
+   final beat isn't just a repeat of the feature scene's primary block. */
+.scene-cta {
+  background-color: color-mix(in srgb, var(--color-primary) 50%, var(--color-secondary) 50%);
+}
+.scene-cta .scene-text {
+  color: var(--color-background);
+}
+.scene-cta .scene-text .hl {
+  background: var(--color-background);
+  color: var(--color-primary);
+}
+
+@keyframes scene-in {
+  0% {
+    opacity: 0;
+    transform: translateY(2vh);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scene-out {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-2vh);
+  }
+}
+
+/* Timeline (15000ms total, 4 scenes): hook 0-3500, proof 3500-7000,
+   feature 7000-10500, cta 10500-15000 (holds to the end). */
+#scene-hook {
+  animation:
+    scene-in 450ms ease-out 0ms forwards,
+    scene-out 350ms ease-in 3150ms forwards;
+}
+
+#scene-proof {
+  animation:
+    scene-in 450ms ease-out 3500ms forwards,
+    scene-out 350ms ease-in 6650ms forwards;
+}
+
+#scene-feature {
+  animation:
+    scene-in 450ms ease-out 7000ms forwards,
+    scene-out 350ms ease-in 10150ms forwards;
+}
+
+.feature-photo {
+  width: 56vw;
+  height: 56vw;
+  max-width: 380px;
+  max-height: 380px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.feature-chip {
+  background: var(--color-background);
+  color: var(--color-primary);
+  font-weight: 700;
+  padding: 0.8vh 3vw;
+  border-radius: 8px;
+  font-size: clamp(1rem, 3vw, 1.4rem);
+}
+
+#scene-cta {
+  z-index: 10;
+  animation:
+    scene-in 450ms ease-out 10500ms forwards,
+    cta-nudge 900ms ease-in-out 11500ms infinite;
+}
+
+@keyframes cta-nudge {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -0.6vh;
+  }
+}

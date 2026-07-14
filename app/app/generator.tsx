@@ -15,7 +15,7 @@ type Brand = {
   } | null;
 };
 
-type TemplateId = "dark-neon" | "light-gradient";
+type TemplateId = "dark-neon" | "light-gradient" | "color-blocks" | "editorial" | "split-duotone";
 
 type SceneRole = "hook" | "proof" | "feature" | "cta";
 
@@ -52,6 +52,9 @@ const COLOR_ROLES = ["primary", "secondary", "background", "text"] as const;
 const TEMPLATES: Array<{ id: TemplateId; previewSrc: string }> = [
   { id: "dark-neon", previewSrc: "/template-previews/dark-neon.png" },
   { id: "light-gradient", previewSrc: "/template-previews/light-gradient.png" },
+  { id: "color-blocks", previewSrc: "/template-previews/color-blocks.png" },
+  { id: "editorial", previewSrc: "/template-previews/editorial.png" },
+  { id: "split-duotone", previewSrc: "/template-previews/split-duotone.png" },
 ];
 
 type GeneratorText = (typeof DICTIONARY)[Locale]["generator"];
@@ -376,7 +379,7 @@ function GenerationModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 p-4 backdrop-blur-sm" onClick={onClose}>
       <div
-        className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-card border border-border bg-surface p-6"
+        className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-card border border-border bg-surface p-6"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start justify-between gap-4">
@@ -392,7 +395,7 @@ function GenerationModal({
         </div>
 
         {step === "template" && (
-          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3">
             {TEMPLATES.map((template) => {
               const recommended = template.id === concept.templateId;
               const selected = template.id === selectedTemplateId;

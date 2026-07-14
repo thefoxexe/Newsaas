@@ -1,0 +1,119 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div class="stage">
+      <div class="brand-badge" id="brand-badge">
+        <span class="brand-mark" id="brand-mark"></span>
+        <span class="brand-name" id="brand-name"></span>
+      </div>
+
+      <div class="scene scene-hook" id="scene-hook" data-role="hook">
+        <p class="scene-text" id="text-hook"></p>
+      </div>
+      <div class="scene scene-proof" id="scene-proof" data-role="proof">
+        <p class="scene-text" id="text-proof"></p>
+      </div>
+      <div class="scene scene-feature" id="scene-feature" data-role="feature">
+        <img class="feature-photo" id="feature-photo" alt="" />
+        <span class="feature-chip" id="feature-chip"></span>
+        <p class="scene-text" id="text-feature"></p>
+      </div>
+      <div class="scene scene-cta" id="scene-cta" data-role="cta">
+        <p class="scene-text" id="text-cta"></p>
+      </div>
+    </div>
+    <script id="reeljolt-data" type="application/json">__REELJOLT_DATA__</script>
+    <script>
+      (function () {
+        var data = JSON.parse(document.getElementById("reeljolt-data").textContent);
+        var root = document.documentElement;
+        root.style.setProperty("--color-primary", data.colors.primary);
+        root.style.setProperty("--color-secondary", data.colors.secondary);
+        root.style.setProperty("--color-background", data.colors.background);
+        root.style.setProperty("--color-text", data.colors.text);
+        root.style.setProperty(
+          "--font-heading",
+          "'" + (data.typography.headingGoogleFontMatch || data.typography.headingFamily) + "', " + data.typography.fallbackStack,
+        );
+        root.style.setProperty(
+          "--font-body",
+          "'" + (data.typography.bodyGoogleFontMatch || data.typography.bodyFamily) + "', " + data.typography.fallbackStack,
+        );
+
+        function fillBrandMark(markEl, nameEl) {
+          if (data.logoUrl) {
+            var img = document.createElement("img");
+            img.src = data.logoUrl;
+            markEl.appendChild(img);
+          } else {
+            markEl.textContent = data.brandName.charAt(0).toUpperCase();
+          }
+          nameEl.textContent = data.brandName;
+        }
+        fillBrandMark(document.getElementById("brand-mark"), document.getElementById("brand-name"));
+
+        // Highlighter-marker technique instead of colored text: a filled
+        // box behind the word, using the scene's own (already
+        // contrast-proven) text/background pair swapped, so the box is
+        // always legible against the scene's flat background and the
+        // word inside the box is always legible against the box's fill —
+        // no new, undetermined color needed.
+        function renderSceneText(el, scene) {
+          if (scene.highlight && scene.text.includes(scene.highlight)) {
+            var idx = scene.text.indexOf(scene.highlight);
+            var before = scene.text.slice(0, idx);
+            var hl = scene.text.slice(idx, idx + scene.highlight.length);
+            var after = scene.text.slice(idx + scene.highlight.length);
+            el.textContent = "";
+            if (before) el.appendChild(document.createTextNode(before));
+            var span = document.createElement("span");
+            span.className = "hl";
+            span.textContent = hl;
+            el.appendChild(span);
+            if (after) el.appendChild(document.createTextNode(after));
+          } else {
+            el.textContent = scene.text;
+          }
+        }
+
+        data.scenes.forEach(function (scene) {
+          var textEl = document.getElementById("text-" + scene.role);
+          if (textEl) renderSceneText(textEl, scene);
+
+          if (scene.role === "feature") {
+            var photoEl = document.getElementById("feature-photo");
+            var chipEl = document.getElementById("feature-chip");
+            if (scene.product) {
+              photoEl.src = scene.product.imageUrl;
+              if (scene.product.price) {
+                chipEl.textContent = scene.product.price;
+              } else {
+                chipEl.remove();
+              }
+            } else {
+              photoEl.remove();
+              chipEl.remove();
+            }
+          }
+        });
+
+        document.fonts.ready.then(function () {
+          document.getAnimations().forEach(function (animation) {
+            animation.pause();
+          });
+
+          window.__reeljoltSeek = function (ms) {
+            document.getAnimations().forEach(function (animation) {
+              animation.currentTime = ms;
+            });
+          };
+          window.__reeljoltReady = true;
+        });
+      })();
+    </script>
+  </body>
+</html>

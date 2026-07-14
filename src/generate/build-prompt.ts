@@ -4,12 +4,15 @@ import type { Prompt } from "./llm-client";
 
 const CONCEPT_COUNT = 5;
 
-// Both templates deliberately share identical text constraints/timing (see
-// SHARED_TEMPLATE_TEXT_CONSTRAINTS in ../domain/text-constraints) — the
-// model only has to pick *which one* fits each concept's angle, not worry
-// about different limits per template.
+// All 5 templates deliberately share identical text constraints/timing
+// (see SHARED_TEMPLATE_TEXT_CONSTRAINTS in ../domain/text-constraints) —
+// the model only has to pick *which one* fits each concept's angle, not
+// worry about different limits per template.
 const TEMPLATE_GUIDE = `- "dark-neon" : fond sombre, typographie tres grasse, accent neon. Direction percutante/directe. Choix par defaut, marche pour n'importe quel angle.
-- "light-gradient" : fond clair avec degrade doux, typographie fine, cartes flottantes. Direction premium/epuree. A privilegier pour un positionnement haut de gamme ou tech.`;
+- "light-gradient" : fond clair avec degrade doux, typographie fine, cartes flottantes. Direction premium/epuree. A privilegier pour un positionnement haut de gamme ou tech.
+- "color-blocks" : chaque scene a son propre aplat de couleur vive, typographie tres grasse, mots-cles surlignes comme au marqueur. Direction pop/energique, marche bien pour un ton jeune ou fun.
+- "editorial" : composition alignee a gauche, typographie plus sobre, mots-cles en italique, fines lignes de separation. Direction premium/magazine, discrete. A privilegier pour un positionnement raffine ou une marque etablie.
+- "split-duotone" : ecran divise en deux zones de couleur fixes, mots-cles entre crochets colores. Direction graphique/affiche. A privilegier pour un angle qui oppose deux idees (avant/apres, probleme/solution).`;
 
 const SYSTEM_PROMPT = `Tu es un strategiste publicitaire specialise en direct-to-consumer e-commerce.
 Tu ne rediges jamais une publicite directement : tu analyses le positionnement d'une marque,
@@ -51,7 +54,7 @@ Contraintes de format pour chaque scene (le rendu echouera si elles sont depasse
 - productImageIndex : uniquement sur la scene "feature". Un index valide du tableau de produits
   ci-dessus si l'angle beneficie de montrer un produit precis, sinon null. Toujours null sur les
   3 autres scenes.
-- recommendedTemplate : "dark-neon" ou "light-gradient" (voir description ci-dessus).
+- recommendedTemplate : "dark-neon", "light-gradient", "color-blocks", "editorial" ou "split-duotone" (voir description ci-dessus).
 
 Reponds avec exactement cet objet JSON (pas de markdown, pas de commentaire) :
 {
@@ -66,7 +69,7 @@ Reponds avec exactement cet objet JSON (pas de markdown, pas de commentaire) :
     {
       "id": string,
       "angle": string,
-      "recommendedTemplate": "dark-neon" | "light-gradient",
+      "recommendedTemplate": "dark-neon" | "light-gradient" | "color-blocks" | "editorial" | "split-duotone",
       "scenes": [
         { "role": "hook", "text": string, "highlight": string | null, "productImageIndex": null },
         { "role": "proof", "text": string, "highlight": string | null, "productImageIndex": null },

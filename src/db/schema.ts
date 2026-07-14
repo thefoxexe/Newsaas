@@ -1,9 +1,9 @@
 import { pgTable, pgSchema, uuid, text, timestamp, jsonb, integer, boolean, pgEnum, uniqueIndex, index } from "drizzle-orm/pg-core";
 
 // "kinetic-type"/"product-reveal"/"split-claim"/"review-slam"/"price-drop"
-// are retired (superseded by the 4-scene "dark-neon"/"light-gradient"
-// templates) but stay listed here — Postgres enums can't cleanly drop
-// values, so the old members just sit unused rather than being removed.
+// are retired (superseded by the 4-scene templates below) but stay listed
+// here — Postgres enums can't cleanly drop values, so the old members just
+// sit unused rather than being removed.
 export const templateIdEnum = pgEnum("template_id", [
   "kinetic-type",
   "product-reveal",
@@ -12,6 +12,9 @@ export const templateIdEnum = pgEnum("template_id", [
   "price-drop",
   "dark-neon",
   "light-gradient",
+  "color-blocks",
+  "editorial",
+  "split-duotone",
 ]);
 
 export const formatEnum = pgEnum("format", ["9:16", "1:1", "16:9"]);

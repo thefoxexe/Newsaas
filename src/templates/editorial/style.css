@@ -1,0 +1,211 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Uses the brand's real background/text pair directly (unlike
+   light-gradient, which synthesizes a guaranteed-light surface) — this
+   template is meant to feel authentically "on-brand" whatever the
+   brand's real polarity is, since --color-text is already the
+   contrast-picked token for --color-background. */
+.stage {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  font-family: var(--font-body);
+  overflow: hidden;
+  background-color: var(--color-background);
+  color: var(--color-text);
+}
+
+.brand-badge {
+  position: fixed;
+  top: 6vw;
+  left: 6vw;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 0.9vw;
+}
+
+.brand-mark {
+  width: clamp(24px, 3.6vw, 38px);
+  height: clamp(24px, 3.6vw, 38px);
+  border-radius: 22%;
+  background: var(--color-primary);
+  color: var(--color-background);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: clamp(0.8rem, 1.6vw, 1.1rem);
+  flex-shrink: 0;
+}
+
+.brand-mark img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.brand-name {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: clamp(0.75rem, 1.4vw, 1rem);
+  opacity: 0.85;
+}
+
+/* Left-aligned, generous whitespace — a genuinely different composition
+   from the other 3 templates' centered stacks, matching a print/magazine
+   register rather than a poster/ad one. */
+.scene {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 2.2vh;
+  padding: 12vw 11vw;
+  text-align: left;
+  opacity: 0;
+  transform: translateY(2vh);
+}
+
+.kicker {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: clamp(0.75rem, 1.6vw, 1rem);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  opacity: 0.55;
+}
+
+.scene-text {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: clamp(1.9rem, 7.6vw, 4.6rem);
+  line-height: 1.15;
+}
+
+/* Emphasis via italic + color instead of a filled highlight — the
+   "editorial pull-quote" technique, distinct from every other template's
+   flat color-block/highlighter mechanic. */
+.scene-text .hl {
+  font-style: italic;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.divider {
+  display: block;
+  width: 14vw;
+  height: 2px;
+  background: var(--color-text);
+  opacity: 0.35;
+}
+
+@keyframes scene-in {
+  0% {
+    opacity: 0;
+    transform: translateY(2vh);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scene-out {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-2vh);
+  }
+}
+
+/* Timeline (15000ms total, 4 scenes): hook 0-3500, proof 3500-7000,
+   feature 7000-10500, cta 10500-15000 (holds to the end). */
+#scene-hook {
+  animation:
+    scene-in 450ms ease-out 0ms forwards,
+    scene-out 350ms ease-in 3150ms forwards;
+}
+
+#scene-proof {
+  animation:
+    scene-in 450ms ease-out 3500ms forwards,
+    scene-out 350ms ease-in 6650ms forwards;
+}
+
+#scene-feature {
+  animation:
+    scene-in 450ms ease-out 7000ms forwards,
+    scene-out 350ms ease-in 10150ms forwards;
+}
+
+/* Thin flat border instead of a soft shadow or filled card — keeps the
+   restrained, print-like register instead of light-gradient's
+   glassmorphism-adjacent floating card. */
+.feature-photo {
+  width: 46vw;
+  height: 46vw;
+  max-width: 320px;
+  max-height: 320px;
+  object-fit: cover;
+  border: 1px solid var(--color-text);
+}
+
+.feature-caption {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: clamp(0.9rem, 2.4vw, 1.2rem);
+  opacity: 0.7;
+}
+
+/* The one loud beat in an otherwise restrained template: a flat primary
+   background for the final scene only, same established
+   text-on-primary contrast pair every other template already proves out. */
+.scene-cta {
+  background-color: var(--color-primary);
+  color: var(--color-background);
+}
+
+.scene-cta .scene-text .hl {
+  color: var(--color-background);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.12em;
+}
+
+#scene-cta {
+  z-index: 10;
+  animation:
+    scene-in 450ms ease-out 10500ms forwards,
+    cta-nudge 900ms ease-in-out 11500ms infinite;
+}
+
+@keyframes cta-nudge {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -0.6vh;
+  }
+}

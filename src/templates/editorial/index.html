@@ -1,0 +1,128 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div class="stage">
+      <div class="brand-badge" id="brand-badge">
+        <span class="brand-mark" id="brand-mark"></span>
+        <span class="brand-name" id="brand-name"></span>
+      </div>
+
+      <div class="scene" id="scene-hook" data-role="hook">
+        <span class="kicker" id="kicker-hook"></span>
+        <p class="scene-text" id="text-hook"></p>
+        <span class="divider"></span>
+      </div>
+      <div class="scene" id="scene-proof" data-role="proof">
+        <span class="kicker" id="kicker-proof"></span>
+        <p class="scene-text" id="text-proof"></p>
+        <span class="divider"></span>
+      </div>
+      <div class="scene scene-feature" id="scene-feature" data-role="feature">
+        <img class="feature-photo" id="feature-photo" alt="" />
+        <span class="feature-caption" id="feature-caption"></span>
+        <p class="scene-text" id="text-feature"></p>
+        <span class="divider"></span>
+      </div>
+      <div class="scene scene-cta" id="scene-cta" data-role="cta">
+        <span class="kicker" id="kicker-cta"></span>
+        <p class="scene-text" id="text-cta"></p>
+      </div>
+    </div>
+    <script id="reeljolt-data" type="application/json">__REELJOLT_DATA__</script>
+    <script>
+      (function () {
+        var data = JSON.parse(document.getElementById("reeljolt-data").textContent);
+        var root = document.documentElement;
+        root.style.setProperty("--color-primary", data.colors.primary);
+        root.style.setProperty("--color-secondary", data.colors.secondary);
+        root.style.setProperty("--color-background", data.colors.background);
+        root.style.setProperty("--color-text", data.colors.text);
+        root.style.setProperty(
+          "--font-heading",
+          "'" + (data.typography.headingGoogleFontMatch || data.typography.headingFamily) + "', " + data.typography.fallbackStack,
+        );
+        root.style.setProperty(
+          "--font-body",
+          "'" + (data.typography.bodyGoogleFontMatch || data.typography.bodyFamily) + "', " + data.typography.fallbackStack,
+        );
+
+        function fillBrandMark(markEl, nameEl) {
+          if (data.logoUrl) {
+            var img = document.createElement("img");
+            img.src = data.logoUrl;
+            markEl.appendChild(img);
+          } else {
+            markEl.textContent = data.brandName.charAt(0).toUpperCase();
+          }
+          nameEl.textContent = data.brandName;
+        }
+        fillBrandMark(document.getElementById("brand-mark"), document.getElementById("brand-name"));
+
+        ["hook", "proof", "cta"].forEach(function (role) {
+          var el = document.getElementById("kicker-" + role);
+          if (el) el.textContent = "— " + data.brandName;
+        });
+
+        // Emphasis via italics + color rather than a highlighter box or
+        // fully-colored line — a genuinely different typographic register
+        // (restrained/editorial) from dark-neon's uppercase blast or
+        // color-blocks' marker box.
+        function renderSceneText(el, scene) {
+          if (scene.highlight && scene.text.includes(scene.highlight)) {
+            var idx = scene.text.indexOf(scene.highlight);
+            var before = scene.text.slice(0, idx);
+            var hl = scene.text.slice(idx, idx + scene.highlight.length);
+            var after = scene.text.slice(idx + scene.highlight.length);
+            el.textContent = "";
+            if (before) el.appendChild(document.createTextNode(before));
+            var em = document.createElement("em");
+            em.className = "hl";
+            em.textContent = hl;
+            el.appendChild(em);
+            if (after) el.appendChild(document.createTextNode(after));
+          } else {
+            el.textContent = scene.text;
+          }
+        }
+
+        data.scenes.forEach(function (scene) {
+          var textEl = document.getElementById("text-" + scene.role);
+          if (textEl) renderSceneText(textEl, scene);
+
+          if (scene.role === "feature") {
+            var photoEl = document.getElementById("feature-photo");
+            var captionEl = document.getElementById("feature-caption");
+            if (scene.product) {
+              photoEl.src = scene.product.imageUrl;
+              if (scene.product.price) {
+                captionEl.textContent = scene.product.price;
+              } else {
+                captionEl.remove();
+              }
+            } else {
+              photoEl.remove();
+              captionEl.remove();
+            }
+          }
+        });
+
+        document.fonts.ready.then(function () {
+          document.getAnimations().forEach(function (animation) {
+            animation.pause();
+          });
+
+          window.__reeljoltSeek = function (ms) {
+            document.getAnimations().forEach(function (animation) {
+              animation.currentTime = ms;
+            });
+          };
+          window.__reeljoltReady = true;
+        });
+      })();
+    </script>
+  </body>
+</html>

@@ -68,8 +68,8 @@ type Dictionary = {
       recommended: string;
       chooseTemplate: string;
       chooseFormat: string;
-      names: Record<"dark-neon" | "light-gradient", string>;
-      descriptions: Record<"dark-neon" | "light-gradient", string>;
+      names: Record<"dark-neon" | "light-gradient" | "color-blocks" | "editorial" | "split-duotone", string>;
+      descriptions: Record<"dark-neon" | "light-gradient" | "color-blocks" | "editorial" | "split-duotone", string>;
     };
   };
   libraryPage: {
@@ -307,10 +307,16 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
         names: {
           "dark-neon": "Dark neon",
           "light-gradient": "Light gradient",
+          "color-blocks": "Color blocks",
+          editorial: "Editorial",
+          "split-duotone": "Split duotone",
         },
         descriptions: {
           "dark-neon": "Bold dark scenes with a punchy accent color, one word at a time.",
           "light-gradient": "Soft light scenes with a floating product card, clean and premium.",
+          "color-blocks": "Every scene in its own bold flat color, marker-style highlights.",
+          editorial: "Left-aligned, restrained typography, italic emphasis — a magazine feel.",
+          "split-duotone": "Screen split into two fixed color zones, bracketed keyword tags.",
         },
       },
     },
@@ -543,10 +549,16 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
         names: {
           "dark-neon": "Sombre néon",
           "light-gradient": "Clair dégradé",
+          "color-blocks": "Aplats de couleur",
+          editorial: "Éditorial",
+          "split-duotone": "Duotone divisé",
         },
         descriptions: {
           "dark-neon": "Scènes sombres percutantes, un mot en couleur à la fois.",
           "light-gradient": "Scènes claires en douceur, carte produit flottante, épuré et premium.",
+          "color-blocks": "Chaque scène dans son propre aplat de couleur, mots surlignés au marqueur.",
+          editorial: "Aligné à gauche, typographie sobre, accent en italique — esprit magazine.",
+          "split-duotone": "Écran divisé en deux zones de couleur fixes, mots-clés entre crochets.",
         },
       },
     },
@@ -779,10 +791,16 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
         names: {
           "dark-neon": "Dunkel neon",
           "light-gradient": "Hell verlauf",
+          "color-blocks": "Farbblöcke",
+          editorial: "Editorial",
+          "split-duotone": "Geteilt duoton",
         },
         descriptions: {
           "dark-neon": "Wirkungsvolle dunkle Szenen, ein Wort nach dem anderen in Akzentfarbe.",
           "light-gradient": "Sanfte helle Szenen mit schwebender Produktkarte, clean und hochwertig.",
+          "color-blocks": "Jede Szene in ihrer eigenen kräftigen Farbe, Textmarker-Hervorhebung.",
+          editorial: "Linksbündig, zurückhaltende Typografie, Betonung kursiv — Magazin-Gefühl.",
+          "split-duotone": "Bildschirm in zwei feste Farbzonen geteilt, Schlüsselwörter in Klammern.",
         },
       },
     },
