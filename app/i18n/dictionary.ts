@@ -46,6 +46,8 @@ type Dictionary = {
     submitError: string;
     brandKitLabel: string;
     generateConcepts: string;
+    regenerateConcepts: string;
+    regenerateConceptsHint: string;
     generatingConcepts: string;
     renderPending: string;
     renderFailed: string;
@@ -280,6 +282,8 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
       submitError: "Something went wrong submitting this URL. Check your connection and try again.",
       brandKitLabel: "Brand identity",
       generateConcepts: "Generate 5 concepts",
+      regenerateConcepts: "Regenerate 5 concepts",
+      regenerateConceptsHint: "Old concepts you haven't rendered a finished video from yet will be replaced.",
       generatingConcepts: "Generating...",
       renderPending: "Rendering...",
       renderFailed: "The render failed.",
@@ -514,6 +518,8 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
       submitError: "Un problème est survenu en envoyant cette URL. Vérifie ta connexion et réessaie.",
       brandKitLabel: "Direction artistique",
       generateConcepts: "Générer 5 concepts",
+      regenerateConcepts: "Régénérer 5 concepts",
+      regenerateConceptsHint: "Les anciens concepts sans vidéo terminée seront remplacés.",
       generatingConcepts: "Génération...",
       renderPending: "Rendu en cours...",
       renderFailed: "Le rendu a échoué.",
@@ -748,6 +754,8 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
       submitError: "Beim Senden dieser URL ist etwas schiefgelaufen. Prüfe deine Verbindung und versuch es erneut.",
       brandKitLabel: "Markenidentität",
       generateConcepts: "5 Konzepte generieren",
+      regenerateConcepts: "5 Konzepte neu generieren",
+      regenerateConceptsHint: "Alte Konzepte ohne fertiges Video werden ersetzt.",
       generatingConcepts: "Generierung läuft...",
       renderPending: "Rendering läuft...",
       renderFailed: "Das Rendering ist fehlgeschlagen.",

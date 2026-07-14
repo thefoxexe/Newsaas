@@ -240,23 +240,28 @@ export function Generator({ brandId, t }: { brandId: string; t: GeneratorText })
         </div>
         {brand.brandKit.copy.tagline && <p className="mt-3 text-foreground">{brand.brandKit.copy.tagline}</p>}
 
-        {concepts.length === 0 && (
-          <div className="mt-5">
-            <button
-              onClick={generateConcepts}
-              disabled={generating}
-              className="rounded-pill bg-primary px-5 py-2.5 font-semibold text-primary-foreground transition-transform hover:scale-[1.02] disabled:opacity-50"
-            >
-              {generating ? t.generatingConcepts : conceptsError ? t.retry : t.generateConcepts}
-            </button>
-            {conceptsError && (
-              <div className="mt-2">
-                <p className="text-sm text-danger">{t.conceptsError}</p>
-                {conceptsErrorDetail && <p className="mt-1 font-mono text-xs text-danger/70">{conceptsErrorDetail}</p>}
-              </div>
-            )}
-          </div>
-        )}
+        <div className="mt-5">
+          <button
+            onClick={generateConcepts}
+            disabled={generating}
+            className="rounded-pill bg-primary px-5 py-2.5 font-semibold text-primary-foreground transition-transform hover:scale-[1.02] disabled:opacity-50"
+          >
+            {generating
+              ? t.generatingConcepts
+              : conceptsError
+                ? t.retry
+                : concepts.length > 0
+                  ? t.regenerateConcepts
+                  : t.generateConcepts}
+          </button>
+          {concepts.length > 0 && !generating && <p className="mt-2 text-xs text-muted">{t.regenerateConceptsHint}</p>}
+          {conceptsError && (
+            <div className="mt-2">
+              <p className="text-sm text-danger">{t.conceptsError}</p>
+              {conceptsErrorDetail && <p className="mt-1 font-mono text-xs text-danger/70">{conceptsErrorDetail}</p>}
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="reveal relative mt-6 overflow-hidden rounded-card border border-primary/25 bg-gradient-to-br from-primary/10 via-surface to-surface p-6">
