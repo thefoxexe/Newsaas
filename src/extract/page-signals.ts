@@ -23,4 +23,5 @@ export type RawPageSignals = {
   headerLogoCandidates: LogoCandidate[];
   headings: string[];
   reviewLikeSnippets: string[];
+  serviceLikeSnippets: string[];
 };

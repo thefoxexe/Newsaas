@@ -39,6 +39,7 @@ const brandKit: BrandKit = {
   logo: null,
   products: [],
   copy: { tagline: null, headings: [], reviewSnippets: [] },
+  services: [],
 };
 
 function makeConcept(overrides: Partial<AdConcept> = {}): AdConcept {

@@ -34,7 +34,7 @@ type Dictionary = {
   faq: { eyebrow: string; title: string; items: Array<{ q: string; a: string }> };
   finalCta: { title: string; body: string; button: string };
   footer: { rights: string; signIn: string };
-  appNav: { generator: string; library: string; brands: string; billing: string; settings: string; signOut: string };
+  appNav: { library: string; brands: string; billing: string; settings: string; signOut: string };
   generator: {
     title: string;
     subtitle: string;
@@ -56,6 +56,9 @@ type Dictionary = {
     onboardingTitle: string;
     onboardingBody: string;
     onboardingCta: string;
+    customPromptBadge: string;
+    customPromptPlaceholder: string;
+    customPromptButton: string;
   };
   libraryPage: {
     title: string;
@@ -116,6 +119,29 @@ type Dictionary = {
     addBusinessPlaceholder: string;
     limitReached: string;
     upgradeCta: string;
+    searchPlaceholder: string;
+    edit: string;
+    delete: string;
+    deleteConfirm: string;
+    deleteLocked: string;
+  };
+  brandReviewPage: {
+    title: string;
+    subtitle: string;
+    extracting: string;
+    failedTitle: string;
+    failedBody: string;
+    nameLabel: string;
+    taglineLabel: string;
+    servicesLabel: string;
+    addService: string;
+    removeService: string;
+    logoLabel: string;
+    save: string;
+    saving: string;
+    limitReached: string;
+    upgradeCta: string;
+    genericError: string;
   };
 };
 
@@ -222,7 +248,6 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
     },
     footer: { rights: "All rights reserved.", signIn: "Sign in" },
     appNav: {
-      generator: "Generator",
       library: "Library",
       brands: "Brands",
       billing: "Plan",
@@ -250,6 +275,9 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
       onboardingTitle: "Your 5 ads are ready.",
       onboardingBody: "Pick a plan to render them in full HD, without watermark, and unlock more videos every month.",
       onboardingCta: "See plans",
+      customPromptBadge: "Coming soon",
+      customPromptPlaceholder: "Describe a specific angle you want the AI to focus on...",
+      customPromptButton: "Generate with this angle",
     },
     libraryPage: {
       title: "Library",
@@ -310,6 +338,29 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
       addBusinessPlaceholder: "https://your-store.com",
       limitReached: "You've reached your plan's business limit.",
       upgradeCta: "Upgrade to add more businesses",
+      searchPlaceholder: "Search your businesses...",
+      edit: "Edit",
+      delete: "Delete",
+      deleteConfirm: "Delete this business? Its concepts and rendered videos will be deleted too.",
+      deleteLocked: "Your plan allows 1 business, which can't be deleted or swapped. Upgrade to manage several.",
+    },
+    brandReviewPage: {
+      title: "Review your business",
+      subtitle: "Check what we found, fix anything that's missing, then save it.",
+      extracting: "Analyzing your brand identity...",
+      failedTitle: "The analysis didn't work for this URL.",
+      failedBody: "No problem — fill in what you can by hand below.",
+      nameLabel: "Business name",
+      taglineLabel: "Tagline / context",
+      servicesLabel: "Services",
+      addService: "Add a service",
+      removeService: "Remove",
+      logoLabel: "Logo URL",
+      save: "Save business",
+      saving: "Saving...",
+      limitReached: "You've reached your plan's business limit.",
+      upgradeCta: "Upgrade to add more businesses",
+      genericError: "Something went wrong saving this business. Try again.",
     },
   },
   fr: {
@@ -414,7 +465,6 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
     },
     footer: { rights: "Tous droits réservés.", signIn: "Se connecter" },
     appNav: {
-      generator: "Générateur",
       library: "Bibliothèque",
       brands: "Marques",
       billing: "Plan",
@@ -442,6 +492,9 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
       onboardingTitle: "Tes 5 pubs sont prêtes.",
       onboardingBody: "Choisis un plan pour les rendre en HD, sans filigrane, et débloquer plus de vidéos chaque mois.",
       onboardingCta: "Voir les plans",
+      customPromptBadge: "Bientôt disponible",
+      customPromptPlaceholder: "Décris un angle spécifique à mettre en avant...",
+      customPromptButton: "Générer avec cet angle",
     },
     libraryPage: {
       title: "Bibliothèque",
@@ -502,6 +555,29 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
       addBusinessPlaceholder: "https://ta-boutique.com",
       limitReached: "Tu as atteint la limite d'entreprises de ton plan.",
       upgradeCta: "Passer à un plan supérieur pour en ajouter",
+      searchPlaceholder: "Rechercher tes entreprises...",
+      edit: "Modifier",
+      delete: "Supprimer",
+      deleteConfirm: "Supprimer cette entreprise ? Ses concepts et vidéos rendues seront aussi supprimés.",
+      deleteLocked: "Ton plan autorise 1 entreprise, qui ne peut être ni supprimée ni remplacée. Passe à un plan supérieur pour en gérer plusieurs.",
+    },
+    brandReviewPage: {
+      title: "Vérifie ton entreprise",
+      subtitle: "Vérifie ce qu'on a trouvé, corrige ce qui manque, puis enregistre.",
+      extracting: "Analyse de la direction artistique en cours...",
+      failedTitle: "L'analyse n'a pas fonctionné pour cette URL.",
+      failedBody: "Pas de souci — remplis ce que tu peux à la main ci-dessous.",
+      nameLabel: "Nom de l'entreprise",
+      taglineLabel: "Slogan / contexte",
+      servicesLabel: "Services",
+      addService: "Ajouter un service",
+      removeService: "Retirer",
+      logoLabel: "URL du logo",
+      save: "Enregistrer l'entreprise",
+      saving: "Enregistrement...",
+      limitReached: "Tu as atteint la limite d'entreprises de ton plan.",
+      upgradeCta: "Passer à un plan supérieur pour en ajouter",
+      genericError: "Un problème est survenu en enregistrant cette entreprise. Réessaie.",
     },
   },
   de: {
@@ -606,7 +682,6 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
     },
     footer: { rights: "Alle Rechte vorbehalten.", signIn: "Anmelden" },
     appNav: {
-      generator: "Generator",
       library: "Bibliothek",
       brands: "Marken",
       billing: "Plan",
@@ -634,6 +709,9 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
       onboardingTitle: "Deine 5 Ads sind fertig.",
       onboardingBody: "Wähle einen Plan, um sie in HD ohne Wasserzeichen zu rendern und jeden Monat mehr Videos freizuschalten.",
       onboardingCta: "Pläne ansehen",
+      customPromptBadge: "Demnächst verfügbar",
+      customPromptPlaceholder: "Beschreibe einen bestimmten Winkel, auf den die KI sich konzentrieren soll...",
+      customPromptButton: "Mit diesem Winkel generieren",
     },
     libraryPage: {
       title: "Bibliothek",
@@ -694,6 +772,29 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
       addBusinessPlaceholder: "https://dein-shop.com",
       limitReached: "Du hast das Unternehmenslimit deines Plans erreicht.",
       upgradeCta: "Upgrade, um mehr Unternehmen hinzuzufügen",
+      searchPlaceholder: "Deine Unternehmen durchsuchen...",
+      edit: "Bearbeiten",
+      delete: "Löschen",
+      deleteConfirm: "Dieses Unternehmen löschen? Seine Konzepte und gerenderten Videos werden ebenfalls gelöscht.",
+      deleteLocked: "Dein Plan erlaubt 1 Unternehmen, das weder gelöscht noch ausgetauscht werden kann. Upgrade, um mehrere zu verwalten.",
+    },
+    brandReviewPage: {
+      title: "Überprüfe dein Unternehmen",
+      subtitle: "Prüfe, was wir gefunden haben, korrigiere Fehlendes und speichere dann.",
+      extracting: "Markenidentität wird analysiert...",
+      failedTitle: "Die Analyse hat für diese URL nicht funktioniert.",
+      failedBody: "Kein Problem — fülle unten aus, was du kannst, von Hand.",
+      nameLabel: "Unternehmensname",
+      taglineLabel: "Slogan / Kontext",
+      servicesLabel: "Dienstleistungen",
+      addService: "Dienstleistung hinzufügen",
+      removeService: "Entfernen",
+      logoLabel: "Logo-URL",
+      save: "Unternehmen speichern",
+      saving: "Speichern...",
+      limitReached: "Du hast das Unternehmenslimit deines Plans erreicht.",
+      upgradeCta: "Upgrade, um mehr Unternehmen hinzuzufügen",
+      genericError: "Beim Speichern dieses Unternehmens ist etwas schiefgelaufen. Versuch es erneut.",
     },
   },
 };

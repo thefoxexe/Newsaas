@@ -1,4 +1,4 @@
-import { pgTable, pgSchema, uuid, text, timestamp, jsonb, integer, pgEnum, uniqueIndex, index } from "drizzle-orm/pg-core";
+import { pgTable, pgSchema, uuid, text, timestamp, jsonb, integer, boolean, pgEnum, uniqueIndex, index } from "drizzle-orm/pg-core";
 
 export const templateIdEnum = pgEnum("template_id", [
   "kinetic-type",
@@ -33,6 +33,11 @@ export const brands = pgTable(
     status: extractionStatusEnum("status").notNull().default("pending"),
     brandKit: jsonb("brand_kit"),
     errorCode: text("error_code"),
+    // False for a brand that only ran through extraction (anonymous hero
+    // analysis, or "Add business") but was never confirmed in the review
+    // form — it doesn't count against the plan's maxBrands and never shows
+    // up in the Brands list until the user explicitly saves it.
+    saved: boolean("saved").notNull().default(false),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [index("brands_user_id_idx").on(table.userId)],

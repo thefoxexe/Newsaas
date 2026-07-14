@@ -2,31 +2,24 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 
 export function AddBusinessForm({
   placeholder,
   addLabel,
-  limitReachedLabel,
-  upgradeCta,
   genericErrorLabel,
 }: {
   placeholder: string;
   addLabel: string;
-  limitReachedLabel: string;
-  upgradeCta: string;
   genericErrorLabel: string;
 }) {
   const router = useRouter();
   const [url, setUrl] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [limitReached, setLimitReached] = useState(false);
   const [genericError, setGenericError] = useState(false);
 
   async function handleSubmit(event: React.FormEvent): Promise<void> {
     event.preventDefault();
     setSubmitting(true);
-    setLimitReached(false);
     setGenericError(false);
 
     try {
@@ -36,17 +29,16 @@ export function AddBusinessForm({
         body: JSON.stringify({ url }),
       });
 
-      if (response.status === 409) {
-        setLimitReached(true);
-        return;
-      }
       if (!response.ok) {
         setGenericError(true);
         return;
       }
 
+      // This only ever runs an extraction — it isn't counted against the
+      // plan's business limit until the review form's explicit save, which
+      // is where the limit is actually enforced.
       const { id } = (await response.json()) as { id: string };
-      router.push(`/app?brand=${id}`);
+      router.push(`/app/brands/${id}/review`);
     } catch {
       setGenericError(true);
     } finally {
@@ -76,15 +68,6 @@ export function AddBusinessForm({
           {submitting ? "..." : addLabel}
         </button>
       </form>
-
-      {limitReached && (
-        <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-card border border-danger/40 bg-danger/10 px-4 py-3">
-          <p className="text-sm text-danger">{limitReachedLabel}</p>
-          <Link href="/app/billing" className="shrink-0 rounded-pill bg-danger px-4 py-1.5 text-sm font-semibold text-white">
-            {upgradeCta}
-          </Link>
-        </div>
-      )}
 
       {genericError && <p className="mt-3 text-sm text-danger">{genericErrorLabel}</p>}
     </div>

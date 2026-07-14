@@ -41,4 +41,11 @@ describe("BrandKitSchema", () => {
     const invalid = { ...validBrandKit, sourceUrl: "not-a-url" };
     expect(BrandKitSchema.safeParse(invalid).success).toBe(false);
   });
+
+  it("defaults services to an empty array for a brand kit stored before the field existed", () => {
+    const parsed = BrandKitSchema.safeParse(validBrandKit);
+    expect(parsed.success).toBe(true);
+    if (!parsed.success) return;
+    expect(parsed.data.services).toEqual([]);
+  });
 });

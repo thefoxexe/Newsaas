@@ -30,6 +30,7 @@ const brandKit: BrandKit = {
   logo: null,
   products: [{ title: "Veste Aro", price: "CHF 129", imageUrl: "https://example.com/aro.jpg", description: null }],
   copy: { tagline: "Le vestiaire de la ville", headings: [], reviewSnippets: [] },
+  services: [],
 };
 
 const validPayload: GenerationResponse = {

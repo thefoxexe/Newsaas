@@ -20,9 +20,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const { locale, t } = await getDictionary();
 
   const NAV = [
-    { href: "/app", label: t.appNav.generator },
-    { href: "/app/library", label: t.appNav.library },
     { href: "/app/brands", label: t.appNav.brands },
+    { href: "/app/library", label: t.appNav.library },
     { href: "/app/billing", label: t.appNav.billing },
     { href: "/app/settings", label: t.appNav.settings },
   ];
@@ -31,7 +30,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-md">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-4">
-          <Link href="/app" className="flex shrink-0 items-center gap-2 font-display text-lg font-bold tracking-tight">
+          <Link href="/app/brands" className="flex shrink-0 items-center gap-2 font-display text-lg font-bold tracking-tight">
             <span className="flex h-7 w-7 items-center justify-center rounded-md bg-primary text-primary-foreground">
               R
             </span>

@@ -8,8 +8,6 @@ import { DICTIONARY } from "../i18n/dictionary";
 type Brand = {
   id: string;
   name: string;
-  status: "pending" | "extracting" | "done" | "failed";
-  errorCode: string | null;
   brandKit: {
     colors: { primary: string; secondary: string; background: string; text: string };
     copy: { tagline: string | null };
@@ -33,82 +31,51 @@ type RenderJob = {
 };
 
 const FORMATS = ["9:16", "1:1", "16:9"] as const;
+const COLOR_ROLES = ["primary", "secondary", "background", "text"] as const;
 
 type GeneratorText = (typeof DICTIONARY)[Locale]["generator"];
 
-export function Generator({ initialBrandId, t }: { initialBrandId: string | null; t: GeneratorText }) {
-  const [url, setUrl] = useState("");
+// The generator is always scoped to a specific, already-saved brand now
+// (see app/app/brands/[id]/generate/page.tsx) — there's no URL-to-analyze
+// form here anymore, that lives on the Brands / review pages instead.
+export function Generator({ brandId, t }: { brandId: string; t: GeneratorText }) {
   const [brand, setBrand] = useState<Brand | null>(null);
+  const [loadError, setLoadError] = useState(false);
   const [concepts, setConcepts] = useState<Concept[]>([]);
   const [generating, setGenerating] = useState(false);
   const [renders, setRenders] = useState<Record<string, RenderJob>>({});
   const [quotaError, setQuotaError] = useState<string | null>(null);
   const [conceptsError, setConceptsError] = useState(false);
   const [conceptsErrorDetail, setConceptsErrorDetail] = useState<string | null>(null);
-  const [submitting, setSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState(false);
 
   useEffect(() => {
-    if (initialBrandId) {
-      void pollBrand(initialBrandId);
-    }
-  }, [initialBrandId]);
+    let cancelled = false;
 
-  async function pollBrand(id: string): Promise<void> {
-    for (let attempt = 0; attempt < 20; attempt += 1) {
-      try {
-        const response = await fetch(`/api/brands/${id}`);
+    void fetch(`/api/brands/${brandId}`)
+      .then(async (response) => {
         if (!response.ok) {
-          setSubmitError(true);
+          if (!cancelled) setLoadError(true);
           return;
         }
         const { brand: fetched } = (await response.json()) as { brand: Brand };
-        setBrand(fetched);
-        if (fetched.status === "done" || fetched.status === "failed") return;
-      } catch {
-        setSubmitError(true);
-        return;
-      }
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-    }
-  }
-
-  async function submitUrl(event: React.FormEvent): Promise<void> {
-    event.preventDefault();
-    setBrand(null);
-    setConcepts([]);
-    setQuotaError(null);
-    setSubmitError(false);
-    setSubmitting(true);
-
-    try {
-      const response = await fetch("/api/brands", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url }),
+        if (!cancelled) setBrand(fetched);
+      })
+      .catch(() => {
+        if (!cancelled) setLoadError(true);
       });
-      if (!response.ok) {
-        setSubmitError(true);
-        return;
-      }
 
-      const { id } = (await response.json()) as { id: string };
-      await pollBrand(id);
-    } catch {
-      setSubmitError(true);
-    } finally {
-      setSubmitting(false);
-    }
-  }
+    return () => {
+      cancelled = true;
+    };
+  }, [brandId]);
 
   async function generateConcepts(): Promise<void> {
-    if (!brand) return;
     setGenerating(true);
     setConceptsError(false);
     setConceptsErrorDetail(null);
 
     try {
-      const response = await fetch(`/api/brands/${brand.id}/concepts`, { method: "POST" });
+      const response = await fetch(`/api/brands/${brandId}/concepts`, { method: "POST" });
       if (!response.ok) {
         setConceptsError(true);
         const body = (await response.json().catch(() => null)) as { error?: string } | null;
@@ -157,148 +124,133 @@ export function Generator({ initialBrandId, t }: { initialBrandId: string | null
     }
   }
 
+  if (loadError) {
+    return <p className="rounded-card border border-danger/40 bg-danger/10 px-4 py-3 text-sm text-danger">{t.submitError}</p>;
+  }
+
+  if (!brand?.brandKit) {
+    return (
+      <div className="flex items-center gap-3 text-muted">
+        <span className="h-2 w-2 animate-pulse rounded-full bg-primary" />
+        {t.extracting}
+      </div>
+    );
+  }
+
   return (
     <div>
-      <form
-        onSubmit={submitUrl}
-        className="flex flex-col gap-2 rounded-pill border border-border-strong bg-surface p-2 shadow-[0_20px_60px_-25px_rgb(0_0_0/0.7)] sm:flex-row"
-      >
-        <input
-          type="url"
-          required
-          value={url}
-          onChange={(event) => setUrl(event.target.value)}
-          placeholder={t.inputPlaceholder}
-          className="flex-1 rounded-pill bg-transparent px-5 py-3 text-foreground outline-none placeholder:text-muted"
-        />
-        <button
-          type="submit"
-          disabled={submitting}
-          className="rounded-pill bg-primary px-6 py-3 font-semibold text-primary-foreground transition-transform hover:scale-[1.02] disabled:opacity-50"
-        >
-          {submitting ? t.analyzing : t.analyze}
-        </button>
-      </form>
-
-      {brand && (brand.status === "pending" || brand.status === "extracting") && (
-        <div className="mt-6 flex items-center gap-3 text-muted">
-          <span className="h-2 w-2 animate-pulse rounded-full bg-primary" />
-          {t.extracting}
-        </div>
-      )}
-
-      {brand?.status === "failed" && (
-        <div className="mt-6 rounded-card border border-danger/40 bg-danger/10 px-4 py-3">
-          <p className="text-sm text-danger">{t.failed}</p>
-          {brand.errorCode && <p className="mt-1 font-mono text-xs text-danger/70">{brand.errorCode}</p>}
-        </div>
-      )}
-
-      {submitError && (
-        <p className="mt-6 rounded-card border border-danger/40 bg-danger/10 px-4 py-3 text-sm text-danger">
-          {t.submitError}
+      <div className="reveal rounded-card border border-border bg-surface p-6">
+        <p className="text-sm text-muted">
+          {t.brandKitLabel} — {brand.name}
         </p>
-      )}
+        <div className="mt-3 flex gap-2">
+          {COLOR_ROLES.map((role) => (
+            <span
+              key={role}
+              className="h-10 w-10 rounded-full border border-border"
+              style={{ backgroundColor: brand.brandKit?.colors[role] }}
+              title={role}
+            />
+          ))}
+        </div>
+        {brand.brandKit.copy.tagline && <p className="mt-3 text-foreground">{brand.brandKit.copy.tagline}</p>}
 
-      {quotaError && (
-        <p className="mt-6 rounded-card border border-danger/40 bg-danger/10 px-4 py-3 text-sm text-danger">
-          {quotaError}
-        </p>
-      )}
-
-      {brand?.status === "done" && brand.brandKit && (
-        <div className="mt-8">
-          <div className="reveal rounded-card border border-border bg-surface p-6">
-            <p className="text-sm text-muted">
-              {t.brandKitLabel} — {brand.name}
-            </p>
-            <div className="mt-3 flex gap-2">
-              {Object.entries(brand.brandKit.colors).map(([role, color]) => (
-                <span
-                  key={role}
-                  className="h-10 w-10 rounded-full border border-border"
-                  style={{ backgroundColor: color }}
-                  title={`${role}: ${color}`}
-                />
-              ))}
-            </div>
-            {brand.brandKit.copy.tagline && <p className="mt-3 text-foreground">{brand.brandKit.copy.tagline}</p>}
-            {concepts.length === 0 && (
-              <div className="mt-5">
-                <button
-                  onClick={generateConcepts}
-                  disabled={generating}
-                  className="rounded-pill bg-primary px-5 py-2.5 font-semibold text-primary-foreground transition-transform hover:scale-[1.02] disabled:opacity-50"
-                >
-                  {generating ? t.generatingConcepts : conceptsError ? t.retry : t.generateConcepts}
-                </button>
-                {conceptsError && (
-                  <div className="mt-2">
-                    <p className="text-sm text-danger">{t.conceptsError}</p>
-                    {conceptsErrorDetail && <p className="mt-1 font-mono text-xs text-danger/70">{conceptsErrorDetail}</p>}
-                  </div>
-                )}
+        {concepts.length === 0 && (
+          <div className="mt-5">
+            <button
+              onClick={generateConcepts}
+              disabled={generating}
+              className="rounded-pill bg-primary px-5 py-2.5 font-semibold text-primary-foreground transition-transform hover:scale-[1.02] disabled:opacity-50"
+            >
+              {generating ? t.generatingConcepts : conceptsError ? t.retry : t.generateConcepts}
+            </button>
+            {conceptsError && (
+              <div className="mt-2">
+                <p className="text-sm text-danger">{t.conceptsError}</p>
+                {conceptsErrorDetail && <p className="mt-1 font-mono text-xs text-danger/70">{conceptsErrorDetail}</p>}
               </div>
             )}
           </div>
+        )}
+      </div>
 
-          {initialBrandId && concepts.length > 0 && (
-            <div className="reveal mt-6 flex flex-col items-start justify-between gap-4 rounded-card border border-primary/40 bg-primary/10 p-6 sm:flex-row sm:items-center">
-              <div>
-                <p className="font-display text-lg font-bold">{t.onboardingTitle}</p>
-                <p className="mt-1 text-sm text-muted">{t.onboardingBody}</p>
-              </div>
-              <Link
-                href="/app/billing"
-                className="shrink-0 whitespace-nowrap rounded-pill bg-primary px-5 py-2.5 font-semibold text-primary-foreground transition-transform hover:scale-[1.02]"
-              >
-                {t.onboardingCta}
-              </Link>
-            </div>
-          )}
+      <div className="reveal mt-6 rounded-card border border-border bg-surface/60 p-6 opacity-60">
+        <span className="rounded-pill bg-border px-3 py-1 text-xs font-semibold uppercase tracking-widest text-muted">
+          {t.customPromptBadge}
+        </span>
+        <textarea
+          disabled
+          placeholder={t.customPromptPlaceholder}
+          rows={2}
+          className="mt-3 w-full resize-none rounded-card border border-border bg-transparent px-4 py-3 text-sm text-muted outline-none placeholder:text-muted"
+        />
+        <button
+          disabled
+          className="mt-3 cursor-not-allowed rounded-pill border border-border px-5 py-2 text-sm font-semibold text-muted"
+        >
+          {t.customPromptButton}
+        </button>
+      </div>
 
-          {concepts.length > 0 && (
-            <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
-              {concepts.map((concept) => {
-                const render = renders[concept.id];
-                return (
-                  <div key={concept.id} className="card-hover rounded-card border border-border bg-surface p-5">
-                    <p className="text-xs font-semibold uppercase tracking-widest text-primary">{concept.angle}</p>
-                    <p className="mt-2 font-display text-lg font-bold">{concept.hook}</p>
-                    <p className="mt-1 text-sm text-muted">{concept.body.join(" · ")}</p>
-                    <p className="mt-2 text-sm font-semibold text-primary">{concept.cta}</p>
+      {quotaError && (
+        <p className="mt-6 rounded-card border border-danger/40 bg-danger/10 px-4 py-3 text-sm text-danger">{quotaError}</p>
+      )}
 
-                    {!render && (
-                      <div className="mt-4 flex flex-wrap gap-2">
-                        {FORMATS.map((format) => (
-                          <button
-                            key={format}
-                            onClick={() => launchRender(concept.id, format)}
-                            className="rounded-pill border border-border px-3 py-1.5 text-sm transition-colors hover:border-primary hover:text-primary"
-                          >
-                            {format}
-                          </button>
-                        ))}
-                      </div>
-                    )}
+      {concepts.length > 0 && (
+        <div className="reveal mt-6 flex flex-col items-start justify-between gap-4 rounded-card border border-primary/40 bg-primary/10 p-6 sm:flex-row sm:items-center">
+          <div>
+            <p className="font-display text-lg font-bold">{t.onboardingTitle}</p>
+            <p className="mt-1 text-sm text-muted">{t.onboardingBody}</p>
+          </div>
+          <Link
+            href="/app/billing"
+            className="shrink-0 whitespace-nowrap rounded-pill bg-primary px-5 py-2.5 font-semibold text-primary-foreground transition-transform hover:scale-[1.02]"
+          >
+            {t.onboardingCta}
+          </Link>
+        </div>
+      )}
 
-                    {render && (render.status === "queued" || render.status === "rendering") && (
-                      <div className="mt-4 flex items-center gap-2 text-sm text-muted">
-                        <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary" />
-                        {render.status === "rendering" ? `${t.renderPending} ${render.progress}%` : t.renderPending}
-                      </div>
-                    )}
+      {concepts.length > 0 && (
+        <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {concepts.map((concept) => {
+            const render = renders[concept.id];
+            return (
+              <div key={concept.id} className="card-hover rounded-card border border-border bg-surface p-5">
+                <p className="text-xs font-semibold uppercase tracking-widest text-primary">{concept.angle}</p>
+                <p className="mt-2 font-display text-lg font-bold">{concept.hook}</p>
+                <p className="mt-1 text-sm text-muted">{concept.body.join(" · ")}</p>
+                <p className="mt-2 text-sm font-semibold text-primary">{concept.cta}</p>
 
-                    {render?.status === "failed" && <p className="mt-4 text-sm text-danger">{t.renderFailed}</p>}
-
-                    {render?.status === "done" && render.outputUrl && (
-                      <video src={render.outputUrl} controls className="mt-4 w-full rounded-card" />
-                    )}
+                {!render && (
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {FORMATS.map((format) => (
+                      <button
+                        key={format}
+                        onClick={() => launchRender(concept.id, format)}
+                        className="rounded-pill border border-border px-3 py-1.5 text-sm transition-colors hover:border-primary hover:text-primary"
+                      >
+                        {format}
+                      </button>
+                    ))}
                   </div>
-                );
-              })}
-            </div>
-          )}
+                )}
+
+                {render && (render.status === "queued" || render.status === "rendering") && (
+                  <div className="mt-4 flex items-center gap-2 text-sm text-muted">
+                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary" />
+                    {render.status === "rendering" ? `${t.renderPending} ${render.progress}%` : t.renderPending}
+                  </div>
+                )}
+
+                {render?.status === "failed" && <p className="mt-4 text-sm text-danger">{t.renderFailed}</p>}
+
+                {render?.status === "done" && render.outputUrl && (
+                  <video src={render.outputUrl} controls className="mt-4 w-full rounded-card" />
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

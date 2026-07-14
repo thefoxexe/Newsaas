@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/src/supabase/client";
-import { claimPendingBrandIfAny } from "../claim-pending-brand";
 import { useLanguage } from "../i18n/language-context";
 
 export default function SignInPage() {
@@ -29,8 +28,7 @@ export default function SignInPage() {
         return;
       }
 
-      const brandId = await claimPendingBrandIfAny();
-      router.push(brandId ? `/app?brand=${brandId}` : "/app");
+      router.push("/app");
     } catch {
       setError(t.authPages.unexpectedError);
     } finally {

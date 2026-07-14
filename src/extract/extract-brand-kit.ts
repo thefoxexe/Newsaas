@@ -66,5 +66,6 @@ export async function extractBrandKit(
     logo,
     products,
     copy,
+    services: signals.serviceLikeSnippets,
   });
 }

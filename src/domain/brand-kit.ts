@@ -37,6 +37,39 @@ export const BrandKitSchema = z.object({
     headings: z.array(z.string()),
     reviewSnippets: z.array(z.string()),
   }),
+  // Best-effort: only populated when the site has service-labelled sections
+  // (agency/service sites, which have no schema.org Product data at all).
+  // `.default([])` keeps this optional on already-stored brand kits.
+  services: z.array(z.string()).default([]),
 });
 
 export type BrandKit = z.infer<typeof BrandKitSchema>;
+
+// Used when extraction fails outright (no signals to work from at all) but
+// the user still wants to manually fill in and save a business — the review
+// form's fallback path. Colors/typography get inert placeholders since the
+// render pipeline requires *some* valid value; the fields the manual form
+// actually asks for (tagline, services, logo) start empty/null.
+export function blankBrandKit(sourceUrl: string): BrandKit {
+  return {
+    sourceUrl,
+    colors: {
+      primary: "#000000",
+      secondary: "#000000",
+      background: "#FFFFFF",
+      text: "#000000",
+      accent: null,
+      confidence: 0,
+    },
+    typography: {
+      headingFamily: "sans-serif",
+      bodyFamily: "sans-serif",
+      googleFontMatch: null,
+      fallbackStack: "sans-serif",
+    },
+    logo: null,
+    products: [],
+    copy: { tagline: null, headings: [], reviewSnippets: [] },
+    services: [],
+  };
+}

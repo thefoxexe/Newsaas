@@ -201,6 +201,18 @@ function collectSignals(maxScannedElements: number): BrowserSignals {
       .slice(0, 20);
   }
 
+  // Best-effort signal for agency/service sites that have no schema.org
+  // Product data at all — same shape and caveats as collectReviewSnippets:
+  // depends entirely on the site using a class/id containing "service",
+  // which plenty of sites won't. That's fine — this only ever pre-fills a
+  // form the user can fix by hand.
+  function collectServiceSnippets(): string[] {
+    return Array.from(document.querySelectorAll<HTMLElement>('[class*="service" i], [id*="service" i]'))
+      .map((el) => el.textContent?.trim() ?? "")
+      .filter((text) => text.length > 10 && text.length < 300)
+      .slice(0, 20);
+  }
+
   const meta = document.querySelector('meta[name="description"]');
   const ogDescription = document.querySelector('meta[property="og:description"]');
   const ogImage = document.querySelector('meta[property="og:image"]');
@@ -217,5 +229,6 @@ function collectSignals(maxScannedElements: number): BrowserSignals {
     headerLogoCandidates: collectHeaderLogoCandidates(),
     headings: collectHeadings(),
     reviewLikeSnippets: collectReviewSnippets(),
+    serviceLikeSnippets: collectServiceSnippets(),
   };
 }
