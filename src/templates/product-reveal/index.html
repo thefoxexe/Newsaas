@@ -1,0 +1,109 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div class="stage">
+      <div class="brand-badge" id="brand-badge">
+        <span class="brand-mark" id="brand-mark"></span>
+        <span class="brand-name" id="brand-name"></span>
+      </div>
+      <div class="photo-panel">
+        <img class="product-photo" id="product-photo" alt="" />
+      </div>
+      <div class="info-panel" id="info-panel">
+        <div class="eyebrow" id="eyebrow"><span class="eyebrow-label" id="eyebrow-label"></span></div>
+        <p class="hook-line" id="hook-line"></p>
+        <span class="price-chip" id="price-chip"></span>
+        <div class="body-lines" id="body"></div>
+      </div>
+      <div class="cta" id="cta">
+        <span class="cta-text" id="cta-text"></span>
+        <div class="brand-badge" id="brand-badge-outro">
+          <span class="brand-mark" id="brand-mark-outro"></span>
+          <span class="brand-name" id="brand-name-outro"></span>
+        </div>
+      </div>
+    </div>
+    <script id="reeljolt-data" type="application/json">__REELJOLT_DATA__</script>
+    <script>
+      (function () {
+        var data = JSON.parse(document.getElementById("reeljolt-data").textContent);
+        var root = document.documentElement;
+        root.style.setProperty("--color-primary", data.colors.primary);
+        root.style.setProperty("--color-secondary", data.colors.secondary);
+        root.style.setProperty("--color-background", data.colors.background);
+        root.style.setProperty("--color-text", data.colors.text);
+        root.style.setProperty(
+          "--font-heading",
+          "'" + (data.typography.headingGoogleFontMatch || data.typography.headingFamily) + "', " + data.typography.fallbackStack,
+        );
+        root.style.setProperty(
+          "--font-body",
+          "'" + (data.typography.bodyGoogleFontMatch || data.typography.bodyFamily) + "', " + data.typography.fallbackStack,
+        );
+
+        function fillBrandMark(markEl, nameEl) {
+          if (data.logoUrl) {
+            var img = document.createElement("img");
+            img.src = data.logoUrl;
+            markEl.appendChild(img);
+          } else {
+            markEl.textContent = data.brandName.charAt(0).toUpperCase();
+          }
+          nameEl.textContent = data.brandName;
+        }
+
+        fillBrandMark(document.getElementById("brand-mark"), document.getElementById("brand-name"));
+        fillBrandMark(document.getElementById("brand-mark-outro"), document.getElementById("brand-name-outro"));
+
+        document.getElementById("eyebrow-label").textContent = data.angle;
+        document.getElementById("hook-line").textContent = data.hook;
+
+        var photoEl = document.getElementById("product-photo");
+        if (data.product) {
+          photoEl.src = data.product.imageUrl;
+        } else {
+          photoEl.remove();
+        }
+
+        var priceChip = document.getElementById("price-chip");
+        if (data.product && data.product.price) {
+          priceChip.textContent = data.product.price;
+        } else {
+          priceChip.remove();
+        }
+
+        var bodyEl = document.getElementById("body");
+        data.body.forEach(function (line) {
+          var p = document.createElement("p");
+          p.className = "body-line";
+          p.textContent = line;
+          bodyEl.appendChild(p);
+        });
+
+        document.getElementById("cta-text").textContent = data.cta;
+
+        // Base64-embedded @font-face fonts still decode asynchronously via
+        // the FontFace API — waiting for document.fonts.ready before pausing
+        // animations/signalling readiness prevents frame capture from
+        // starting while text is still rendered in the fallback font (see
+        // kinetic-type/index.html for the full determinism rationale).
+        document.fonts.ready.then(function () {
+          document.getAnimations().forEach(function (animation) {
+            animation.pause();
+          });
+
+          window.__reeljoltSeek = function (ms) {
+            document.getAnimations().forEach(function (animation) {
+              animation.currentTime = ms;
+            });
+          };
+          window.__reeljoltReady = true;
+        });
+      })();
+    </script>
+  </body>
+</html>

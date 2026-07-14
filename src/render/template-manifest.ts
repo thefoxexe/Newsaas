@@ -18,3 +18,13 @@ export const TemplateManifestSchema = z.object({
 });
 
 export type TemplateManifest = z.infer<typeof TemplateManifestSchema>;
+
+// Shared by every template's manifest.json (see SHARED_TEMPLATE_TEXT_CONSTRAINTS
+// in ../domain/text-constraints for why) — manifests are static JSON so this
+// can't be imported by them directly, only compared against in
+// tests/template-manifests.test.ts.
+export const SHARED_TEMPLATE_TIMING = {
+  durationMs: 6000,
+  fps: 30,
+  formats: ["9:16", "1:1", "16:9"],
+};

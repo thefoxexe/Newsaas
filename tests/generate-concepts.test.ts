@@ -142,4 +142,26 @@ describe("generateConcepts", () => {
 
     expect(result.ok).toBe(false);
   });
+
+  it("drops a product-reveal concept that has no productImageIndex, keeping the rest", async () => {
+    const mixed = JSON.stringify({
+      analysis: validPayload.analysis,
+      concepts: [
+        { ...validPayload.concepts[0], id: "concept-1", recommendedTemplate: "kinetic-type" },
+        {
+          ...validPayload.concepts[0],
+          id: "concept-2",
+          recommendedTemplate: "product-reveal",
+          productImageIndex: null,
+        },
+      ],
+    });
+
+    const client = new ScriptedLlmClient([mixed]);
+    const result = await generateConcepts(brandKit, client, textConstraints);
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value.concepts.map((c) => c.id)).toEqual(["concept-1"]);
+  });
 });

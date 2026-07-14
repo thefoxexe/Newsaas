@@ -15,6 +15,23 @@ import { AdConceptSchema } from "../src/domain/ad-concept";
 // browser isn't installed for this Node/OS combination (e.g. bare CI images).
 const chromiumAvailable = Boolean(process.env["PLAYWRIGHT_CHROMIUM_EXECUTABLE"]);
 
+// Known, narrow residual flakiness (roughly 1 in 5-6 runs under real CPU
+// load, e.g. two concurrent renders sharing a CPU-constrained host): the
+// very first captured frame occasionally differs by a handful of
+// anti-aliased pixels at a real embedded font's glyph edges — root-caused
+// to document.fonts.ready resolving once a font finishes *parsing*, not
+// once the page has necessarily *repainted* with it, which two Chromium
+// processes competing for CPU can occasionally still race. A double
+// requestAnimationFrame wait was tried as a fix and made things measurably
+// worse (introduced a whole-video mismatch instead of a single-frame one),
+// so this is left as a known, accepted gap rather than a broken fix —
+// exactly the same category as the logo-image case already documented as
+// an accepted limitation in this codebase (extractBrandKit's real network
+// fetch is real in production but untested here). It has no visible
+// impact on actual output quality (a few sub-pixel AA differences on one
+// frame, not a content difference) — same "frames looked fine, only the
+// hash differed" character as every other bug this test has ever caught.
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 describe.skipIf(!chromiumAvailable)("renderVideo (kinetic-type, real browser + ffmpeg)", () => {

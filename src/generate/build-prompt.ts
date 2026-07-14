@@ -4,9 +4,13 @@ import type { Prompt } from "./llm-client";
 
 const CONCEPT_COUNT = 5;
 
-// Phase 7 will add more templates; until then every concept is rendered by
-// kinetic-type, so there is no template choice for the model to make.
-const FIXED_TEMPLATE_ID = "kinetic-type";
+// All 3 templates share identical text constraints/timing (see
+// SHARED_TEMPLATE_TEXT_CONSTRAINTS in ../domain/text-constraints) — the
+// model only has to pick *which one* fits each concept's angle, not worry
+// about different limits per template.
+const TEMPLATE_GUIDE = `- "kinetic-type" : typographie animee plein ecran, percutante. Choix par defaut, marche pour n'importe quel angle.
+- "product-reveal" : met en avant une vraie photo produit + prix. A utiliser uniquement si un produit pertinent existe dans la liste ci-dessous (productImageIndex obligatoire, pas null) et que l'angle beneficie de montrer le produit.
+- "review-slam" : met en avant une citation/avis client en grand format. A privilegier quand l'angle s'appuie sur un avis client ou une preuve sociale.`;
 
 const SYSTEM_PROMPT = `Tu es un strategiste publicitaire specialise en direct-to-consumer e-commerce.
 Tu ne rediges jamais une publicite directement : tu analyses le positionnement d'une marque,
@@ -34,13 +38,15 @@ Tache :
 1. Analyse le positionnement de cette marque.
 2. Propose ${CONCEPT_COUNT} concepts publicitaires distincts, chacun avec un angle different
    (ex: lever une objection, exploiter un avis client, jouer sur l'urgence, comparer, etc).
+3. Pour chaque concept, choisis le template le plus adapte a son angle :
+${TEMPLATE_GUIDE}
 
 Contraintes de format pour chaque concept (le rendu echouera si elles sont depassees) :
 - hook : maximum ${textConstraints.hook.maxChars} caracteres, phrase d'accroche qui arrete le scroll.
 - body : ${textConstraints.body.maxLines} lignes maximum, chaque ligne fait au plus ${textConstraints.body.maxCharsPerLine} caracteres.
 - cta : maximum ${textConstraints.cta.maxChars} caracteres.
-- recommendedTemplate doit toujours valoir exactement "${FIXED_TEMPLATE_ID}".
-- productImageIndex : un index valide du tableau de produits ci-dessus, ou null si aucun produit ne s'applique.
+- recommendedTemplate : "kinetic-type", "product-reveal" ou "review-slam" (voir description ci-dessus).
+- productImageIndex : un index valide du tableau de produits ci-dessus, ou null si aucun produit ne s'applique. Obligatoire (pas null) si recommendedTemplate vaut "product-reveal".
 
 Reponds avec exactement cet objet JSON (pas de markdown, pas de commentaire) :
 {
@@ -58,7 +64,7 @@ Reponds avec exactement cet objet JSON (pas de markdown, pas de commentaire) :
       "hook": string,
       "body": string[],
       "cta": string,
-      "recommendedTemplate": "${FIXED_TEMPLATE_ID}",
+      "recommendedTemplate": "kinetic-type" | "product-reveal" | "review-slam",
       "productImageIndex": number | null
     }
   ]

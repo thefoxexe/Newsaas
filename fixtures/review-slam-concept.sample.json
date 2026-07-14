@@ -1,0 +1,9 @@
+{
+  "id": "concept-review-slam",
+  "angle": "Avis client",
+  "hook": "Enfin une veste qui tient ses promesses",
+  "body": ["Livree en 48h", "Je recommande a 100%"],
+  "cta": "Voir les avis",
+  "recommendedTemplate": "review-slam",
+  "productImageIndex": null
+}

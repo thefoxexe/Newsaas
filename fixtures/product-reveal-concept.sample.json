@@ -1,0 +1,9 @@
+{
+  "id": "concept-product-reveal",
+  "angle": "Vitrine produit",
+  "hook": "La veste qui tient toutes saisons",
+  "body": ["Impermeable et respirante", "Garantie 2 ans"],
+  "cta": "Decouvrir",
+  "recommendedTemplate": "product-reveal",
+  "productImageIndex": 0
+}

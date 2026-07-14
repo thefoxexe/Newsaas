@@ -1,0 +1,11 @@
+{
+  "id": "product-reveal",
+  "durationMs": 6000,
+  "fps": 30,
+  "formats": ["9:16", "1:1", "16:9"],
+  "textConstraints": {
+    "hook": { "maxChars": 40 },
+    "body": { "maxLines": 3, "maxCharsPerLine": 28 },
+    "cta": { "maxChars": 20 }
+  }
+}

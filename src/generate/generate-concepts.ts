@@ -60,6 +60,18 @@ async function tryOnce(
       continue;
     }
 
+    // product-reveal has nothing to show without a product photo — drop it
+    // the same way as any other constraint violation rather than letting it
+    // through to render a template with a blank image slot.
+    if (concept.recommendedTemplate === "product-reveal" && concept.productImageIndex === null) {
+      firstViolation ??= new LlmConstraintViolationError(
+        concept.id,
+        "recommendedTemplate",
+        "product-reveal requires a productImageIndex, got null",
+      );
+      continue;
+    }
+
     validConcepts.push(concept);
   }
 

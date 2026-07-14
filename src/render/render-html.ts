@@ -23,6 +23,9 @@ type TemplateData = {
   hook: string;
   body: string[];
   cta: string;
+  // Only non-null when the concept named a valid product index — used by
+  // product-reveal; other templates simply ignore this field.
+  product: { title: string; price: string | null; imageUrl: string; description: string | null } | null;
 };
 
 export function renderTemplateHtml(
@@ -60,6 +63,7 @@ export function renderTemplateHtml(
     hook: concept.hook,
     body: concept.body,
     cta: concept.cta,
+    product: concept.productImageIndex !== null ? brandKit.products[concept.productImageIndex] ?? null : null,
   };
 
   // "</" would close the surrounding <script> tag early if left unescaped.
