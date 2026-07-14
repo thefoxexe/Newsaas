@@ -5,9 +5,11 @@ import { brands } from "@/src/db/schema";
 import { getCurrentSession } from "@/src/supabase/get-session";
 import { getUserPlan } from "@/src/entitlements/get-user-plan";
 import { PLAN_LIMITS } from "@/src/entitlements/plans";
+import { BrandKitSchema } from "@/src/domain/brand-kit";
 import { getDictionary } from "@/src/i18n/locale";
 import { AddBusinessForm } from "./add-business-form";
 import { BrandSearch } from "./brand-search";
+import { BrandSummary } from "./brand-summary";
 import { ClaimPendingRedirect } from "./claim-pending-redirect";
 
 export default async function BrandsPage() {
@@ -19,11 +21,16 @@ export default async function BrandsPage() {
   const maxBrands = PLAN_LIMITS[plan].maxBrands;
   const canManageBrands = maxBrands !== 1;
 
-  const rows = await db
+  const rawRows = await db
     .select()
     .from(brands)
     .where(and(eq(brands.userId, session.user.id), eq(brands.saved, true)))
     .orderBy(desc(brands.createdAt));
+
+  const rows = rawRows.map((brand) => ({
+    ...brand,
+    brandKit: brand.brandKit ? BrandKitSchema.parse(brand.brandKit) : null,
+  }));
 
   const canAddMore = maxBrands === null || rows.length < maxBrands;
 
@@ -73,6 +80,7 @@ export default async function BrandsPage() {
                 <div className="min-w-0">
                   <p className="font-semibold">{brand.name}</p>
                   <p className="truncate text-sm text-muted">{brand.sourceUrl}</p>
+                  <BrandSummary brandKit={brand.brandKit} />
                 </div>
               </Link>
             ))}

@@ -174,19 +174,22 @@ export function Generator({ brandId, t }: { brandId: string; t: GeneratorText })
         )}
       </div>
 
-      <div className="reveal mt-6 rounded-card border border-border bg-surface/60 p-6 opacity-60">
-        <span className="rounded-pill bg-border px-3 py-1 text-xs font-semibold uppercase tracking-widest text-muted">
+      <div className="reveal relative mt-6 overflow-hidden rounded-card border border-primary/25 bg-gradient-to-br from-primary/10 via-surface to-surface p-6">
+        <div aria-hidden className="glow-primary pointer-events-none absolute -right-12 -top-16 h-40 w-40 opacity-30 blur-2xl" />
+
+        <span className="relative inline-flex items-center gap-1.5 rounded-pill bg-primary/15 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-primary">
+          <span aria-hidden>✨</span>
           {t.customPromptBadge}
         </span>
         <textarea
           disabled
           placeholder={t.customPromptPlaceholder}
           rows={2}
-          className="mt-3 w-full resize-none rounded-card border border-border bg-transparent px-4 py-3 text-sm text-muted outline-none placeholder:text-muted"
+          className="relative mt-4 w-full resize-none rounded-card border border-border-strong bg-background/40 px-4 py-3 text-sm text-foreground/70 outline-none placeholder:text-muted"
         />
         <button
           disabled
-          className="mt-3 cursor-not-allowed rounded-pill border border-border px-5 py-2 text-sm font-semibold text-muted"
+          className="relative mt-3 cursor-not-allowed rounded-pill border border-primary/40 px-5 py-2 text-sm font-semibold text-primary/70"
         >
           {t.customPromptButton}
         </button>

@@ -3,8 +3,10 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import type { BrandKit } from "@/src/domain/brand-kit";
+import { BrandSummary } from "./brand-summary";
 
-type BrandRow = { id: string; name: string; sourceUrl: string; status: string };
+type BrandRow = { id: string; name: string; sourceUrl: string; status: string; brandKit: BrandKit | null };
 
 // Only rendered for plans that allow more than one business (see
 // app/app/brands/page.tsx) — search + edit + delete are a multi-business
@@ -58,6 +60,7 @@ export function BrandSearch({
             <Link href={`/app/brands/${brand.id}/generate`} className="min-w-0 flex-1">
               <p className="font-semibold">{brand.name}</p>
               <p className="truncate text-sm text-muted">{brand.sourceUrl}</p>
+              <BrandSummary brandKit={brand.brandKit} />
             </Link>
             <div className="flex shrink-0 items-center gap-4">
               <Link href={`/app/brands/${brand.id}/review`} className="text-sm font-semibold text-muted hover:text-foreground">
