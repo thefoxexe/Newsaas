@@ -42,6 +42,15 @@ const RENDER_TIMEOUT_MS = 3 * 60 * 1000;
 const STALE_JOB_THRESHOLD_MS = 15 * 60 * 1000;
 const STALE_SWEEP_INTERVAL_MS = 2 * 60 * 1000;
 
+// Measured peak RSS for one render (headless-shell Chromium + ffmpeg) is
+// ~460MB; 2 at once is ~920MB, comfortably under the 2GB host this worker
+// now runs on while leaving headroom for Node/Postgres/OS overhead and the
+// occasional concurrent extraction (a separate, sequential path below,
+// using full Chromium at ~800MB). Deliberately conservative rather than
+// maxing out the box: a second OOM crash after a paid upgrade would be
+// worse than leaving some throughput on the table.
+const MAX_CONCURRENT_RENDERS = 2;
+
 const storage = new LocalDiskStorage(
   RENDER_STORAGE_DIR,
   process.env["RENDER_PUBLIC_BASE_URL"] ?? RENDER_URL_PREFIX,
@@ -137,6 +146,26 @@ async function claimOneQueuedRender() {
   });
 }
 
+// Only writes to the DB when the rounded percentage actually changes
+// (roughly once per frame at 30fps/180 frames, ~100 writes max per render)
+// instead of on every one of the frames captured. Fire-and-forget: a missed
+// or out-of-order progress update is harmless, unlike blocking the capture
+// loop on a DB round trip for every single frame.
+function makeProgressReporter(renderId: string): (framesDone: number, frameCount: number) => void {
+  let lastPercent = -1;
+  return (framesDone, frameCount) => {
+    const percent = Math.floor((framesDone / frameCount) * 100);
+    if (percent === lastPercent) return;
+    lastPercent = percent;
+    db.update(renders)
+      .set({ progress: percent })
+      .where(eq(renders.id, renderId))
+      .catch((error: unknown) => {
+        logger.error({ renderId, error }, "failed to persist render progress");
+      });
+  };
+}
+
 async function processRender(render: {
   id: string;
   userId: string;
@@ -184,6 +213,7 @@ async function processRender(render: {
           frameCapturer: new PlaywrightFrameCapturer(),
           videoEncoder: new FfmpegVideoEncoder(),
           watermark: PLAN_LIMITS[plan].watermark,
+          onProgress: makeProgressReporter(render.id),
         }),
         RENDER_TIMEOUT_MS,
       );
@@ -251,22 +281,34 @@ async function sweepStaleJobs(): Promise<void> {
   }
 }
 
-async function tick(): Promise<void> {
+async function tick(activeRenders: Set<Promise<void>>): Promise<void> {
+  // Extraction stays sequential (one at a time, blocking) — it uses full
+  // Chromium rather than the lighter headless-shell build (see
+  // analyze-page.ts), so it isn't part of the render concurrency budget above.
   const brand = await claimOnePendingBrand();
   if (brand) {
     await processExtraction(brand);
   }
 
-  const render = await claimOneQueuedRender();
-  if (render) {
-    await processRender(render);
+  while (activeRenders.size < MAX_CONCURRENT_RENDERS) {
+    const render = await claimOneQueuedRender();
+    if (!render) break;
+
+    const job = processRender(render);
+    activeRenders.add(job);
+    void job.finally(() => activeRenders.delete(job));
   }
 }
 
 async function main(): Promise<void> {
-  logger.info("reeljolt worker started, polling every %dms", POLL_INTERVAL_MS);
+  logger.info(
+    "reeljolt worker started, polling every %dms, up to %d renders at once",
+    POLL_INTERVAL_MS,
+    MAX_CONCURRENT_RENDERS,
+  );
 
   let lastSweepAt = 0;
+  const activeRenders = new Set<Promise<void>>();
 
   for (;;) {
     try {
@@ -274,7 +316,7 @@ async function main(): Promise<void> {
         await sweepStaleJobs();
         lastSweepAt = Date.now();
       }
-      await tick();
+      await tick(activeRenders);
     } catch (error) {
       logger.error({ error }, "worker tick failed unexpectedly");
     }

@@ -32,14 +32,16 @@ export default async function LibraryPage() {
               <p className="mt-2 text-sm text-muted">
                 {render.status === "failed"
                   ? [t.libraryPage.failed, render.errorCode].filter(Boolean).join(": ")
-                  : t.libraryPage.inProgress}
+                  : `${t.libraryPage.inProgress} ${render.status === "rendering" ? `${render.progress}%` : ""}`.trim()}
               </p>
             )}
-            <DeleteRenderButton
-              renderId={render.id}
-              label={t.libraryPage.deleteButton}
-              confirmLabel={t.libraryPage.deleteConfirm}
-            />
+            {(render.status === "done" || render.status === "failed") && (
+              <DeleteRenderButton
+                renderId={render.id}
+                label={t.libraryPage.deleteButton}
+                confirmLabel={t.libraryPage.deleteConfirm}
+              />
+            )}
           </div>
         ))}
       </div>

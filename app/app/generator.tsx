@@ -29,6 +29,7 @@ type RenderJob = {
   status: "queued" | "rendering" | "done" | "failed";
   outputUrl: string | null;
   errorCode: string | null;
+  progress: number;
 };
 
 const FORMATS = ["9:16", "1:1", "16:9"] as const;
@@ -132,12 +133,16 @@ export function Generator({ initialBrandId, t }: { initialBrandId: string | null
     });
 
     if (!response.ok) {
-      setQuotaError(t.quotaAlert);
+      const body = (await response.json().catch(() => null)) as { error?: string } | null;
+      setQuotaError(body?.error === "queue_full" ? t.queueFull : t.quotaAlert);
       return;
     }
 
     const { id } = (await response.json()) as { id: string };
-    setRenders((prev) => ({ ...prev, [conceptId]: { id, status: "queued", outputUrl: null, errorCode: null } }));
+    setRenders((prev) => ({
+      ...prev,
+      [conceptId]: { id, status: "queued", outputUrl: null, errorCode: null, progress: 0 },
+    }));
     void pollRender(conceptId, id);
   }
 
@@ -280,7 +285,7 @@ export function Generator({ initialBrandId, t }: { initialBrandId: string | null
                     {render && (render.status === "queued" || render.status === "rendering") && (
                       <div className="mt-4 flex items-center gap-2 text-sm text-muted">
                         <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary" />
-                        {t.renderPending}
+                        {render.status === "rendering" ? `${t.renderPending} ${render.progress}%` : t.renderPending}
                       </div>
                     )}
 

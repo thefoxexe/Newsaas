@@ -10,6 +10,8 @@ export type CaptureOptions = {
   fps: number;
 };
 
+export type FrameProgressCallback = (framesDone: number, frameCount: number) => void;
+
 export interface FrameCapturer {
   // Writes frame-00000.png, frame-00001.png, ... directly into frameDir and
   // returns the frame count. Streaming to disk one frame at a time (instead
@@ -19,7 +21,16 @@ export interface FrameCapturer {
   // exhausts RAM on a constrained host (512MB free-tier containers included)
   // — the previous version did this, and rendering died silently (OOM-killed
   // mid-render, no application-level error) once actually deployed to one.
-  captureFrames(html: string, options: CaptureOptions, frameDir: string): Promise<number>;
+  // onProgress (optional) fires after each frame is written to disk — frame
+  // capture dominates a render's wall time versus the ffmpeg encode step, so
+  // it's a good enough proxy for overall percentage without also having to
+  // parse ffmpeg's own progress output.
+  captureFrames(
+    html: string,
+    options: CaptureOptions,
+    frameDir: string,
+    onProgress?: FrameProgressCallback,
+  ): Promise<number>;
 }
 
 declare global {
@@ -36,7 +47,12 @@ export class PlaywrightFrameCapturer implements FrameCapturer {
     this.executablePath = executablePath;
   }
 
-  async captureFrames(html: string, options: CaptureOptions, frameDir: string): Promise<number> {
+  async captureFrames(
+    html: string,
+    options: CaptureOptions,
+    frameDir: string,
+    onProgress?: FrameProgressCallback,
+  ): Promise<number> {
     const browser = await chromium.launch({
       // The "headless shell" build strips the parts of Chromium only needed
       // for a real browser window (full UI, extensions, devtools chrome) —
@@ -74,6 +90,7 @@ export class PlaywrightFrameCapturer implements FrameCapturer {
         await page.evaluate((ms) => window.__reeljoltSeek?.(ms), timeMs);
         const frame = await page.screenshot({ type: "png" });
         await writeFile(path.join(frameDir, `frame-${String(i).padStart(5, "0")}.png`), frame);
+        onProgress?.(i + 1, frameCount);
       }
 
       return frameCount;

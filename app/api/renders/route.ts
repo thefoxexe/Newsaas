@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { eq } from "drizzle-orm";
+import { eq, inArray, sql } from "drizzle-orm";
 import { db } from "@/src/db/client";
 import { brands, concepts, renders } from "@/src/db/schema";
 import { getCurrentSession } from "@/src/supabase/get-session";
@@ -11,6 +11,15 @@ const CreateRenderSchema = z.object({
   conceptId: z.string().uuid(),
   format: FormatSchema,
 });
+
+// The worker renders at most MAX_CONCURRENT_RENDERS (2) at a time (see
+// worker.ts) on a 2GB host — an unbounded backlog just means a very long,
+// silent wait rather than a crash, but it's still a bad experience with no
+// feedback. Reject new renders past this backlog size instead of piling
+// them up indefinitely; ~15 queued/rendering rows is a few minutes' worth
+// of draining at the current concurrency, a reasonable point to ask
+// someone to retry rather than wait blind.
+const MAX_PENDING_RENDERS = 15;
 
 export async function POST(request: Request): Promise<Response> {
   const session = await getCurrentSession();
@@ -31,6 +40,15 @@ export async function POST(request: Request): Promise<Response> {
   const [brand] = await db.select().from(brands).where(eq(brands.id, concept.brandId));
   if (!brand || brand.userId !== session.user.id) {
     return NextResponse.json({ error: "not found" }, { status: 404 });
+  }
+
+  const pendingCountRows = await db
+    .select({ count: sql<number>`count(*)::int` })
+    .from(renders)
+    .where(inArray(renders.status, ["queued", "rendering"]));
+
+  if ((pendingCountRows[0]?.count ?? 0) >= MAX_PENDING_RENDERS) {
+    return NextResponse.json({ error: "queue_full" }, { status: 503 });
   }
 
   const reservation = await reserveRenderCredit(db, session.user.id);

@@ -8,7 +8,7 @@ import { dimensionsFor } from "../domain/format";
 import type { Result } from "../domain/result";
 import { ok, err } from "../domain/result";
 import type { LoadedTemplate } from "./load-template";
-import type { FrameCapturer } from "./capture-frames";
+import type { FrameCapturer, FrameProgressCallback } from "./capture-frames";
 import type { VideoEncoder } from "./encode-video";
 import { renderTemplateHtml } from "./render-html";
 import { UnsupportedFormatError, type TemplateValidationError } from "./errors";
@@ -22,6 +22,7 @@ export type RenderVideoInput = {
   frameCapturer: FrameCapturer;
   videoEncoder: VideoEncoder;
   watermark?: boolean;
+  onProgress?: FrameProgressCallback;
 };
 
 export type RenderVideoOutput = {
@@ -49,7 +50,12 @@ export async function renderVideo(
   const frameDir = await mkdtemp(path.join(tmpdir(), "reeljolt-frames-"));
 
   try {
-    const frameCount = await input.frameCapturer.captureFrames(html.value, { width, height, durationMs, fps }, frameDir);
+    const frameCount = await input.frameCapturer.captureFrames(
+      html.value,
+      { width, height, durationMs, fps },
+      frameDir,
+      input.onProgress,
+    );
     await input.videoEncoder.encode(frameDir, frameCount, { fps, outputPath: input.outputPath });
 
     return ok({ outputPath: input.outputPath, frameCount });

@@ -73,6 +73,9 @@ export const renders = pgTable(
     status: renderStatusEnum("status").notNull().default("queued"),
     outputUrl: text("output_url"),
     durationMs: integer("duration_ms"),
+    // 0-100, updated as frames are captured (see capture-frames.ts) so the UI
+    // can show a moving percentage instead of an indefinite spinner.
+    progress: integer("progress").notNull().default(0),
     errorCode: text("error_code"),
     usageId: uuid("usage_id"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),

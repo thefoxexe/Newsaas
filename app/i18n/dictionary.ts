@@ -50,6 +50,7 @@ type Dictionary = {
     renderPending: string;
     renderFailed: string;
     quotaAlert: string;
+    queueFull: string;
     conceptsError: string;
     retry: string;
     onboardingTitle: string;
@@ -243,6 +244,7 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
       renderPending: "Rendering...",
       renderFailed: "The render failed.",
       quotaAlert: "Can't launch this render (quota reached?)",
+      queueFull: "Render queue is full right now — try again in a few minutes.",
       conceptsError: "Couldn't generate concepts. Try again.",
       retry: "Retry",
       onboardingTitle: "Your 5 ads are ready.",
@@ -434,6 +436,7 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
       renderPending: "Rendu en cours...",
       renderFailed: "Le rendu a échoué.",
       quotaAlert: "Impossible de lancer ce rendu (quota atteint ?)",
+      queueFull: "La file d'attente est pleine — réessaie dans quelques minutes.",
       conceptsError: "Impossible de générer les concepts. Réessaie.",
       retry: "Réessayer",
       onboardingTitle: "Tes 5 pubs sont prêtes.",
@@ -625,6 +628,7 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
       renderPending: "Rendering läuft...",
       renderFailed: "Das Rendering ist fehlgeschlagen.",
       quotaAlert: "Dieses Rendering kann nicht gestartet werden (Kontingent erreicht?)",
+      queueFull: "Die Render-Warteschlange ist gerade voll — versuche es in ein paar Minuten erneut.",
       conceptsError: "Konzepte konnten nicht generiert werden. Versuch es erneut.",
       retry: "Erneut versuchen",
       onboardingTitle: "Deine 5 Ads sind fertig.",
