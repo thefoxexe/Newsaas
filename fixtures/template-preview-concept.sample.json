@@ -1,0 +1,9 @@
+{
+  "id": "preview",
+  "angle": "AA",
+  "hook": "AAAA AAAA AAAA",
+  "body": ["BBBB BBBB BBBB BBBB", "BBBB BBBB BBBB"],
+  "cta": "CCCC CCCC",
+  "recommendedTemplate": "kinetic-type",
+  "productImageIndex": 0
+}

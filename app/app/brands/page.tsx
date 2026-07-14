@@ -51,7 +51,7 @@ export default async function BrandsPage() {
             <p className="text-sm text-muted">
               {canManageBrands ? t.brandsPageExtra.limitReached : t.brandsPageExtra.deleteLocked}
             </p>
-            <Link href="/app/billing" className="shrink-0 rounded-pill bg-primary px-4 py-1.5 text-sm font-semibold text-primary-foreground">
+            <Link href="/app/settings" className="shrink-0 rounded-pill bg-primary px-4 py-1.5 text-sm font-semibold text-primary-foreground">
               {t.brandsPageExtra.upgradeCta}
             </Link>
           </div>

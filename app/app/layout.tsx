@@ -22,7 +22,6 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const NAV = [
     { href: "/app/brands", label: t.appNav.brands },
     { href: "/app/library", label: t.appNav.library },
-    { href: "/app/billing", label: t.appNav.billing },
     { href: "/app/settings", label: t.appNav.settings },
   ];
 

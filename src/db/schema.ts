@@ -55,6 +55,13 @@ export const concepts = pgTable(
     body: jsonb("body").notNull().$type<string[]>(),
     cta: text("cta").notNull(),
     templateId: templateIdEnum("template_id").notNull(),
+    // Index into the brand's BrandKit.products[] this concept was written
+    // for (product-reveal needs it to know which photo/price to show); null
+    // for concepts with no product tie-in. Previously computed by the LLM
+    // and validated at generation time but never actually persisted here —
+    // the render worker read this column back as always null, so
+    // product-reveal renders silently never got a product.
+    productImageIndex: integer("product_image_index"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [index("concepts_brand_id_idx").on(table.brandId)],

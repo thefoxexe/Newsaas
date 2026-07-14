@@ -217,7 +217,7 @@ export function ReviewForm({ brandId, mode, t }: { brandId: string; mode: "save"
       {limitReached && (
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-card border border-danger/40 bg-danger/10 px-4 py-3">
           <p className="text-sm text-danger">{t.limitReached}</p>
-          <Link href="/app/billing" className="shrink-0 rounded-pill bg-danger px-4 py-1.5 text-sm font-semibold text-white">
+          <Link href="/app/settings" className="shrink-0 rounded-pill bg-danger px-4 py-1.5 text-sm font-semibold text-white">
             {t.upgradeCta}
           </Link>
         </div>

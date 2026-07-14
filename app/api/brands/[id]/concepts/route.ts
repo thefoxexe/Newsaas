@@ -43,6 +43,7 @@ export async function POST(_request: Request, context: { params: Promise<{ id: s
         body: concept.body,
         cta: concept.cta,
         templateId: concept.recommendedTemplate,
+        productImageIndex: concept.productImageIndex,
       })),
     )
     .returning();

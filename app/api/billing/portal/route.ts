@@ -20,7 +20,7 @@ export async function POST(request: Request): Promise<Response> {
   const appUrl = process.env["NEXT_PUBLIC_APP_URL"] ?? new URL(request.url).origin;
   const url = await createPortalSession(createStripeClient(), {
     stripeCustomerId: subscription.stripeCustomerId,
-    returnUrl: `${appUrl}/app/billing`,
+    returnUrl: `${appUrl}/app/settings`,
   });
 
   return NextResponse.json({ url });

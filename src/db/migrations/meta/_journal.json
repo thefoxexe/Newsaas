@@ -50,6 +50,13 @@
       "when": 1784102400000,
       "tag": "0006_brand_saved",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1784188800000,
+      "tag": "0007_concept_product_image_index",
+      "breakpoints": true
     }
   ]
 }

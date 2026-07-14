@@ -194,7 +194,7 @@ async function processRender(render: {
       body: concept.body,
       cta: concept.cta,
       recommendedTemplate: concept.templateId,
-      productImageIndex: null,
+      productImageIndex: concept.productImageIndex,
     });
 
     const template = await loadTemplate(path.join(TEMPLATES_DIR, render.templateId));

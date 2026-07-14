@@ -7,9 +7,18 @@ import { getCurrentSession } from "@/src/supabase/get-session";
 import { FormatSchema } from "@/src/domain/format";
 import { reserveRenderCredit } from "@/src/entitlements/reserve-credit";
 
+// Restricted to the templates that actually have a directory under
+// src/templates/ — narrower than the full TemplateIdSchema enum (which
+// still reserves ids for templates not built yet), so a manipulated
+// request can't ask the worker to render something that doesn't exist.
+const BuildableTemplateIdSchema = z.enum(["kinetic-type", "product-reveal", "review-slam"]);
+
 const CreateRenderSchema = z.object({
   conceptId: z.string().uuid(),
   format: FormatSchema,
+  // Optional override from the template-picker step in the generator UI —
+  // defaults to the concept's own (LLM-recommended) template when omitted.
+  templateId: BuildableTemplateIdSchema.optional(),
 });
 
 // The worker renders at most MAX_CONCURRENT_RENDERS (2) at a time (see
@@ -42,6 +51,11 @@ export async function POST(request: Request): Promise<Response> {
     return NextResponse.json({ error: "not found" }, { status: 404 });
   }
 
+  const templateId = body.data.templateId ?? concept.templateId;
+  if (templateId === "product-reveal" && concept.productImageIndex === null) {
+    return NextResponse.json({ error: "product-reveal requires a product" }, { status: 400 });
+  }
+
   const pendingCountRows = await db
     .select({ count: sql<number>`count(*)::int` })
     .from(renders)
@@ -62,7 +76,7 @@ export async function POST(request: Request): Promise<Response> {
       userId: session.user.id,
       brandId: brand.id,
       conceptId: concept.id,
-      templateId: concept.templateId,
+      templateId,
       format: body.data.format,
       status: "queued",
       usageId: reservation.value.usageId,

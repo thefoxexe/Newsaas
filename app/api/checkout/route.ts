@@ -35,8 +35,8 @@ export async function POST(request: Request): Promise<Response> {
     userId: session.user.id,
     userEmail: session.user.email,
     priceId: price.id,
-    successUrl: `${appUrl}/app/billing?checkout=success`,
-    cancelUrl: `${appUrl}/app/billing?checkout=cancelled`,
+    successUrl: `${appUrl}/app/settings?checkout=success`,
+    cancelUrl: `${appUrl}/app/settings?checkout=cancelled`,
   });
 
   return NextResponse.json({ url });

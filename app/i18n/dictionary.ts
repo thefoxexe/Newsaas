@@ -34,7 +34,7 @@ type Dictionary = {
   faq: { eyebrow: string; title: string; items: Array<{ q: string; a: string }> };
   finalCta: { title: string; body: string; button: string };
   footer: { rights: string; signIn: string };
-  appNav: { library: string; brands: string; billing: string; settings: string; signOut: string };
+  appNav: { library: string; brands: string; settings: string; signOut: string };
   generator: {
     title: string;
     subtitle: string;
@@ -59,6 +59,17 @@ type Dictionary = {
     customPromptBadge: string;
     customPromptPlaceholder: string;
     customPromptButton: string;
+    templatePicker: {
+      next: string;
+      back: string;
+      close: string;
+      recommended: string;
+      chooseTemplate: string;
+      chooseFormat: string;
+      needsProduct: string;
+      names: Record<"kinetic-type" | "product-reveal" | "review-slam", string>;
+      descriptions: Record<"kinetic-type" | "product-reveal" | "review-slam", string>;
+    };
   };
   libraryPage: {
     title: string;
@@ -83,20 +94,16 @@ type Dictionary = {
     unexpectedError: string;
   };
   brandsPage: { title: string; empty: string };
+  // Slim, reusable atomic labels shared by the settings plan-switch modal
+  // and the (separate) onboarding plan-selection page — the standalone
+  // /app/billing page these used to belong to no longer exists, this is
+  // just what's still shared between the two remaining call sites.
   billingPage: {
-    title: string;
-    currentPlan: string;
-    creditsUsed: string;
-    renewsOn: string;
-    managePlan: string;
-    choosePlan: string;
-    videosPerMonth: string;
     monthly: string;
     annual: string;
     checkoutError: string;
     manageError: string;
-    freeBannerTitle: string;
-    freeBannerBody: string;
+    videosPerMonth: string;
   };
   settingsPage: {
     title: string;
@@ -107,7 +114,17 @@ type Dictionary = {
     deleteWarning: string;
     confirmDelete: string;
     cancel: string;
-    manageBilling: string;
+    currentPlan: string;
+    creditsUsed: string;
+    renewsOn: string;
+    freeBannerTitle: string;
+    freeBannerBody: string;
+    manageSubscriptionLink: string;
+    modalTitle: string;
+    modalSubtitle: string;
+    topPlanMessage: string;
+    downgradeLink: string;
+    close: string;
   };
   onboardingPlanPage: {
     title: string;
@@ -250,7 +267,6 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
     appNav: {
       library: "Library",
       brands: "Brands",
-      billing: "Plan",
       settings: "Settings",
       signOut: "Sign out",
     },
@@ -278,6 +294,25 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
       customPromptBadge: "Coming soon",
       customPromptPlaceholder: "Describe a specific angle you want the AI to focus on...",
       customPromptButton: "Generate with this angle",
+      templatePicker: {
+        next: "Next",
+        back: "Back",
+        close: "Close",
+        recommended: "Recommended",
+        chooseTemplate: "Pick a design",
+        chooseFormat: "Pick a format",
+        needsProduct: "Needs a product photo",
+        names: {
+          "kinetic-type": "Kinetic type",
+          "product-reveal": "Product reveal",
+          "review-slam": "Review slam",
+        },
+        descriptions: {
+          "kinetic-type": "Bold animated typography, works for any angle.",
+          "product-reveal": "Your product photo front and center, with the price.",
+          "review-slam": "A customer quote blown up big, with stars.",
+        },
+      },
     },
     libraryPage: {
       title: "Library",
@@ -303,19 +338,11 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
     },
     brandsPage: { title: "Brands", empty: "No brand saved yet." },
     billingPage: {
-      title: "Billing",
-      currentPlan: "Current plan",
-      creditsUsed: "credits used this month",
-      renewsOn: "Renews on",
-      managePlan: "Manage subscription",
-      choosePlan: "Choose",
-      videosPerMonth: "videos/month",
       monthly: "Monthly",
       annual: "Annual",
       checkoutError: "Couldn't start checkout. Try again in a moment.",
       manageError: "No Stripe subscription to manage yet.",
-      freeBannerTitle: "You're on the free plan.",
-      freeBannerBody: "1 video/month, 1 business, watermarked. Upgrade below for more videos, more businesses, and no watermark.",
+      videosPerMonth: "videos/month",
     },
     settingsPage: {
       title: "Settings",
@@ -326,7 +353,17 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
       deleteWarning: "This action is permanent.",
       confirmDelete: "Confirm deletion",
       cancel: "Cancel",
-      manageBilling: "Manage billing & plan",
+      currentPlan: "Current plan",
+      creditsUsed: "credits used this month",
+      renewsOn: "Renews on",
+      freeBannerTitle: "You're on the free plan.",
+      freeBannerBody: "1 video/month, 1 business, watermarked.",
+      manageSubscriptionLink: "Manage subscription",
+      modalTitle: "Upgrade your plan",
+      modalSubtitle: "More videos, more businesses, no watermark.",
+      topPlanMessage: "You're already on our top plan.",
+      downgradeLink: "Back to the free plan",
+      close: "Close",
     },
     onboardingPlanPage: {
       title: "Choose your plan",
@@ -467,7 +504,6 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
     appNav: {
       library: "Bibliothèque",
       brands: "Marques",
-      billing: "Plan",
       settings: "Réglages",
       signOut: "Se déconnecter",
     },
@@ -495,6 +531,25 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
       customPromptBadge: "Bientôt disponible",
       customPromptPlaceholder: "Décris un angle spécifique à mettre en avant...",
       customPromptButton: "Générer avec cet angle",
+      templatePicker: {
+        next: "Suivant",
+        back: "Retour",
+        close: "Fermer",
+        recommended: "Recommandé",
+        chooseTemplate: "Choisis un style",
+        chooseFormat: "Choisis un format",
+        needsProduct: "Nécessite une photo produit",
+        names: {
+          "kinetic-type": "Typographie animée",
+          "product-reveal": "Mise en avant produit",
+          "review-slam": "Avis client",
+        },
+        descriptions: {
+          "kinetic-type": "Typographie animée percutante, marche pour n'importe quel angle.",
+          "product-reveal": "Ta photo produit en avant, avec le prix.",
+          "review-slam": "Un avis client en très grand, avec les étoiles.",
+        },
+      },
     },
     libraryPage: {
       title: "Bibliothèque",
@@ -520,19 +575,11 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
     },
     brandsPage: { title: "Marques", empty: "Aucune marque enregistrée pour l'instant." },
     billingPage: {
-      title: "Abonnement",
-      currentPlan: "Plan actuel",
-      creditsUsed: "crédits utilisés ce mois",
-      renewsOn: "Renouvellement le",
-      managePlan: "Gérer l'abonnement",
-      choosePlan: "Choisir",
-      videosPerMonth: "vidéos/mois",
       monthly: "Mensuel",
       annual: "Annuel",
       checkoutError: "Impossible de lancer le paiement. Réessaie dans un instant.",
       manageError: "Aucun abonnement Stripe à gérer pour l'instant.",
-      freeBannerTitle: "Tu es sur le plan gratuit.",
-      freeBannerBody: "1 vidéo/mois, 1 entreprise, avec filigrane. Passe à un plan supérieur ci-dessous pour plus de vidéos, plus d'entreprises et sans filigrane.",
+      videosPerMonth: "vidéos/mois",
     },
     settingsPage: {
       title: "Réglages",
@@ -543,7 +590,17 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
       deleteWarning: "Cette action est définitive.",
       confirmDelete: "Confirmer la suppression",
       cancel: "Annuler",
-      manageBilling: "Gérer la facturation et le plan",
+      currentPlan: "Plan actuel",
+      creditsUsed: "crédits utilisés ce mois",
+      renewsOn: "Renouvellement le",
+      freeBannerTitle: "Tu es sur le plan gratuit.",
+      freeBannerBody: "1 vidéo/mois, 1 entreprise, avec filigrane.",
+      manageSubscriptionLink: "Gérer l'abonnement",
+      modalTitle: "Passer à un plan supérieur",
+      modalSubtitle: "Plus de vidéos, plus d'entreprises, sans filigrane.",
+      topPlanMessage: "Tu es déjà sur notre plan le plus complet.",
+      downgradeLink: "Revenir au plan gratuit",
+      close: "Fermer",
     },
     onboardingPlanPage: {
       title: "Choisis ton plan",
@@ -684,7 +741,6 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
     appNav: {
       library: "Bibliothek",
       brands: "Marken",
-      billing: "Plan",
       settings: "Einstellungen",
       signOut: "Abmelden",
     },
@@ -712,6 +768,25 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
       customPromptBadge: "Demnächst verfügbar",
       customPromptPlaceholder: "Beschreibe einen bestimmten Winkel, auf den die KI sich konzentrieren soll...",
       customPromptButton: "Mit diesem Winkel generieren",
+      templatePicker: {
+        next: "Weiter",
+        back: "Zurück",
+        close: "Schließen",
+        recommended: "Empfohlen",
+        chooseTemplate: "Design wählen",
+        chooseFormat: "Format wählen",
+        needsProduct: "Benötigt ein Produktfoto",
+        names: {
+          "kinetic-type": "Animierte Typografie",
+          "product-reveal": "Produkt-Präsentation",
+          "review-slam": "Kundenbewertung",
+        },
+        descriptions: {
+          "kinetic-type": "Wirkungsvolle animierte Typografie, passt zu jedem Winkel.",
+          "product-reveal": "Dein Produktfoto im Mittelpunkt, mit Preis.",
+          "review-slam": "Eine Kundenbewertung riesig groß, mit Sternen.",
+        },
+      },
     },
     libraryPage: {
       title: "Bibliothek",
@@ -737,19 +812,11 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
     },
     brandsPage: { title: "Marken", empty: "Noch keine Marke gespeichert." },
     billingPage: {
-      title: "Abo",
-      currentPlan: "Aktueller Plan",
-      creditsUsed: "Credits diesen Monat verwendet",
-      renewsOn: "Verlängerung am",
-      managePlan: "Abo verwalten",
-      choosePlan: "Wählen",
-      videosPerMonth: "Videos/Monat",
       monthly: "Monatlich",
       annual: "Jährlich",
       checkoutError: "Zahlung konnte nicht gestartet werden. Versuch es gleich nochmal.",
       manageError: "Noch kein Stripe-Abo zum Verwalten.",
-      freeBannerTitle: "Du bist im kostenlosen Plan.",
-      freeBannerBody: "1 Video/Monat, 1 Unternehmen, mit Wasserzeichen. Upgrade unten für mehr Videos, mehr Unternehmen und ohne Wasserzeichen.",
+      videosPerMonth: "Videos/Monat",
     },
     settingsPage: {
       title: "Einstellungen",
@@ -760,7 +827,17 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
       deleteWarning: "Diese Aktion ist endgültig.",
       confirmDelete: "Löschung bestätigen",
       cancel: "Abbrechen",
-      manageBilling: "Abrechnung & Plan verwalten",
+      currentPlan: "Aktueller Plan",
+      creditsUsed: "Credits diesen Monat verwendet",
+      renewsOn: "Verlängerung am",
+      freeBannerTitle: "Du bist im kostenlosen Plan.",
+      freeBannerBody: "1 Video/Monat, 1 Unternehmen, mit Wasserzeichen.",
+      manageSubscriptionLink: "Abo verwalten",
+      modalTitle: "Upgrade deinen Plan",
+      modalSubtitle: "Mehr Videos, mehr Unternehmen, kein Wasserzeichen.",
+      topPlanMessage: "Du bist bereits auf unserem besten Plan.",
+      downgradeLink: "Zurück zum kostenlosen Plan",
+      close: "Schließen",
     },
     onboardingPlanPage: {
       title: "Wähle deinen Plan",

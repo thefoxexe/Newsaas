@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import type { Locale } from "../i18n/dictionary";
 import { DICTIONARY } from "../i18n/dictionary";
 
@@ -14,12 +15,16 @@ type Brand = {
   } | null;
 };
 
+type TemplateId = "kinetic-type" | "product-reveal" | "review-slam";
+
 type Concept = {
   id: string;
   angle: string;
   hook: string;
   body: string[];
   cta: string;
+  templateId: TemplateId;
+  productImageIndex: number | null;
 };
 
 type RenderJob = {
@@ -32,6 +37,17 @@ type RenderJob = {
 
 const FORMATS = ["9:16", "1:1", "16:9"] as const;
 const COLOR_ROLES = ["primary", "secondary", "background", "text"] as const;
+
+// Static, generic previews (placeholder AA/BB text, neutral colors) so the
+// picker shows the actual layout/animation choreography of each design
+// without implying real brand colors — those only apply at real render
+// time. As more templates ship, add an entry here and drop its preview
+// PNG in public/template-previews/.
+const TEMPLATES: Array<{ id: TemplateId; previewSrc: string }> = [
+  { id: "kinetic-type", previewSrc: "/template-previews/kinetic-type.png" },
+  { id: "product-reveal", previewSrc: "/template-previews/product-reveal.png" },
+  { id: "review-slam", previewSrc: "/template-previews/review-slam.png" },
+];
 
 type GeneratorText = (typeof DICTIONARY)[Locale]["generator"];
 
@@ -47,6 +63,7 @@ export function Generator({ brandId, t }: { brandId: string; t: GeneratorText })
   const [quotaError, setQuotaError] = useState<string | null>(null);
   const [conceptsError, setConceptsError] = useState(false);
   const [conceptsErrorDetail, setConceptsErrorDetail] = useState<string | null>(null);
+  const [activeConceptId, setActiveConceptId] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -91,12 +108,16 @@ export function Generator({ brandId, t }: { brandId: string; t: GeneratorText })
     }
   }
 
-  async function launchRender(conceptId: string, format: (typeof FORMATS)[number]): Promise<void> {
+  async function launchRender(
+    conceptId: string,
+    templateId: TemplateId,
+    format: (typeof FORMATS)[number],
+  ): Promise<void> {
     setQuotaError(null);
     const response = await fetch("/api/renders", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ conceptId, format }),
+      body: JSON.stringify({ conceptId, templateId, format }),
     });
 
     if (!response.ok) {
@@ -136,6 +157,8 @@ export function Generator({ brandId, t }: { brandId: string; t: GeneratorText })
       </div>
     );
   }
+
+  const activeConcept = concepts.find((c) => c.id === activeConceptId) ?? null;
 
   return (
     <div>
@@ -206,7 +229,7 @@ export function Generator({ brandId, t }: { brandId: string; t: GeneratorText })
             <p className="mt-1 text-sm text-muted">{t.onboardingBody}</p>
           </div>
           <Link
-            href="/app/billing"
+            href="/app/settings"
             className="shrink-0 whitespace-nowrap rounded-pill bg-primary px-5 py-2.5 font-semibold text-primary-foreground transition-transform hover:scale-[1.02]"
           >
             {t.onboardingCta}
@@ -226,16 +249,13 @@ export function Generator({ brandId, t }: { brandId: string; t: GeneratorText })
                 <p className="mt-2 text-sm font-semibold text-primary">{concept.cta}</p>
 
                 {!render && (
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {FORMATS.map((format) => (
-                      <button
-                        key={format}
-                        onClick={() => launchRender(concept.id, format)}
-                        className="rounded-pill border border-border px-3 py-1.5 text-sm transition-colors hover:border-primary hover:text-primary"
-                      >
-                        {format}
-                      </button>
-                    ))}
+                  <div className="mt-4">
+                    <button
+                      onClick={() => setActiveConceptId(concept.id)}
+                      className="rounded-pill bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-transform hover:scale-[1.02]"
+                    >
+                      {t.templatePicker.next}
+                    </button>
                   </div>
                 )}
 
@@ -256,6 +276,129 @@ export function Generator({ brandId, t }: { brandId: string; t: GeneratorText })
           })}
         </div>
       )}
+
+      {activeConcept && (
+        <GenerationModal
+          concept={activeConcept}
+          t={t}
+          onClose={() => setActiveConceptId(null)}
+          onSubmit={async (templateId, format) => {
+            setActiveConceptId(null);
+            await launchRender(activeConcept.id, templateId, format);
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+function GenerationModal({
+  concept,
+  t,
+  onClose,
+  onSubmit,
+}: {
+  concept: Concept;
+  t: GeneratorText;
+  onClose: () => void;
+  onSubmit: (templateId: TemplateId, format: (typeof FORMATS)[number]) => void;
+}) {
+  const [step, setStep] = useState<"template" | "format">("template");
+  // Falls back to kinetic-type instead of preselecting a disabled card in
+  // the (should-be-impossible-post-generation-validation, but not
+  // DB-enforced) case of a product-reveal concept with no product.
+  const [selectedTemplateId, setSelectedTemplateId] = useState<TemplateId>(
+    concept.templateId === "product-reveal" && concept.productImageIndex === null ? "kinetic-type" : concept.templateId,
+  );
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 p-4 backdrop-blur-sm" onClick={onClose}>
+      <div
+        className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-card border border-border bg-surface p-6"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-widest text-primary">{concept.angle}</p>
+            <p className="mt-1 font-display text-lg font-bold">
+              {step === "template" ? t.templatePicker.chooseTemplate : t.templatePicker.chooseFormat}
+            </p>
+          </div>
+          <button onClick={onClose} aria-label={t.templatePicker.close} className="text-muted hover:text-foreground">
+            ✕
+          </button>
+        </div>
+
+        {step === "template" && (
+          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+            {TEMPLATES.map((template) => {
+              const disabled = template.id === "product-reveal" && concept.productImageIndex === null;
+              const recommended = template.id === concept.templateId;
+              const selected = template.id === selectedTemplateId;
+              return (
+                <button
+                  key={template.id}
+                  disabled={disabled}
+                  onClick={() => setSelectedTemplateId(template.id)}
+                  className={`relative overflow-hidden rounded-card border p-2 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${
+                    selected ? "border-primary ring-2 ring-primary/40" : "border-border hover:border-border-strong"
+                  }`}
+                >
+                  {recommended && !disabled && (
+                    <span className="absolute left-3 top-3 z-10 rounded-pill bg-primary px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary-foreground">
+                      {t.templatePicker.recommended}
+                    </span>
+                  )}
+                  <div className="relative aspect-[9/16] w-full overflow-hidden rounded-md bg-background">
+                    <Image
+                      src={template.previewSrc}
+                      alt={t.templatePicker.names[template.id]}
+                      fill
+                      sizes="(max-width: 640px) 90vw, 220px"
+                      className="object-cover"
+                    />
+                  </div>
+                  <p className="mt-2 text-sm font-semibold">{t.templatePicker.names[template.id]}</p>
+                  <p className="mt-0.5 text-xs text-muted">{t.templatePicker.descriptions[template.id]}</p>
+                  {disabled && <p className="mt-1 text-xs text-danger">{t.templatePicker.needsProduct}</p>}
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        {step === "format" && (
+          <div className="mt-6 flex flex-wrap gap-3">
+            {FORMATS.map((format) => (
+              <button
+                key={format}
+                onClick={() => onSubmit(selectedTemplateId, format)}
+                className="rounded-pill border border-border px-5 py-2.5 text-sm font-semibold transition-colors hover:border-primary hover:text-primary"
+              >
+                {format}
+              </button>
+            ))}
+          </div>
+        )}
+
+        <div className="mt-6 flex justify-between">
+          {step === "format" ? (
+            <button onClick={() => setStep("template")} className="text-sm text-muted hover:text-foreground">
+              {t.templatePicker.back}
+            </button>
+          ) : (
+            <span />
+          )}
+          {step === "template" && (
+            <button
+              onClick={() => setStep("format")}
+              className="rounded-pill bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground transition-transform hover:scale-[1.02]"
+            >
+              {t.templatePicker.next}
+            </button>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

@@ -3,7 +3,7 @@ import { getCurrentSession } from "@/src/supabase/get-session";
 import { getDictionary } from "@/src/i18n/locale";
 import { PLAN_LIMITS } from "@/src/entitlements/plans";
 import { DISPLAY_PLANS } from "../../plans-display";
-import { CheckoutButton } from "../../app/billing/billing-actions";
+import { CheckoutButton } from "../../app/settings/billing-actions";
 import { ContinueFreeButton } from "./continue-free-button";
 
 export default async function OnboardingPlanPage() {
