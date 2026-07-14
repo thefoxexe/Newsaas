@@ -7,6 +7,25 @@ import { BrandKitSchema } from "@/src/domain/brand-kit";
 import { generateConcepts } from "@/src/generate/generate-concepts";
 import { AnthropicLlmClient } from "@/src/generate/llm-client";
 import { getTemplateManifest } from "@/src/render/template-registry";
+import { TEMPLATE_IDS } from "@/src/domain/ad-concept";
+
+// Concepts created before the 4-scene rewrite (or any future schema
+// change) still exist as rows — Postgres enums never drop old values and
+// this endpoint never deleted them outright — but the worker's schema
+// validation rejects them on render, which is exactly the confusing
+// "Render failed: invalid_enum_value / too_small" error a user hits if
+// one of these still shows up as a clickable card. Filtering them out
+// here means a broken legacy concept simply never appears as an option
+// again, rather than relying on someone noticing and hitting
+// "regenerate" — any real finished video from one is untouched, since
+// the library page reads renders directly, not through this filter.
+function isRenderable(concept: { scenes: unknown; templateId: string }): boolean {
+  return (
+    Array.isArray(concept.scenes) &&
+    concept.scenes.length === 4 &&
+    (TEMPLATE_IDS as readonly string[]).includes(concept.templateId)
+  );
+}
 
 export async function POST(_request: Request, context: { params: Promise<{ id: string }> }): Promise<Response> {
   const session = await getCurrentSession();
@@ -65,7 +84,7 @@ export async function POST(_request: Request, context: { params: Promise<{ id: s
 
   const allConcepts = await db.select().from(concepts).where(eq(concepts.brandId, brand.id));
 
-  return NextResponse.json({ analysis: result.value.analysis, concepts: allConcepts });
+  return NextResponse.json({ analysis: result.value.analysis, concepts: allConcepts.filter(isRenderable) });
 }
 
 export async function GET(_request: Request, context: { params: Promise<{ id: string }> }): Promise<Response> {
@@ -81,5 +100,5 @@ export async function GET(_request: Request, context: { params: Promise<{ id: st
   }
 
   const rows = await db.select().from(concepts).where(eq(concepts.brandId, id));
-  return NextResponse.json({ concepts: rows });
+  return NextResponse.json({ concepts: rows.filter(isRenderable) });
 }
