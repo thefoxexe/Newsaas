@@ -23,6 +23,27 @@ body {
   background-color: var(--color-background);
   font-family: var(--font-body);
   overflow: hidden;
+  animation: stage-bg-shift 6000ms ease-in-out forwards;
+}
+
+/* A single beat shift from the flat background into a brand-tinted flat
+   background around the hook-to-body transition (~2.2-2.6s) — the hard
+   cut to the full-bleed --color-primary CTA card at 4400ms is the second,
+   already-dramatic color beat. color-mix() here resolves to one solid
+   computed color per keyframe stop (not a rendered multi-stop gradient
+   texture), so it carries the same determinism properties as any other
+   flat background-color — unlike radial-gradient()/blur(), which render
+   with GPU-dependent dithering/AA that isn't bit-identical across separate
+   Chromium launches (see the discs below for that documented history). */
+@keyframes stage-bg-shift {
+  0%,
+  36% {
+    background-color: var(--color-background);
+  }
+  44%,
+  100% {
+    background-color: color-mix(in srgb, var(--color-background) 85%, var(--color-primary) 15%);
+  }
 }
 
 /* A slowly-pulsing color disc behind the copy — gives the frame some depth
@@ -30,7 +51,9 @@ body {
    or a blur filter: both render with GPU-dependent dithering/AA that isn't
    bit-identical across separate Chromium launches, which silently broke
    the determinism guarantee (caught by the render integration test, not
-   by eye — the frames looked fine, only the file hash differed). */
+   by eye — the frames looked fine, only the file hash differed). Also
+   shifts from a primary to a secondary tint at the same beat as the stage
+   background above — same color-mix() reasoning, flat computed color only. */
 .stage::before {
   content: "";
   position: absolute;
@@ -42,7 +65,9 @@ body {
   border-radius: 50%;
   opacity: 0.1;
   transform: translate(-50%, -50%) scale(0.85);
-  animation: glow-pulse 6000ms ease-in-out infinite;
+  animation:
+    glow-pulse 6000ms ease-in-out infinite,
+    disc-tint-shift 6000ms ease-in-out forwards;
   pointer-events: none;
 }
 
@@ -53,6 +78,17 @@ body {
   }
   50% {
     transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes disc-tint-shift {
+  0%,
+  36% {
+    background-color: var(--color-primary);
+  }
+  44%,
+  100% {
+    background-color: color-mix(in srgb, var(--color-primary) 55%, var(--color-secondary) 45%);
   }
 }
 
@@ -73,7 +109,9 @@ body {
   border-radius: 50%;
   opacity: 0.14;
   transform: translateY(0) scale(1);
-  animation: chip-float 5000ms ease-in-out infinite;
+  animation:
+    chip-float 5000ms ease-in-out infinite,
+    chip-tint-shift 6000ms ease-in-out forwards;
   pointer-events: none;
 }
 
@@ -84,6 +122,17 @@ body {
   }
   50% {
     transform: translateY(3vh) scale(1.12);
+  }
+}
+
+@keyframes chip-tint-shift {
+  0%,
+  36% {
+    background-color: var(--color-primary);
+  }
+  44%,
+  100% {
+    background-color: var(--color-secondary);
   }
 }
 
@@ -251,13 +300,13 @@ body {
   position: relative;
   font-family: var(--font-heading);
   font-weight: 900;
-  font-size: clamp(2.3rem, 10.5vw, 6.9rem);
+  font-size: clamp(2.4rem, 11.5vw, 7.6rem);
   line-height: 0.98;
   color: var(--color-text);
   text-transform: uppercase;
   letter-spacing: -0.03em;
   opacity: 0;
-  transform: translateY(6vh) scale(0.85) rotate(-2deg);
+  transform: translateY(6vh) scale(0.85);
   animation: word-in 500ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
@@ -272,18 +321,26 @@ body {
 .hook .word:nth-child(7) { animation-delay: 1320ms; }
 .hook .word:nth-child(8) { animation-delay: 1540ms; }
 
+/* No rotate() here (was: rotate(-2deg) -> rotate(1deg) -> rotate(0deg)) —
+   measured directly: a real embedded custom font's glyph edges rendered
+   mid-rotation are not bit-stable across separate Chromium launches (same
+   documented "diagonal anti-aliased edges" class of non-determinism as the
+   rotated decorative square this codebase already removed — just newly
+   exposed here now that this template embeds a real font instead of
+   relying on the system's generic, long-cached fallback). translate+scale
+   only, confirmed byte-identical across repeated runs including under load. */
 @keyframes word-in {
   0% {
     opacity: 0;
-    transform: translateY(6vh) scale(0.85) rotate(-2deg);
+    transform: translateY(6vh) scale(0.85);
   }
   55% {
     opacity: 1;
-    transform: translateY(0) scale(1.08) rotate(1deg);
+    transform: translateY(0) scale(1.08);
   }
   100% {
     opacity: 1;
-    transform: translateY(0) scale(1) rotate(0deg);
+    transform: translateY(0) scale(1);
   }
 }
 
@@ -346,7 +403,7 @@ body {
   color: var(--color-background);
   font-family: var(--font-heading);
   font-weight: 900;
-  font-size: clamp(2rem, 9vw, 5.6rem);
+  font-size: clamp(2.1rem, 9.8vw, 6.2rem);
   line-height: 1;
   text-transform: uppercase;
   letter-spacing: -0.02em;

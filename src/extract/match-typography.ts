@@ -35,7 +35,7 @@ function majorityVote(values: string[], fallback: string): string {
   return winner;
 }
 
-function matchGoogleFont(familyName: string): string | null {
+export function matchGoogleFont(familyName: string): string | null {
   const normalized = normalize(familyName);
   return GOOGLE_FONTS_CATALOG.find((entry) => normalize(entry) === normalized) ?? null;
 }

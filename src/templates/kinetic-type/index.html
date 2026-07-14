@@ -27,15 +27,16 @@
         var data = JSON.parse(document.getElementById("reeljolt-data").textContent);
         var root = document.documentElement;
         root.style.setProperty("--color-primary", data.colors.primary);
+        root.style.setProperty("--color-secondary", data.colors.secondary);
         root.style.setProperty("--color-background", data.colors.background);
         root.style.setProperty("--color-text", data.colors.text);
         root.style.setProperty(
           "--font-heading",
-          "'" + data.typography.headingFamily + "', " + data.typography.fallbackStack,
+          "'" + (data.typography.headingGoogleFontMatch || data.typography.headingFamily) + "', " + data.typography.fallbackStack,
         );
         root.style.setProperty(
           "--font-body",
-          "'" + data.typography.bodyFamily + "', " + data.typography.fallbackStack,
+          "'" + (data.typography.bodyGoogleFontMatch || data.typography.bodyFamily) + "', " + data.typography.fallbackStack,
         );
 
         function fillBrandMark(markEl, nameEl) {
@@ -72,19 +73,28 @@
 
         document.getElementById("cta-text").textContent = data.cta;
 
-        // Every Animation starts in its "before" phase immediately, so pausing
-        // here (before any paint) and later seeking currentTime is enough to
-        // capture any point in the timeline deterministically.
-        document.getAnimations().forEach(function (animation) {
-          animation.pause();
-        });
-
-        window.__reeljoltSeek = function (ms) {
+        // Base64-embedded @font-face fonts still decode asynchronously via
+        // the FontFace API — waiting for document.fonts.ready before pausing
+        // animations/signalling readiness prevents frame capture from
+        // starting while text is still rendered in the fallback font, which
+        // would otherwise also make the very first frame(s) non-deterministic
+        // (font-decode timing racing the capture start, independent of the
+        // seeked animation clock below).
+        document.fonts.ready.then(function () {
+          // Every Animation starts in its "before" phase immediately, so pausing
+          // here (before any paint) and later seeking currentTime is enough to
+          // capture any point in the timeline deterministically.
           document.getAnimations().forEach(function (animation) {
-            animation.currentTime = ms;
+            animation.pause();
           });
-        };
-        window.__reeljoltReady = true;
+
+          window.__reeljoltSeek = function (ms) {
+            document.getAnimations().forEach(function (animation) {
+              animation.currentTime = ms;
+            });
+          };
+          window.__reeljoltReady = true;
+        });
       })();
     </script>
   </body>

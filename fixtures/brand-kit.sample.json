@@ -9,9 +9,9 @@
     "confidence": 0.82
   },
   "typography": {
-    "headingFamily": "Arial",
-    "bodyFamily": "Arial",
-    "googleFontMatch": null,
+    "headingFamily": "Poppins",
+    "bodyFamily": "Inter",
+    "googleFontMatch": "Poppins",
     "fallbackStack": "sans-serif"
   },
   "logo": null,

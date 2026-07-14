@@ -4,12 +4,19 @@ import type { Result } from "../domain/result";
 import { ok, err } from "../domain/result";
 import { checkTextConstraints } from "../domain/text-constraints";
 import { deriveBrandName } from "../domain/brand-name";
+import { matchGoogleFont } from "../extract/match-typography";
 import { TemplateValidationError } from "./errors";
 import type { LoadedTemplate } from "./load-template";
 
 type TemplateData = {
-  colors: { primary: string; background: string; text: string };
-  typography: { headingFamily: string; bodyFamily: string; fallbackStack: string };
+  colors: { primary: string; secondary: string; background: string; text: string };
+  typography: {
+    headingFamily: string;
+    bodyFamily: string;
+    fallbackStack: string;
+    headingGoogleFontMatch: string | null;
+    bodyGoogleFontMatch: string | null;
+  };
   brandName: string;
   logoUrl: string | null;
   angle: string;
@@ -23,6 +30,7 @@ export function renderTemplateHtml(
   brandKit: BrandKit,
   concept: AdConcept,
   watermark = false,
+  embeddedFontsCss = "",
 ): Result<string, TemplateValidationError> {
   const validation = validateTextConstraints(template, concept);
   if (!validation.ok) {
@@ -32,6 +40,7 @@ export function renderTemplateHtml(
   const data: TemplateData = {
     colors: {
       primary: brandKit.colors.primary,
+      secondary: brandKit.colors.secondary,
       background: brandKit.colors.background,
       text: brandKit.colors.text,
     },
@@ -39,6 +48,11 @@ export function renderTemplateHtml(
       headingFamily: brandKit.typography.headingFamily,
       bodyFamily: brandKit.typography.bodyFamily,
       fallbackStack: brandKit.typography.fallbackStack,
+      // The stored googleFontMatch only ever matched the heading family
+      // (see match-typography.ts) — the body match is computed fresh here,
+      // no BrandKit schema change needed for it.
+      headingGoogleFontMatch: brandKit.typography.googleFontMatch,
+      bodyGoogleFontMatch: matchGoogleFont(brandKit.typography.bodyFamily),
     },
     brandName: deriveBrandName(brandKit.sourceUrl),
     logoUrl: brandKit.logo?.url ?? null,
@@ -51,9 +65,12 @@ export function renderTemplateHtml(
   // "</" would close the surrounding <script> tag early if left unescaped.
   const dataJson = JSON.stringify(data).replace(/<\//g, "<\\/");
 
+  // embeddedFontsCss (real, base64-embedded @font-face blocks fetched by the
+  // caller — see render-video.ts) goes first so it's declared before the
+  // template's own CSS references it via --font-heading/--font-body.
   const withInlineStyles = template.html.replace(
     /<link rel="stylesheet" href="\.\/style\.css" \/>/,
-    `<style>${template.css}</style>`,
+    `<style>${embeddedFontsCss}${template.css}</style>`,
   );
 
   const withData = withInlineStyles.replace("__REELJOLT_DATA__", dataJson);

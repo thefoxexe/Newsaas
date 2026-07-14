@@ -11,6 +11,8 @@ import type { LoadedTemplate } from "./load-template";
 import type { FrameCapturer, FrameProgressCallback } from "./capture-frames";
 import type { VideoEncoder } from "./encode-video";
 import { renderTemplateHtml } from "./render-html";
+import { fetchEmbeddableFontFace } from "./embed-google-font";
+import { matchGoogleFont } from "../extract/match-typography";
 import { UnsupportedFormatError, type TemplateValidationError } from "./errors";
 
 export type RenderVideoInput = {
@@ -37,7 +39,24 @@ export async function renderVideo(
     return err(new UnsupportedFormatError(input.format, input.template.manifest.id));
   }
 
-  const html = renderTemplateHtml(input.template, input.brandKit, input.concept, input.watermark ?? false);
+  // Fetched here (not inside renderTemplateHtml, which stays a pure sync
+  // function) since this is the async I/O boundary already used for
+  // mkdtemp/frame capture/encoding below. A fetch failure degrades
+  // gracefully to "" (renderTemplateHtml just gets no embedded font), it
+  // never fails the render.
+  const [headingFontCss, bodyFontCss] = await Promise.all([
+    fetchEmbeddableFontFace(input.brandKit.typography.googleFontMatch, [900, 700]),
+    fetchEmbeddableFontFace(matchGoogleFont(input.brandKit.typography.bodyFamily), [400]),
+  ]);
+  const embeddedFontsCss = [headingFontCss, bodyFontCss].filter((css): css is string => css !== null).join("\n");
+
+  const html = renderTemplateHtml(
+    input.template,
+    input.brandKit,
+    input.concept,
+    input.watermark ?? false,
+    embeddedFontsCss,
+  );
   if (!html.ok) {
     return html;
   }
