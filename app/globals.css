@@ -58,11 +58,11 @@ body {
 }
 
 .glow-primary {
-  background: radial-gradient(closest-side, color-mix(in srgb, var(--color-primary) 55%, transparent), transparent);
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--color-primary) 65%, transparent), transparent);
 }
 
 .glow-secondary {
-  background: radial-gradient(closest-side, color-mix(in srgb, var(--color-secondary) 55%, transparent), transparent);
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--color-secondary) 65%, transparent), transparent);
 }
 
 .card-hover {
@@ -73,9 +73,9 @@ body {
 }
 
 .card-hover:hover {
-  transform: translateY(-4px);
+  transform: translateY(-6px);
   border-color: var(--color-border-strong);
-  box-shadow: 0 20px 60px -20px rgb(0 0 0 / 0.6);
+  box-shadow: 0 28px 70px -24px rgb(0 0 0 / 0.7);
 }
 
 .reveal {
@@ -92,6 +92,17 @@ body {
     transform: none;
     animation: none;
   }
+}
+
+/* Same fade-up as .reveal, but time-based rather than scroll-linked — for
+   content that's already visible on load (hero, stats), where a
+   view-timeline's "entry" range may never be crossed if the user never
+   scrolls, which would leave it stuck at opacity:0. Use animation-delay
+   (inline style) to stagger a sequence of these. */
+.reveal-eager {
+  opacity: 0;
+  transform: translateY(24px);
+  animation: fade-up 700ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes fade-up {

@@ -15,8 +15,8 @@ export function StatsSection() {
   return (
     <section className="border-y border-border bg-surface/50">
       <div className="mx-auto grid max-w-5xl grid-cols-2 gap-6 px-6 py-10 text-center sm:grid-cols-4">
-        {stats.map((stat) => (
-          <div key={stat.v}>
+        {stats.map((stat, i) => (
+          <div key={stat.v} className="reveal-eager" style={{ animationDelay: `${i * 80}ms` }}>
             <p className="font-display text-3xl font-bold text-primary">{stat.k}</p>
             <p className="mt-1 text-xs uppercase tracking-widest text-muted">{stat.v}</p>
           </div>
