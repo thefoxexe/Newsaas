@@ -70,15 +70,23 @@ body {
   opacity: 0.5;
 }
 
-/* transition mechanic: "snap-cut" — outgoing scene pulls back into depth
-   (scale down + fade) instead of sliding, incoming scene snaps into focus
-   from slightly oversized, and a brief flat-color flash (.cut-flash below)
+/* transition mechanic: "snap-cut" — outgoing scene fades back, incoming
+   scene snaps into focus, and a brief flat-color flash (.cut-flash below)
    straddles each hard cut. Every scene is a full-viewport stack; only the
    currently-active one has non-zero opacity at any given seek time, so they
    never visually collide even though all 4 exist in the DOM simultaneously
-   (see index.html). opacity + scale only — same safe-for-determinism
-   family already proven in this codebase, no rotation or blur anywhere
-   near real embedded font glyphs. */
+   (see index.html).
+
+   translateY, not scale, on this full-viewport container specifically:
+   empirically found this session that scaling a full-viewport element
+   becomes a real determinism risk once combined with kinetic typography's
+   much higher total Animation count (~200 vs ~10) — reproduced via
+   artificial CPU load (a handful of `yes > /dev/null` processes), root-
+   caused by isolating scene container transform from kinetic typography
+   (each tested independently), confirmed fixed by switching to translateY
+   (3x stress-test MD5-identical afterward). Small elements scaling (the
+   .kt-unit letters below, light-gradient's card) remain in the proven-safe
+   family — it's specifically a full-viewport element that's the problem. */
 .scene {
   position: fixed;
   inset: 0;
@@ -91,7 +99,7 @@ body {
   padding: 10vw 9vw;
   text-align: center;
   opacity: 0;
-  transform: scale(1.04);
+  transform: translateY(2vh);
 }
 
 .scene-text {
@@ -136,22 +144,22 @@ body {
 @keyframes scene-in {
   0% {
     opacity: 0;
-    transform: scale(1.04);
+    transform: translateY(2vh);
   }
   100% {
     opacity: 1;
-    transform: scale(1);
+    transform: translateY(0);
   }
 }
 
 @keyframes scene-out {
   0% {
     opacity: 1;
-    transform: scale(1);
+    transform: translateY(0);
   }
   100% {
     opacity: 0;
-    transform: scale(0.96);
+    transform: translateY(-2vh);
   }
 }
 
