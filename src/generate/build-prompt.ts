@@ -28,11 +28,22 @@ export function buildGenerationPrompt(brandKit: BrandKit, textConstraints: TextC
     .map((p, i) => `  [${i}] ${p.title}${p.price ? ` (${p.price})` : ""} - ${p.description ?? "sans description"}`)
     .join("\n");
 
+  const businessTypeLabel =
+    brandKit.businessType === "ecommerce"
+      ? "e-commerce (vente de produits physiques)"
+      : brandKit.businessType === "saas"
+        ? "SaaS / logiciel"
+        : brandKit.businessType === "service"
+          ? "prestation de service"
+          : "inconnu";
+
   const user = `Voici les donnees extraites du site de la marque :
 
+Type d'activite detecte : ${businessTypeLabel}${brandKit.businessType === null ? " (deduis-le toi-meme si possible depuis les signaux ci-dessous : tagline, titres, services, url)" : ""}
 Tagline : ${brandKit.copy.tagline ?? "aucune"}
 Titres releves sur le site : ${brandKit.copy.headings.join(" | ") || "aucun"}
 Avis clients releves : ${brandKit.copy.reviewSnippets.join(" | ") || "aucun"}
+Services releves : ${brandKit.services.join(" | ") || "aucun"}
 Produits (index utilisable pour productImageIndex) :
 ${productLines || "  aucun produit detecte"}
 
@@ -40,7 +51,9 @@ Tache :
 1. Analyse le positionnement de cette marque.
 2. Propose ${CONCEPT_COUNT} concepts publicitaires distincts, chacun avec un angle different
    (ex: lever une objection, exploiter un avis client, jouer sur l'urgence, comparer, etc).
-3. Pour chaque concept, choisis le template le plus adapte a son angle :
+3. Pour chaque concept, choisis le template le plus adapte a son angle. Privilegie un template
+   pense pour le type d'activite detecte quand il correspond bien a l'angle, sans t'y forcer si un
+   autre template sert mieux cet angle precis :
 ${TEMPLATE_GUIDE}
 4. Chaque concept est decoupe en exactement 4 scenes courtes qui s'enchainent (pas une seule
    composition qui dure) : "hook" (accroche), "proof" (avis client ou argument choc), "feature"
