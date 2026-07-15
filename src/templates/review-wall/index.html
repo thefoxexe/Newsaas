@@ -1,0 +1,110 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div class="stage">
+      <div class="brand-badge" id="brand-badge">
+        <span class="brand-mark" id="brand-mark"></span>
+        <span class="brand-name" id="brand-name"></span>
+      </div>
+
+      <div class="scene" id="scene-hook" data-role="hook">
+        <p class="scene-text" id="text-hook"></p>
+      </div>
+      <div class="scene scene-proof" id="scene-proof" data-role="proof">
+        <span class="quote-glyph" aria-hidden="true">&ldquo;</span>
+        <span class="kicker">Avis client</span>
+        <p class="scene-text" id="text-proof"></p>
+      </div>
+      <div class="scene scene-feature" id="scene-feature" data-role="feature">
+        <p class="scene-text" id="text-feature"></p>
+        <ul class="service-list" id="service-list"></ul>
+      </div>
+      <div class="scene" id="scene-cta" data-role="cta">
+        <p class="scene-text" id="text-cta"></p>
+      </div>
+    </div>
+    <script id="reeljolt-data" type="application/json">__REELJOLT_DATA__</script>
+    <!-- __REELJOLT_SHARED_JS__ -->
+    <script>
+      (function () {
+        var data = JSON.parse(document.getElementById("reeljolt-data").textContent);
+        var root = document.documentElement;
+        root.style.setProperty("--color-primary", data.colors.primary);
+        root.style.setProperty("--color-secondary", data.colors.secondary);
+        root.style.setProperty("--color-background", data.colors.background);
+        root.style.setProperty("--color-text", data.colors.text);
+        root.style.setProperty(
+          "--font-heading",
+          "'" + (data.typography.headingGoogleFontMatch || data.typography.headingFamily) + "', " + data.typography.fallbackStack,
+        );
+        root.style.setProperty(
+          "--font-body",
+          "'" + (data.typography.bodyGoogleFontMatch || data.typography.bodyFamily) + "', " + data.typography.fallbackStack,
+        );
+
+        function fillBrandMark(markEl, nameEl) {
+          if (data.logoUrl) {
+            var img = document.createElement("img");
+            img.src = data.logoUrl;
+            markEl.appendChild(img);
+          } else {
+            markEl.textContent = data.brandName.charAt(0).toUpperCase();
+          }
+          nameEl.textContent = data.brandName;
+        }
+        fillBrandMark(document.getElementById("brand-mark"), document.getElementById("brand-name"));
+
+        data.scenes.forEach(function (scene) {
+          var textEl = document.getElementById("text-" + scene.role);
+          // Char-level everywhere except the feature scene's injected
+          // service-list items (rendered separately below, word-level).
+          // Highlight mechanic: a colored left-border blockquote bar (8th
+          // distinct technique) on the .hl wrapper.
+          if (textEl) window.__reeljoltRenderKineticText(textEl, scene, { splitUnit: "char", highlightTag: "span", highlightClass: "hl" });
+        });
+
+        // Two-level degrade, no fabricated data: real services[] first (the
+        // marketing-relevant list), then real reviewSnippets[] if there are
+        // no services, then nothing extra (the feature scene's own
+        // scene-text already covers that case on its own, same idiom as
+        // every other template's no-extra-content fallback).
+        var items = (data.services && data.services.length > 0 ? data.services : data.reviewSnippets || []).slice(0, 5);
+        var list = document.getElementById("service-list");
+        items.forEach(function (item, i) {
+          var li = document.createElement("li");
+          li.className = "service-item";
+          var check = document.createElement("span");
+          check.className = "service-check";
+          check.textContent = "✓";
+          li.appendChild(check);
+          var textSpan = document.createElement("span");
+          li.appendChild(textSpan);
+          list.appendChild(li);
+          window.__reeljoltRenderKineticText(
+            textSpan,
+            { role: "feature", text: item, highlight: null },
+            { splitUnit: "word", highlightTag: "span", highlightClass: "hl", startOffsetMs: i * 300 },
+          );
+        });
+        if (items.length === 0) list.remove();
+
+        document.fonts.ready.then(function () {
+          document.getAnimations().forEach(function (animation) {
+            animation.pause();
+          });
+
+          window.__reeljoltSeek = function (ms) {
+            document.getAnimations().forEach(function (animation) {
+              animation.currentTime = ms;
+            });
+          };
+          window.__reeljoltReady = true;
+        });
+      })();
+    </script>
+  </body>
+</html>

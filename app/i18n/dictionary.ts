@@ -69,11 +69,25 @@ type Dictionary = {
       chooseTemplate: string;
       chooseFormat: string;
       names: Record<
-        "dark-neon" | "light-gradient" | "color-blocks" | "editorial" | "split-duotone" | "unboxed" | "browser-frame",
+        | "dark-neon"
+        | "light-gradient"
+        | "color-blocks"
+        | "editorial"
+        | "split-duotone"
+        | "unboxed"
+        | "browser-frame"
+        | "review-wall",
         string
       >;
       descriptions: Record<
-        "dark-neon" | "light-gradient" | "color-blocks" | "editorial" | "split-duotone" | "unboxed" | "browser-frame",
+        | "dark-neon"
+        | "light-gradient"
+        | "color-blocks"
+        | "editorial"
+        | "split-duotone"
+        | "unboxed"
+        | "browser-frame"
+        | "review-wall",
         string
       >;
     };
@@ -318,6 +332,7 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
           "split-duotone": "Split duotone",
           unboxed: "Unboxed",
           "browser-frame": "Browser frame",
+          "review-wall": "Review wall",
         },
         descriptions: {
           "dark-neon": "Bold dark scenes with a punchy accent color, one word at a time.",
@@ -327,6 +342,7 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
           "split-duotone": "Screen split into two fixed color zones, bracketed keyword tags.",
           unboxed: "Full-bleed product photo, ticket-style price tag, kraft-paper tones.",
           "browser-frame": "Browser mockup framing a real screenshot of your site, clean and airy.",
+          "review-wall": "Testimonial style with a checklist of your services, warm and trustworthy.",
         },
       },
     },
@@ -564,6 +580,7 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
           "split-duotone": "Duotone divisé",
           unboxed: "Déballage",
           "browser-frame": "Fenêtre navigateur",
+          "review-wall": "Mur d'avis",
         },
         descriptions: {
           "dark-neon": "Scènes sombres percutantes, un mot en couleur à la fois.",
@@ -573,6 +590,7 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
           "split-duotone": "Écran divisé en deux zones de couleur fixes, mots-clés entre crochets.",
           unboxed: "Photo produit plein cadre, étiquette de prix façon ticket, tons papier kraft.",
           "browser-frame": "Mockup de navigateur encadrant une vraie capture de votre site, épuré et aéré.",
+          "review-wall": "Style témoignage avec liste de prestations, chaleureux et rassurant.",
         },
       },
     },
@@ -810,6 +828,7 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
           "split-duotone": "Geteilt duoton",
           unboxed: "Ausgepackt",
           "browser-frame": "Browserfenster",
+          "review-wall": "Bewertungswand",
         },
         descriptions: {
           "dark-neon": "Wirkungsvolle dunkle Szenen, ein Wort nach dem anderen in Akzentfarbe.",
@@ -819,6 +838,7 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
           "split-duotone": "Bildschirm in zwei feste Farbzonen geteilt, Schlüsselwörter in Klammern.",
           unboxed: "Produktfoto randlos im Hintergrund, Preisschild im Ticket-Stil, Kraftpapier-Töne.",
           "browser-frame": "Browser-Mockup mit echtem Screenshot deiner Website, clean und luftig.",
+          "review-wall": "Testimonial-Stil mit Leistungs-Checkliste, warm und vertrauenswürdig.",
         },
       },
     },

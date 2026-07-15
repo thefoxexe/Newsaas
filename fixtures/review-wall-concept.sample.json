@@ -1,0 +1,11 @@
+{
+  "id": "concept-review-wall",
+  "angle": "temoignage client",
+  "recommendedTemplate": "review-wall",
+  "scenes": [
+    { "role": "hook", "text": "Une fuite qui ne peut plus attendre ?", "highlight": "attendre", "productImageIndex": null },
+    { "role": "proof", "text": "Intervention rapide et soignee", "highlight": "rapide", "productImageIndex": null },
+    { "role": "feature", "text": "Tout ce qu'on fait pour vous", "highlight": null, "productImageIndex": null },
+    { "role": "cta", "text": "Demandez votre devis gratuit", "highlight": "gratuit", "productImageIndex": null }
+  ]
+}

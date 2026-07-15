@@ -18,6 +18,7 @@ const BuildableTemplateIdSchema = z.enum([
   "split-duotone",
   "unboxed",
   "browser-frame",
+  "review-wall",
 ]);
 
 const CreateRenderSchema = z.object({

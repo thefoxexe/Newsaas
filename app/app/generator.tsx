@@ -22,7 +22,8 @@ type TemplateId =
   | "editorial"
   | "split-duotone"
   | "unboxed"
-  | "browser-frame";
+  | "browser-frame"
+  | "review-wall";
 
 type SceneRole = "hook" | "proof" | "feature" | "cta";
 
@@ -64,6 +65,7 @@ const TEMPLATES: Array<{ id: TemplateId; previewSrc: string }> = [
   { id: "split-duotone", previewSrc: "/template-previews/split-duotone.png" },
   { id: "unboxed", previewSrc: "/template-previews/unboxed.png" },
   { id: "browser-frame", previewSrc: "/template-previews/browser-frame.png" },
+  { id: "review-wall", previewSrc: "/template-previews/review-wall.png" },
 ];
 
 type GeneratorText = (typeof DICTIONARY)[Locale]["generator"];

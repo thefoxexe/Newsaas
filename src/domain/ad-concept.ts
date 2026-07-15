@@ -8,6 +8,7 @@ export const TEMPLATE_IDS = [
   "split-duotone",
   "unboxed",
   "browser-frame",
+  "review-wall",
 ] as const;
 
 export const TemplateIdSchema = z.enum(TEMPLATE_IDS);

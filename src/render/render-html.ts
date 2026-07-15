@@ -24,6 +24,11 @@ type TemplateData = {
   // SaaS-vertical "browser-frame" template uses this; every other template
   // just ignores it.
   screenshotUrl: string | null;
+  // Service-vertical "review-wall" template's feature-scene list, degrading
+  // to reviewSnippets then to plain scene text when both are empty (see
+  // that template's own index.html) — every other template ignores both.
+  services: string[];
+  reviewSnippets: string[];
   angle: string;
   // Fixed 4-entry sequence (hook/proof/feature/cta) — each scene resolves
   // its own product independently (only ever populated on the "feature"
@@ -69,6 +74,8 @@ export function renderTemplateHtml(
     brandName: deriveBrandName(brandKit.sourceUrl),
     logoUrl: brandKit.logo?.url ?? null,
     screenshotUrl: brandKit.screenshotUrl,
+    services: brandKit.services,
+    reviewSnippets: brandKit.copy.reviewSnippets,
     angle: concept.angle,
     scenes: concept.scenes.map((scene) => ({
       role: scene.role,

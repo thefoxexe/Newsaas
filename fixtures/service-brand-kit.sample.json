@@ -1,0 +1,33 @@
+{
+  "sourceUrl": "https://example-agence.com",
+  "colors": {
+    "primary": "#C4622D",
+    "secondary": "#8A5A3B",
+    "background": "#FBF6EF",
+    "text": "#2E2620",
+    "accent": null,
+    "confidence": 0.75
+  },
+  "typography": {
+    "headingFamily": "Georgia",
+    "bodyFamily": "Georgia",
+    "googleFontMatch": null,
+    "fallbackStack": "serif"
+  },
+  "logo": null,
+  "products": [],
+  "copy": {
+    "tagline": "Votre plomberie, notre metier",
+    "headings": ["Intervention sous 24h", "Devis gratuit"],
+    "reviewSnippets": ["Intervention rapide et soignee", "Tarifs honnetes, je recommande"]
+  },
+  "services": [
+    "Depannage urgence 24h/24",
+    "Installation sanitaire complete",
+    "Renovation salle de bain",
+    "Detection de fuite",
+    "Entretien chaudiere"
+  ],
+  "businessType": "service",
+  "screenshotUrl": null
+}

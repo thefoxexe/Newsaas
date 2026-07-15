@@ -84,8 +84,18 @@ window.__reeljoltRenderKineticText = function (el, scene, config) {
   var windowEndMs = nextStartVar ? cssMs(nextStartVar) : cssMs("--tl-total-duration");
   var sceneWindowMs = Math.max(0, windowEndMs - roleStartMs - inDurMs - outDurMs);
 
+  // Optional extra delay before this call's own stagger begins, on top of
+  // the scene's own start — lets a caller render several independent
+  // kinetic-text calls against the same role (e.g. review-wall's
+  // checkmark list, one call per list item) so each one's reveal is
+  // offset from the last instead of all starting simultaneously. Zero by
+  // default, which reproduces every existing single-call template's
+  // behavior exactly (no behavior change for them).
+  var extraOffsetMs = config.startOffsetMs || 0;
+  sceneWindowMs = Math.max(0, sceneWindowMs - extraOffsetMs);
+
   var staggerMs = totalUnits > 0 ? Math.min(BASE_STAGGER_MS, sceneWindowMs / totalUnits) : BASE_STAGGER_MS;
-  var baseDelayMs = roleStartMs + inDurMs;
+  var baseDelayMs = roleStartMs + inDurMs + extraOffsetMs;
 
   var unitIndex = 0;
 
