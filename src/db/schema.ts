@@ -15,6 +15,9 @@ export const templateIdEnum = pgEnum("template_id", [
   "color-blocks",
   "editorial",
   "split-duotone",
+  "unboxed",
+  "browser-frame",
+  "review-wall",
 ]);
 
 export const formatEnum = pgEnum("format", ["9:16", "1:1", "16:9"]);

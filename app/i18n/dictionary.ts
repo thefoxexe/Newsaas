@@ -68,8 +68,8 @@ type Dictionary = {
       recommended: string;
       chooseTemplate: string;
       chooseFormat: string;
-      names: Record<"dark-neon" | "light-gradient" | "color-blocks" | "editorial" | "split-duotone", string>;
-      descriptions: Record<"dark-neon" | "light-gradient" | "color-blocks" | "editorial" | "split-duotone", string>;
+      names: Record<"dark-neon" | "light-gradient" | "color-blocks" | "editorial" | "split-duotone" | "unboxed", string>;
+      descriptions: Record<"dark-neon" | "light-gradient" | "color-blocks" | "editorial" | "split-duotone" | "unboxed", string>;
     };
   };
   libraryPage: {
@@ -310,6 +310,7 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
           "color-blocks": "Color blocks",
           editorial: "Editorial",
           "split-duotone": "Split duotone",
+          unboxed: "Unboxed",
         },
         descriptions: {
           "dark-neon": "Bold dark scenes with a punchy accent color, one word at a time.",
@@ -317,6 +318,7 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
           "color-blocks": "Every scene in its own bold flat color, marker-style highlights.",
           editorial: "Left-aligned, restrained typography, italic emphasis — a magazine feel.",
           "split-duotone": "Screen split into two fixed color zones, bracketed keyword tags.",
+          unboxed: "Full-bleed product photo, ticket-style price tag, kraft-paper tones.",
         },
       },
     },
@@ -552,6 +554,7 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
           "color-blocks": "Aplats de couleur",
           editorial: "Éditorial",
           "split-duotone": "Duotone divisé",
+          unboxed: "Déballage",
         },
         descriptions: {
           "dark-neon": "Scènes sombres percutantes, un mot en couleur à la fois.",
@@ -559,6 +562,7 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
           "color-blocks": "Chaque scène dans son propre aplat de couleur, mots surlignés au marqueur.",
           editorial: "Aligné à gauche, typographie sobre, accent en italique — esprit magazine.",
           "split-duotone": "Écran divisé en deux zones de couleur fixes, mots-clés entre crochets.",
+          unboxed: "Photo produit plein cadre, étiquette de prix façon ticket, tons papier kraft.",
         },
       },
     },
@@ -794,6 +798,7 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
           "color-blocks": "Farbblöcke",
           editorial: "Editorial",
           "split-duotone": "Geteilt duoton",
+          unboxed: "Ausgepackt",
         },
         descriptions: {
           "dark-neon": "Wirkungsvolle dunkle Szenen, ein Wort nach dem anderen in Akzentfarbe.",
@@ -801,6 +806,7 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
           "color-blocks": "Jede Szene in ihrer eigenen kräftigen Farbe, Textmarker-Hervorhebung.",
           editorial: "Linksbündig, zurückhaltende Typografie, Betonung kursiv — Magazin-Gefühl.",
           "split-duotone": "Bildschirm in zwei feste Farbzonen geteilt, Schlüsselwörter in Klammern.",
+          unboxed: "Produktfoto randlos im Hintergrund, Preisschild im Ticket-Stil, Kraftpapier-Töne.",
         },
       },
     },

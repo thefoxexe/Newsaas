@@ -4,6 +4,7 @@ import lightGradientManifestJson from "../templates/light-gradient/manifest.json
 import colorBlocksManifestJson from "../templates/color-blocks/manifest.json";
 import editorialManifestJson from "../templates/editorial/manifest.json";
 import splitDuotoneManifestJson from "../templates/split-duotone/manifest.json";
+import unboxedManifestJson from "../templates/unboxed/manifest.json";
 
 // Bundled as static JSON (not read from disk at runtime) specifically so
 // this is safe to import from a Next.js API route running on a serverless
@@ -16,6 +17,7 @@ const MANIFESTS: Record<string, TemplateManifest> = {
   "color-blocks": TemplateManifestSchema.parse(colorBlocksManifestJson),
   editorial: TemplateManifestSchema.parse(editorialManifestJson),
   "split-duotone": TemplateManifestSchema.parse(splitDuotoneManifestJson),
+  unboxed: TemplateManifestSchema.parse(unboxedManifestJson),
 };
 
 export function getTemplateManifest(templateId: string): TemplateManifest {

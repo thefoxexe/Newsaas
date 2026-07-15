@@ -1,0 +1,105 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div class="stage">
+      <div class="brand-badge" id="brand-badge">
+        <span class="brand-mark" id="brand-mark"></span>
+        <span class="brand-name" id="brand-name"></span>
+      </div>
+      <div class="swatch-tag"></div>
+
+      <div class="scene" id="scene-hook" data-role="hook">
+        <p class="scene-text" id="text-hook"></p>
+      </div>
+      <div class="scene" id="scene-proof" data-role="proof">
+        <p class="scene-text" id="text-proof"></p>
+      </div>
+      <div class="scene scene-feature" id="scene-feature" data-role="feature">
+        <img class="feature-photo-bg" id="feature-photo" alt="" />
+        <div class="feature-caption-bar">
+          <span class="feature-chip" id="feature-chip"></span>
+          <p class="scene-text" id="text-feature"></p>
+        </div>
+      </div>
+      <div class="scene scene-cta" id="scene-cta" data-role="cta">
+        <p class="scene-text" id="text-cta"></p>
+      </div>
+    </div>
+    <script id="reeljolt-data" type="application/json">__REELJOLT_DATA__</script>
+    <!-- __REELJOLT_SHARED_JS__ -->
+    <script>
+      (function () {
+        var data = JSON.parse(document.getElementById("reeljolt-data").textContent);
+        var root = document.documentElement;
+        root.style.setProperty("--color-primary", data.colors.primary);
+        root.style.setProperty("--color-secondary", data.colors.secondary);
+        root.style.setProperty("--color-background", data.colors.background);
+        root.style.setProperty("--color-text", data.colors.text);
+        root.style.setProperty(
+          "--font-heading",
+          "'" + (data.typography.headingGoogleFontMatch || data.typography.headingFamily) + "', " + data.typography.fallbackStack,
+        );
+        root.style.setProperty(
+          "--font-body",
+          "'" + (data.typography.bodyGoogleFontMatch || data.typography.bodyFamily) + "', " + data.typography.fallbackStack,
+        );
+
+        function fillBrandMark(markEl, nameEl) {
+          if (data.logoUrl) {
+            var img = document.createElement("img");
+            img.src = data.logoUrl;
+            markEl.appendChild(img);
+          } else {
+            markEl.textContent = data.brandName.charAt(0).toUpperCase();
+          }
+          nameEl.textContent = data.brandName;
+        }
+        fillBrandMark(document.getElementById("brand-mark"), document.getElementById("brand-name"));
+
+        data.scenes.forEach(function (scene) {
+          var textEl = document.getElementById("text-" + scene.role);
+          // Kinetic typography (see _shared/kinetic-text.js), char-level for
+          // an energetic, unboxing-reveal feel. Highlight mechanic: an
+          // underline bar draws in under the word (see style.css) instead
+          // of color/box/italic/brackets — a 6th distinct technique.
+          if (textEl) window.__reeljoltRenderKineticText(textEl, scene, { splitUnit: "char", highlightTag: "span", highlightClass: "hl" });
+
+          if (scene.role === "feature") {
+            var photoEl = document.getElementById("feature-photo");
+            var chipEl = document.getElementById("feature-chip");
+            if (scene.product) {
+              photoEl.src = scene.product.imageUrl;
+              if (scene.product.price) {
+                chipEl.textContent = scene.product.price;
+              } else {
+                chipEl.remove();
+              }
+            } else {
+              // Graceful degrade, same idiom as every other template: no
+              // product means a text-only beat, not a broken layout.
+              photoEl.remove();
+              chipEl.remove();
+            }
+          }
+        });
+
+        document.fonts.ready.then(function () {
+          document.getAnimations().forEach(function (animation) {
+            animation.pause();
+          });
+
+          window.__reeljoltSeek = function (ms) {
+            document.getAnimations().forEach(function (animation) {
+              animation.currentTime = ms;
+            });
+          };
+          window.__reeljoltReady = true;
+        });
+      })();
+    </script>
+  </body>
+</html>
