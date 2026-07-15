@@ -66,11 +66,14 @@ body {
   color: var(--color-text);
 }
 
-/* Every scene is a full-viewport stack, each with its OWN flat
-   background-color (unlike dark-neon/light-gradient, which share one
-   stage background) — that per-scene color swap is what gives this
-   template its "color-blocking" cut feel between beats. translateY +
-   opacity only, same proven mechanic. */
+/* transition mechanic: panel wipe — each scene reveals its own flat
+   background-color left-to-right via an animated clip-path (empirically
+   verified deterministic under concurrent load this session, see commit
+   history), reinforcing this template's "color-blocking" identity harder
+   than a plain cross-fade would. Every scene is a full-viewport stack,
+   each with its OWN flat background-color (unlike dark-neon/light-
+   gradient, which share one stage background). clip-path: inset() is
+   axis-aligned geometry only — no gradient, no blur, no rotate. */
 .scene {
   position: fixed;
   inset: 0;
@@ -82,8 +85,7 @@ body {
   gap: 2vh;
   padding: 10vw 9vw;
   text-align: center;
-  opacity: 0;
-  transform: translateY(2vh);
+  clip-path: inset(0 100% 0 0);
 }
 
 .scene-text {
@@ -153,44 +155,45 @@ body {
 
 @keyframes scene-in {
   0% {
-    opacity: 0;
-    transform: translateY(2vh);
+    clip-path: inset(0 100% 0 0);
   }
   100% {
-    opacity: 1;
-    transform: translateY(0);
+    clip-path: inset(0 0 0 0);
   }
 }
 
+/* Wipes off in the same left-to-right direction the incoming panel wipes
+   in, so it reads as one continuous sweep across both scenes rather than
+   two independent transitions. */
 @keyframes scene-out {
   0% {
-    opacity: 1;
-    transform: translateY(0);
+    clip-path: inset(0 0 0 0);
   }
   100% {
-    opacity: 0;
-    transform: translateY(-2vh);
+    clip-path: inset(0 0 0 100%);
   }
 }
 
 /* Timeline (15000ms total, 4 scenes): hook 0-3500, proof 3500-7000,
-   feature 7000-10500, cta 10500-15000 (holds to the end). */
+   feature 7000-10500, cta 10500-15000 (holds to the end). Offsets/
+   durations reference the shared timeline vars (see
+   src/templates/_shared/timeline.css). */
 #scene-hook {
   animation:
-    scene-in 450ms ease-out 0ms forwards,
-    scene-out 350ms ease-in 3150ms forwards;
+    scene-in var(--tl-in-dur) ease-out var(--tl-hook-start) forwards,
+    scene-out var(--tl-out-dur) ease-in var(--tl-hook-out) forwards;
 }
 
 #scene-proof {
   animation:
-    scene-in 450ms ease-out 3500ms forwards,
-    scene-out 350ms ease-in 6650ms forwards;
+    scene-in var(--tl-in-dur) ease-out var(--tl-proof-start) forwards,
+    scene-out var(--tl-out-dur) ease-in var(--tl-proof-out) forwards;
 }
 
 #scene-feature {
   animation:
-    scene-in 450ms ease-out 7000ms forwards,
-    scene-out 350ms ease-in 10150ms forwards;
+    scene-in var(--tl-in-dur) ease-out var(--tl-feature-start) forwards,
+    scene-out var(--tl-out-dur) ease-in var(--tl-feature-out) forwards;
 }
 
 .feature-photo {
@@ -214,8 +217,8 @@ body {
 #scene-cta {
   z-index: 10;
   animation:
-    scene-in 450ms ease-out 10500ms forwards,
-    cta-nudge 900ms ease-in-out 11500ms infinite;
+    scene-in var(--tl-in-dur) ease-out var(--tl-cta-start) forwards,
+    cta-nudge 900ms ease-in-out calc(var(--tl-cta-start) + 1000ms) infinite;
 }
 
 @keyframes cta-nudge {
