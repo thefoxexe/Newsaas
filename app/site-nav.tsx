@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { LOCALES, LOCALE_LABELS } from "./i18n/dictionary";
 import { useLanguage } from "./i18n/language-context";
+import { LocaleSwitcher } from "./locale-switcher";
+import { LandingMobileNav } from "./landing-mobile-nav";
 
 export function SiteNav() {
-  const { locale, setLocale, t } = useLanguage();
+  const { t } = useLanguage();
 
   const links = [
     { href: "#demos", label: t.nav.demos },
@@ -32,20 +33,7 @@ export function SiteNav() {
         </nav>
 
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1 rounded-pill border border-border p-0.5 text-xs font-semibold text-muted">
-            {LOCALES.map((code) => (
-              <button
-                key={code}
-                type="button"
-                onClick={() => setLocale(code)}
-                className={`rounded-pill px-2 py-1 transition-colors ${
-                  locale === code ? "bg-primary text-primary-foreground" : "hover:text-foreground"
-                }`}
-              >
-                {LOCALE_LABELS[code]}
-              </button>
-            ))}
-          </div>
+          <LocaleSwitcher />
           <Link href="/sign-in" className="hidden text-sm font-medium text-muted transition-colors hover:text-foreground sm:block">
             {t.nav.signIn}
           </Link>
@@ -55,6 +43,13 @@ export function SiteNav() {
           >
             {t.nav.cta}
           </Link>
+          <LandingMobileNav
+            items={links}
+            signInLabel={t.nav.signIn}
+            signInHref="/sign-in"
+            ctaLabel={t.nav.cta}
+            ctaHref="/sign-up"
+          />
         </div>
       </div>
     </header>
