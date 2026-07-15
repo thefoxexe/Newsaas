@@ -131,6 +131,32 @@ body {
   animation: text-reveal 500ms ease-out calc(var(--tl-cta-start) + 100ms) forwards;
 }
 
+/* Kinetic typography: each letter pops in individually (opacity + translate
+   + scale only), staggered per-unit via an inline animation-delay set in
+   _shared/kinetic-text.js. Layers on top of the clip-path masked reveal
+   above — by the time a given letter's own stagger delay fires, the clip
+   window has long since swept past its position for anything but the very
+   first few letters of a scene. */
+.kt-unit {
+  display: inline-block;
+  opacity: 0;
+  animation-name: letter-pop;
+  animation-duration: 260ms;
+  animation-timing-function: ease-out;
+  animation-fill-mode: both;
+}
+
+@keyframes letter-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(0.4em) scale(0.92);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 /* Emphasis via italic + color instead of a filled highlight — the
    "editorial pull-quote" technique, distinct from every other template's
    flat color-block/highlighter mechanic. */
