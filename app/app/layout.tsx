@@ -6,6 +6,7 @@ import { db } from "@/src/db/client";
 import { hasCompletedPlanSelection } from "@/src/entitlements/get-user-plan";
 import { AppLanguageSwitcher } from "./app-language-switcher";
 import { MobileNav } from "./mobile-nav";
+import { ProfileButton } from "./profile-button";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const session = await getCurrentSession();
@@ -50,6 +51,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
           <div className="flex shrink-0 items-center gap-2">
             <AppLanguageSwitcher locale={locale} />
+            <ProfileButton name={session.user.name} email={session.user.email} label={t.appNav.settings} />
             <MobileNav items={NAV} />
           </div>
         </div>

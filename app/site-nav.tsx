@@ -37,9 +37,14 @@ export function SiteNav() {
           <Link href="/sign-in" className="hidden text-sm font-medium text-muted transition-colors hover:text-foreground sm:block">
             {t.nav.signIn}
           </Link>
+          {/* Hidden below sm: at narrow phone widths there isn't room for
+              logo + locale dropdown + this button + hamburger on one row,
+              and longer translations (French/German) wrap inside the pill
+              instead of fitting on one line. The mobile menu below already
+              has its own full-width CTA, so nothing is lost. */}
           <Link
             href="/sign-up"
-            className="rounded-pill bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-transform hover:scale-[1.03]"
+            className="hidden rounded-pill bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-transform hover:scale-[1.03] sm:block"
           >
             {t.nav.cta}
           </Link>
