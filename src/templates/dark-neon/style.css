@@ -70,13 +70,15 @@ body {
   opacity: 0.5;
 }
 
-/* Every scene is a full-viewport stack; only the currently-active one has
-   non-zero opacity at any given seek time, so they never visually collide
-   even though all 4 exist in the DOM simultaneously (see index.html — this
-   is what actually fills the full duration with movement, replacing the
-   old single-composition-that-holds approach). translateY + opacity only —
-   same safe-for-determinism family already proven in this codebase, no
-   rotation or blur anywhere near real embedded font glyphs. */
+/* transition mechanic: "snap-cut" — outgoing scene pulls back into depth
+   (scale down + fade) instead of sliding, incoming scene snaps into focus
+   from slightly oversized, and a brief flat-color flash (.cut-flash below)
+   straddles each hard cut. Every scene is a full-viewport stack; only the
+   currently-active one has non-zero opacity at any given seek time, so they
+   never visually collide even though all 4 exist in the DOM simultaneously
+   (see index.html). opacity + scale only — same safe-for-determinism
+   family already proven in this codebase, no rotation or blur anywhere
+   near real embedded font glyphs. */
 .scene {
   position: fixed;
   inset: 0;
@@ -89,7 +91,7 @@ body {
   padding: 10vw 9vw;
   text-align: center;
   opacity: 0;
-  transform: translateY(2vh);
+  transform: scale(1.04);
 }
 
 .scene-text {
@@ -109,43 +111,73 @@ body {
 @keyframes scene-in {
   0% {
     opacity: 0;
-    transform: translateY(2vh);
+    transform: scale(1.04);
   }
   100% {
     opacity: 1;
-    transform: translateY(0);
+    transform: scale(1);
   }
 }
 
 @keyframes scene-out {
   0% {
     opacity: 1;
-    transform: translateY(0);
+    transform: scale(1);
   }
   100% {
     opacity: 0;
-    transform: translateY(-2vh);
+    transform: scale(0.96);
   }
 }
 
 /* Timeline (15000ms total, 4 scenes): hook 0-3500, proof 3500-7000,
-   feature 7000-10500, cta 10500-15000 (holds to the end, no scene-out). */
+   feature 7000-10500, cta 10500-15000 (holds to the end, no scene-out).
+   Offsets/durations reference the shared timeline vars (see
+   src/templates/_shared/timeline.css) instead of duplicating the literal
+   timestamps. */
 #scene-hook {
   animation:
-    scene-in 450ms ease-out 0ms forwards,
-    scene-out 350ms ease-in 3150ms forwards;
+    scene-in var(--tl-in-dur) ease-out var(--tl-hook-start) forwards,
+    scene-out var(--tl-out-dur) ease-in var(--tl-hook-out) forwards;
 }
 
 #scene-proof {
   animation:
-    scene-in 450ms ease-out 3500ms forwards,
-    scene-out 350ms ease-in 6650ms forwards;
+    scene-in var(--tl-in-dur) ease-out var(--tl-proof-start) forwards,
+    scene-out var(--tl-out-dur) ease-in var(--tl-proof-out) forwards;
 }
 
 #scene-feature {
   animation:
-    scene-in 450ms ease-out 7000ms forwards,
-    scene-out 350ms ease-in 10150ms forwards;
+    scene-in var(--tl-in-dur) ease-out var(--tl-feature-start) forwards,
+    scene-out var(--tl-out-dur) ease-in var(--tl-feature-out) forwards;
+}
+
+/* Flat-color flash (opacity only, no blur/gradient) that pops for ~180ms
+   centered on each of the 3 hard cuts between scenes, sitting above every
+   scene (including the CTA block) but below the persistent brand badge —
+   the badge should never wash out. */
+.cut-flash {
+  position: fixed;
+  inset: 0;
+  z-index: 12;
+  background: var(--color-primary);
+  opacity: 0;
+  pointer-events: none;
+  animation:
+    cut-flash 180ms linear calc(var(--tl-proof-start) - 90ms),
+    cut-flash 180ms linear calc(var(--tl-feature-start) - 90ms),
+    cut-flash 180ms linear calc(var(--tl-cta-start) - 90ms);
+}
+
+@keyframes cut-flash {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.35;
+  }
 }
 
 .feature-photo {
@@ -174,8 +206,8 @@ body {
   z-index: 10;
   background: var(--color-primary);
   animation:
-    scene-in 450ms ease-out 10500ms forwards,
-    cta-nudge 900ms ease-in-out 11500ms infinite;
+    scene-in var(--tl-in-dur) ease-out var(--tl-cta-start) forwards,
+    cta-nudge 900ms ease-in-out calc(var(--tl-cta-start) + 1000ms) infinite;
 }
 
 /* --color-background as text color only works here because the CTA's own

@@ -1,0 +1,22 @@
+/* Shared scene timeline (15000ms total, 4 scenes): hook 0-3500, proof
+   3500-7000, feature 7000-10500, cta 10500-15000 (holds to the end, no
+   scene-out). Every template's transition keyframes reference these
+   instead of duplicating the literal timestamps — the timeline itself is
+   identical across all 5 templates, only the transition mechanic differs
+   per template's own style.css. CSS custom properties resolve before
+   paint, so referencing them from animation-delay/animation-duration
+   carries none of the GPU-rasterization determinism risk documented for
+   gradients/blur/rotate elsewhere in this codebase. */
+:root {
+  --tl-hook-start: 0ms;
+  --tl-proof-start: 3500ms;
+  --tl-feature-start: 7000ms;
+  --tl-cta-start: 10500ms;
+
+  --tl-hook-out: 3150ms;
+  --tl-proof-out: 6650ms;
+  --tl-feature-out: 10150ms;
+
+  --tl-in-dur: 450ms;
+  --tl-out-dur: 350ms;
+}
