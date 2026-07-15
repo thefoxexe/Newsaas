@@ -22,9 +22,12 @@ export function PricingSection() {
             <div
               key={plan.id}
               className={`reveal card-hover relative flex flex-col rounded-card border p-8 ${
-                plan.highlight ? "border-primary bg-surface-elevated" : "border-border bg-surface"
+                plan.highlight ? "border-primary bg-surface-elevated sm:-translate-y-2 sm:scale-[1.03]" : "border-border bg-surface"
               }`}
             >
+              {plan.highlight && (
+                <div aria-hidden className="glow-primary pointer-events-none absolute inset-x-0 -top-10 -z-10 h-32 opacity-40 blur-2xl" />
+              )}
               {plan.highlight && (
                 <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-pill bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">
                   {t.pricing.popular}
