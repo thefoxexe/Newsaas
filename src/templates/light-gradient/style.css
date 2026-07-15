@@ -144,33 +144,41 @@ body {
 }
 
 /* Timeline (15000ms total, 4 scenes): hook 0-3500, proof 3500-7000,
-   feature 7000-10500, cta 10500-15000 (holds to the end, no scene-out). */
+   feature 7000-10500, cta 10500-15000 (holds to the end, no scene-out).
+   Offsets/durations reference the shared timeline vars (see
+   src/templates/_shared/timeline.css). */
 #scene-hook {
   animation:
-    scene-in 450ms ease-out 0ms forwards,
-    scene-out 350ms ease-in 3150ms forwards;
+    scene-in var(--tl-in-dur) ease-out var(--tl-hook-start) forwards,
+    scene-out var(--tl-out-dur) ease-in var(--tl-hook-out) forwards;
 }
 
 #scene-proof {
   animation:
-    scene-in 450ms ease-out 3500ms forwards,
-    scene-out 350ms ease-in 6650ms forwards;
+    scene-in var(--tl-in-dur) ease-out var(--tl-proof-start) forwards,
+    scene-out var(--tl-out-dur) ease-in var(--tl-proof-out) forwards;
 }
 
 #scene-feature {
   animation:
-    scene-in 450ms ease-out 7000ms forwards,
-    scene-out 350ms ease-in 10150ms forwards;
+    scene-in var(--tl-in-dur) ease-out var(--tl-feature-start) forwards,
+    scene-out var(--tl-out-dur) ease-in var(--tl-feature-out) forwards;
 }
 
 #scene-cta {
-  animation: scene-in 450ms ease-out 10500ms forwards;
+  animation: scene-in var(--tl-in-dur) ease-out var(--tl-cta-start) forwards;
 }
 
-/* Empirically verified this session (3x repeated render, byte-identical
-   frames under concurrent load) before relying on it: a static box-shadow
-   blur radius on a translate/scale/opacity-animated element is stable,
-   unlike a blur() filter or a gradient background-image. */
+/* transition mechanic: the card drifts in on its own diagonal trajectory
+   (translate + scale, never rotate — a diagonal translate vector stays
+   axis-aligned at the edges, unlike rotate(), which is in the documented
+   risky family) instead of just inheriting the parent scene's plain
+   translateY fade, so it reads as its own composed element arriving
+   rather than the whole scene sliding as one block. Empirically verified
+   this session (3x repeated render, byte-identical frames under
+   concurrent load) before relying on it: a static box-shadow blur radius
+   on a translate/scale/opacity-animated element is stable, unlike a
+   blur() filter or a gradient background-image. */
 .feature-card {
   position: relative;
   width: 66vw;
@@ -183,6 +191,33 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 2vh;
+  opacity: 0;
+  transform: translate(18vw, 10vh) scale(0.82);
+  animation:
+    card-drift-in 550ms cubic-bezier(0.16, 1, 0.3, 1) var(--tl-feature-start) forwards,
+    card-drift-out var(--tl-out-dur) ease-in var(--tl-feature-out) forwards;
+}
+
+@keyframes card-drift-in {
+  0% {
+    opacity: 0;
+    transform: translate(18vw, 10vh) scale(0.82);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+}
+
+@keyframes card-drift-out {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-14vw, -8vh) scale(0.9);
+  }
 }
 
 .feature-photo {
@@ -216,7 +251,7 @@ body {
   border-radius: 10px;
   opacity: 0;
   transform: scale(0.9);
-  animation: pill-pop 400ms cubic-bezier(0.34, 1.56, 0.64, 1) 11000ms forwards;
+  animation: pill-pop 400ms cubic-bezier(0.34, 1.56, 0.64, 1) calc(var(--tl-cta-start) + 500ms) forwards;
 }
 
 @keyframes pill-pop {
