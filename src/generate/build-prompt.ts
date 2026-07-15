@@ -13,7 +13,8 @@ const TEMPLATE_GUIDE = `- "dark-neon" : fond sombre, typographie tres grasse, ac
 - "color-blocks" : chaque scene a son propre aplat de couleur vive, typographie tres grasse, mots-cles surlignes comme au marqueur. Direction pop/energique, marche bien pour un ton jeune ou fun.
 - "editorial" : composition alignee a gauche, typographie plus sobre, mots-cles en italique, fines lignes de separation. Direction premium/magazine, discrete. A privilegier pour un positionnement raffine ou une marque etablie.
 - "split-duotone" : ecran divise en deux zones de couleur fixes, mots-cles entre crochets colores. Direction graphique/affiche. A privilegier pour un angle qui oppose deux idees (avant/apres, probleme/solution).
-- "unboxed" : photo produit plein cadre en fond de la scene feature, ticket de prix, ton papier kraft. Direction e-commerce/unboxing. A privilegier quand le type d'activite est e-commerce et qu'un produit precis existe.`;
+- "unboxed" : photo produit plein cadre en fond de la scene feature, ticket de prix, ton papier kraft. Direction e-commerce/unboxing. A privilegier quand le type d'activite est e-commerce et qu'un produit precis existe.
+- "browser-frame" : mockup de navigateur (barre d'url, capture d'ecran du site) dans la scene feature, fond clair epure et aere. Direction SaaS/logiciel. A privilegier quand le type d'activite est SaaS.`;
 
 const SYSTEM_PROMPT = `Tu es un strategiste publicitaire specialise en direct-to-consumer e-commerce.
 Tu ne rediges jamais une publicite directement : tu analyses le positionnement d'une marque,
@@ -68,7 +69,7 @@ Contraintes de format pour chaque scene (le rendu echouera si elles sont depasse
 - productImageIndex : uniquement sur la scene "feature". Un index valide du tableau de produits
   ci-dessus si l'angle beneficie de montrer un produit precis, sinon null. Toujours null sur les
   3 autres scenes.
-- recommendedTemplate : "dark-neon", "light-gradient", "color-blocks", "editorial", "split-duotone" ou "unboxed" (voir description ci-dessus).
+- recommendedTemplate : "dark-neon", "light-gradient", "color-blocks", "editorial", "split-duotone", "unboxed" ou "browser-frame" (voir description ci-dessus).
 
 Reponds avec exactement cet objet JSON (pas de markdown, pas de commentaire) :
 {
@@ -83,7 +84,7 @@ Reponds avec exactement cet objet JSON (pas de markdown, pas de commentaire) :
     {
       "id": string,
       "angle": string,
-      "recommendedTemplate": "dark-neon" | "light-gradient" | "color-blocks" | "editorial" | "split-duotone" | "unboxed",
+      "recommendedTemplate": "dark-neon" | "light-gradient" | "color-blocks" | "editorial" | "split-duotone" | "unboxed" | "browser-frame",
       "scenes": [
         { "role": "hook", "text": string, "highlight": string | null, "productImageIndex": null },
         { "role": "proof", "text": string, "highlight": string | null, "productImageIndex": null },

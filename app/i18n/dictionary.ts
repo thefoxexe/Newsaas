@@ -68,8 +68,14 @@ type Dictionary = {
       recommended: string;
       chooseTemplate: string;
       chooseFormat: string;
-      names: Record<"dark-neon" | "light-gradient" | "color-blocks" | "editorial" | "split-duotone" | "unboxed", string>;
-      descriptions: Record<"dark-neon" | "light-gradient" | "color-blocks" | "editorial" | "split-duotone" | "unboxed", string>;
+      names: Record<
+        "dark-neon" | "light-gradient" | "color-blocks" | "editorial" | "split-duotone" | "unboxed" | "browser-frame",
+        string
+      >;
+      descriptions: Record<
+        "dark-neon" | "light-gradient" | "color-blocks" | "editorial" | "split-duotone" | "unboxed" | "browser-frame",
+        string
+      >;
     };
   };
   libraryPage: {
@@ -311,6 +317,7 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
           editorial: "Editorial",
           "split-duotone": "Split duotone",
           unboxed: "Unboxed",
+          "browser-frame": "Browser frame",
         },
         descriptions: {
           "dark-neon": "Bold dark scenes with a punchy accent color, one word at a time.",
@@ -319,6 +326,7 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
           editorial: "Left-aligned, restrained typography, italic emphasis — a magazine feel.",
           "split-duotone": "Screen split into two fixed color zones, bracketed keyword tags.",
           unboxed: "Full-bleed product photo, ticket-style price tag, kraft-paper tones.",
+          "browser-frame": "Browser mockup framing a real screenshot of your site, clean and airy.",
         },
       },
     },
@@ -555,6 +563,7 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
           editorial: "Éditorial",
           "split-duotone": "Duotone divisé",
           unboxed: "Déballage",
+          "browser-frame": "Fenêtre navigateur",
         },
         descriptions: {
           "dark-neon": "Scènes sombres percutantes, un mot en couleur à la fois.",
@@ -563,6 +572,7 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
           editorial: "Aligné à gauche, typographie sobre, accent en italique — esprit magazine.",
           "split-duotone": "Écran divisé en deux zones de couleur fixes, mots-clés entre crochets.",
           unboxed: "Photo produit plein cadre, étiquette de prix façon ticket, tons papier kraft.",
+          "browser-frame": "Mockup de navigateur encadrant une vraie capture de votre site, épuré et aéré.",
         },
       },
     },
@@ -799,6 +809,7 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
           editorial: "Editorial",
           "split-duotone": "Geteilt duoton",
           unboxed: "Ausgepackt",
+          "browser-frame": "Browserfenster",
         },
         descriptions: {
           "dark-neon": "Wirkungsvolle dunkle Szenen, ein Wort nach dem anderen in Akzentfarbe.",
@@ -807,6 +818,7 @@ export const DICTIONARY: Record<Locale, Dictionary> = {
           editorial: "Linksbündig, zurückhaltende Typografie, Betonung kursiv — Magazin-Gefühl.",
           "split-duotone": "Bildschirm in zwei feste Farbzonen geteilt, Schlüsselwörter in Klammern.",
           unboxed: "Produktfoto randlos im Hintergrund, Preisschild im Ticket-Stil, Kraftpapier-Töne.",
+          "browser-frame": "Browser-Mockup mit echtem Screenshot deiner Website, clean und luftig.",
         },
       },
     },

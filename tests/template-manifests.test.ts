@@ -7,6 +7,7 @@ import colorBlocksManifestJson from "../src/templates/color-blocks/manifest.json
 import editorialManifestJson from "../src/templates/editorial/manifest.json";
 import splitDuotoneManifestJson from "../src/templates/split-duotone/manifest.json";
 import unboxedManifestJson from "../src/templates/unboxed/manifest.json";
+import browserFrameManifestJson from "../src/templates/browser-frame/manifest.json";
 
 // Manifests are static JSON (see template-registry.ts) so they can't import
 // the shared constants directly — this is the guard against silent drift
@@ -20,6 +21,7 @@ describe("template manifests share identical timing and text constraints", () =>
     { name: "editorial", json: editorialManifestJson },
     { name: "split-duotone", json: splitDuotoneManifestJson },
     { name: "unboxed", json: unboxedManifestJson },
+    { name: "browser-frame", json: browserFrameManifestJson },
   ];
 
   it.each(manifests)("$name matches the shared text constraints", ({ json }) => {

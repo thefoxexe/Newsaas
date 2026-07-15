@@ -1,0 +1,27 @@
+{
+  "sourceUrl": "https://example-saas.com",
+  "colors": {
+    "primary": "#3D5AFE",
+    "secondary": "#0F1730",
+    "background": "#FFFFFF",
+    "text": "#111318",
+    "accent": null,
+    "confidence": 0.78
+  },
+  "typography": {
+    "headingFamily": "Inter",
+    "bodyFamily": "Inter",
+    "googleFontMatch": "Inter",
+    "fallbackStack": "sans-serif"
+  },
+  "logo": null,
+  "products": [],
+  "copy": {
+    "tagline": "Le CRM qui pense a votre place",
+    "headings": ["Automatisez vos relances", "Essai gratuit 14 jours"],
+    "reviewSnippets": ["On a gagne 5h par semaine", "Mise en place en une journee"]
+  },
+  "services": ["Automatisation des relances", "Tableaux de bord en temps reel", "Integration email en un clic"],
+  "businessType": "saas",
+  "screenshotUrl": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAMCAgICAgMCAgIDAwMDBAYEBAQEBAgGBgUGCQgKCgkICQkKDA8MCgsOCwkJDRENDg8QEBEQCgwSExIQEw8QEBD/2wBDAQMDAwQDBAgEBAgQCwkLEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBD/wAARCAABAAEDAREAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAj/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+}

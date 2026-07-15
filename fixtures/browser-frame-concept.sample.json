@@ -1,0 +1,11 @@
+{
+  "id": "concept-browser-frame",
+  "angle": "showcase produit saas",
+  "recommendedTemplate": "browser-frame",
+  "scenes": [
+    { "role": "hook", "text": "Vos relances vous echappent ?", "highlight": "echappent", "productImageIndex": null },
+    { "role": "proof", "text": "5h gagnees par semaine, dit Marc", "highlight": "5h gagnees", "productImageIndex": null },
+    { "role": "feature", "text": "Automatisez tout depuis un seul dashboard", "highlight": "dashboard", "productImageIndex": null },
+    { "role": "cta", "text": "Essayez gratuitement", "highlight": "gratuitement", "productImageIndex": null }
+  ]
+}

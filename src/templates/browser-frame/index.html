@@ -1,0 +1,107 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div class="stage">
+      <div class="brand-badge" id="brand-badge">
+        <span class="brand-mark" id="brand-mark"></span>
+        <span class="brand-name" id="brand-name"></span>
+      </div>
+
+      <div class="scene" id="scene-hook" data-role="hook">
+        <p class="scene-text" id="text-hook"></p>
+      </div>
+      <div class="scene" id="scene-proof" data-role="proof">
+        <p class="scene-text" id="text-proof"></p>
+      </div>
+      <div class="scene scene-feature" id="scene-feature" data-role="feature">
+        <div class="browser-frame" id="browser-frame">
+          <div class="browser-chrome">
+            <span class="dot dot-a"></span>
+            <span class="dot dot-b"></span>
+            <span class="dot dot-c"></span>
+            <span class="url-bar" id="url-bar"></span>
+          </div>
+          <img class="browser-screenshot" id="browser-screenshot" alt="" />
+        </div>
+        <p class="scene-text" id="text-feature"></p>
+      </div>
+      <div class="scene scene-cta" id="scene-cta" data-role="cta">
+        <p class="scene-text" id="text-cta"></p>
+      </div>
+    </div>
+    <script id="reeljolt-data" type="application/json">__REELJOLT_DATA__</script>
+    <!-- __REELJOLT_SHARED_JS__ -->
+    <script>
+      (function () {
+        var data = JSON.parse(document.getElementById("reeljolt-data").textContent);
+        var root = document.documentElement;
+        root.style.setProperty("--color-primary", data.colors.primary);
+        root.style.setProperty("--color-secondary", data.colors.secondary);
+        root.style.setProperty("--color-background", data.colors.background);
+        root.style.setProperty("--color-text", data.colors.text);
+        root.style.setProperty(
+          "--font-heading",
+          "'" + (data.typography.headingGoogleFontMatch || data.typography.headingFamily) + "', " + data.typography.fallbackStack,
+        );
+        root.style.setProperty(
+          "--font-body",
+          "'" + (data.typography.bodyGoogleFontMatch || data.typography.bodyFamily) + "', " + data.typography.fallbackStack,
+        );
+
+        function fillBrandMark(markEl, nameEl) {
+          if (data.logoUrl) {
+            var img = document.createElement("img");
+            img.src = data.logoUrl;
+            markEl.appendChild(img);
+          } else {
+            markEl.textContent = data.brandName.charAt(0).toUpperCase();
+          }
+          nameEl.textContent = data.brandName;
+        }
+        fillBrandMark(document.getElementById("brand-mark"), document.getElementById("brand-name"));
+        document.getElementById("url-bar").textContent = data.brandName;
+
+        data.scenes.forEach(function (scene) {
+          var textEl = document.getElementById("text-" + scene.role);
+          // Kinetic typography (see _shared/kinetic-text.js), word-level —
+          // this template's native feel (SaaS copy tends toward fewer,
+          // longer feature-name words), not a fallback. Highlight
+          // mechanic: a rounded pill-adjacent badge behind the word (7th
+          // distinct technique), modest radius like the brand-mark, not a
+          // full pill.
+          if (textEl) window.__reeljoltRenderKineticText(textEl, scene, { splitUnit: "word", highlightTag: "span", highlightClass: "hl" });
+        });
+
+        // The captured site screenshot is the "real content" hero visual —
+        // static within the frame, only the frame's own scene transition
+        // moves. Graceful degrade when there's no screenshot (extraction
+        // failed, or an older saved BrandKit predates the field): the
+        // frame disappears, same idiom as every other template's
+        // no-product fallback.
+        var frameEl = document.getElementById("browser-frame");
+        if (data.screenshotUrl) {
+          document.getElementById("browser-screenshot").src = data.screenshotUrl;
+        } else {
+          frameEl.remove();
+        }
+
+        document.fonts.ready.then(function () {
+          document.getAnimations().forEach(function (animation) {
+            animation.pause();
+          });
+
+          window.__reeljoltSeek = function (ms) {
+            document.getAnimations().forEach(function (animation) {
+              animation.currentTime = ms;
+            });
+          };
+          window.__reeljoltReady = true;
+        });
+      })();
+    </script>
+  </body>
+</html>

@@ -19,6 +19,11 @@ type TemplateData = {
   };
   brandName: string;
   logoUrl: string | null;
+  // Best-effort site screenshot captured during extraction (see
+  // src/extract/analyze-page.ts) — null when it wasn't captured. Only the
+  // SaaS-vertical "browser-frame" template uses this; every other template
+  // just ignores it.
+  screenshotUrl: string | null;
   angle: string;
   // Fixed 4-entry sequence (hook/proof/feature/cta) — each scene resolves
   // its own product independently (only ever populated on the "feature"
@@ -63,6 +68,7 @@ export function renderTemplateHtml(
     },
     brandName: deriveBrandName(brandKit.sourceUrl),
     logoUrl: brandKit.logo?.url ?? null,
+    screenshotUrl: brandKit.screenshotUrl,
     angle: concept.angle,
     scenes: concept.scenes.map((scene) => ({
       role: scene.role,

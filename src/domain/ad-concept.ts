@@ -1,6 +1,14 @@
 import { z } from "zod";
 
-export const TEMPLATE_IDS = ["dark-neon", "light-gradient", "color-blocks", "editorial", "split-duotone", "unboxed"] as const;
+export const TEMPLATE_IDS = [
+  "dark-neon",
+  "light-gradient",
+  "color-blocks",
+  "editorial",
+  "split-duotone",
+  "unboxed",
+  "browser-frame",
+] as const;
 
 export const TemplateIdSchema = z.enum(TEMPLATE_IDS);
 

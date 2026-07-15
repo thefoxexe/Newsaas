@@ -10,7 +10,15 @@ import { reserveRenderCredit } from "@/src/entitlements/reserve-credit";
 // Restricted to the templates that actually have a directory under
 // src/templates/ — matches TemplateIdSchema today, but kept separate in
 // case a template id is ever reserved before it's actually built again.
-const BuildableTemplateIdSchema = z.enum(["dark-neon", "light-gradient", "color-blocks", "editorial", "split-duotone", "unboxed"]);
+const BuildableTemplateIdSchema = z.enum([
+  "dark-neon",
+  "light-gradient",
+  "color-blocks",
+  "editorial",
+  "split-duotone",
+  "unboxed",
+  "browser-frame",
+]);
 
 const CreateRenderSchema = z.object({
   conceptId: z.string().uuid(),

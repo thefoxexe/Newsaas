@@ -15,7 +15,14 @@ type Brand = {
   } | null;
 };
 
-type TemplateId = "dark-neon" | "light-gradient" | "color-blocks" | "editorial" | "split-duotone" | "unboxed";
+type TemplateId =
+  | "dark-neon"
+  | "light-gradient"
+  | "color-blocks"
+  | "editorial"
+  | "split-duotone"
+  | "unboxed"
+  | "browser-frame";
 
 type SceneRole = "hook" | "proof" | "feature" | "cta";
 
@@ -56,6 +63,7 @@ const TEMPLATES: Array<{ id: TemplateId; previewSrc: string }> = [
   { id: "editorial", previewSrc: "/template-previews/editorial.png" },
   { id: "split-duotone", previewSrc: "/template-previews/split-duotone.png" },
   { id: "unboxed", previewSrc: "/template-previews/unboxed.png" },
+  { id: "browser-frame", previewSrc: "/template-previews/browser-frame.png" },
 ];
 
 type GeneratorText = (typeof DICTIONARY)[Locale]["generator"];
