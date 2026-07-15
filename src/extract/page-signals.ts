@@ -24,4 +24,7 @@ export type RawPageSignals = {
   headings: string[];
   reviewLikeSnippets: string[];
   serviceLikeSnippets: string[];
+  // Best-effort viewport screenshot (JPEG data URI), captured Node-side via
+  // CDP — null when the capture failed or timed out. See analyze-page.ts.
+  screenshotDataUri: string | null;
 };

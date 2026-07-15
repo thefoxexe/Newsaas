@@ -41,6 +41,17 @@ export const BrandKitSchema = z.object({
   // (agency/service sites, which have no schema.org Product data at all).
   // `.default([])` keeps this optional on already-stored brand kits.
   services: z.array(z.string()).default([]),
+  // Heuristic from signals already collected (see extractBrandKit): products
+  // present -> ecommerce, no products but services present -> service,
+  // otherwise null ("unknown" — the generation prompt is told this and can
+  // infer it itself from tagline/headings/services/the URL). `.default(null)`
+  // keeps this optional on already-stored brand kits.
+  businessType: z.enum(["ecommerce", "saas", "service"]).nullable().default(null),
+  // Best-effort viewport screenshot captured during extraction (JPEG data
+  // URI), used by the SaaS-vertical template's browser-chrome mockup. Null
+  // when extraction failed to capture one or predates this field.
+  // `.default(null)` keeps this optional on already-stored brand kits.
+  screenshotUrl: z.string().nullable().default(null),
 });
 
 export type BrandKit = z.infer<typeof BrandKitSchema>;
@@ -71,5 +82,7 @@ export function blankBrandKit(sourceUrl: string): BrandKit {
     products: [],
     copy: { tagline: null, headings: [], reviewSnippets: [] },
     services: [],
+    businessType: null,
+    screenshotUrl: null,
   };
 }

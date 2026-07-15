@@ -14,9 +14,15 @@ function fixtureUrl(name: string): string {
   return pathToFileURL(path.join(__dirname, "fixtures", name)).toString();
 }
 
+// A screenshot data URI over a sane size ceiling would suggest the JPEG
+// quality/viewport-only choice in analyze-page.ts needs revisiting.
+const MAX_SCREENSHOT_DATA_URI_LENGTH = 2_000_000;
+
 describe.skipIf(!chromiumAvailable)("extractBrandKit (real browser, local fixtures)", () => {
   it("extracts a JSON-LD-driven storefront (shop-a)", async () => {
+    const start = Date.now();
     const result = await extractBrandKit(fixtureUrl("shop-a.html"), new PlaywrightPageAnalyzer());
+    const elapsedMs = Date.now() - start;
 
     expect(result.ok).toBe(true);
     if (!result.ok) return;
@@ -31,6 +37,14 @@ describe.skipIf(!chromiumAvailable)("extractBrandKit (real browser, local fixtur
     expect(result.value.logo?.url).toContain("favicon-512.png");
     expect(result.value.copy.tagline).toBe("Le vestiaire technique de la ville.");
     expect(result.value.colors.confidence).toBeGreaterThan(0.5);
+
+    // Has products -> ecommerce.
+    expect(result.value.businessType).toBe("ecommerce");
+    expect(result.value.screenshotUrl).toMatch(/^data:image\/jpeg;base64,/);
+    expect(result.value.screenshotUrl?.length ?? 0).toBeLessThan(MAX_SCREENSHOT_DATA_URI_LENGTH);
+    // The added screenshot step shouldn't meaningfully eat into the
+    // extractor's own TOTAL_BUDGET_MS/NETWORK_IDLE_TIMEOUT_MS budgets.
+    expect(elapsedMs).toBeLessThan(30_000);
   }, 30_000);
 
   it("falls back to heuristics when there is no structured data (shop-b)", async () => {
@@ -44,5 +58,9 @@ describe.skipIf(!chromiumAvailable)("extractBrandKit (real browser, local fixtur
     expect(result.value.colors.primary).toBe("#2E7D32");
     expect(result.value.logo?.url).toContain("social-preview.jpg");
     expect(result.value.copy.tagline).toBe("Sacs et accessoires de voyage minimalistes.");
+
+    // No products, no service-labelled sections in this fixture -> unknown.
+    expect(result.value.businessType).toBeNull();
+    expect(result.value.screenshotUrl).toMatch(/^data:image\/jpeg;base64,/);
   }, 30_000);
 });

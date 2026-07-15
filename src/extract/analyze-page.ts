@@ -22,7 +22,10 @@ const MAX_SCANNED_ELEMENTS = 3000;
 const DESKTOP_USER_AGENT =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
 
-type BrowserSignals = Omit<RawPageSignals, "sourceUrl">;
+// screenshotDataUri is excluded here — it's a Node-side CDP call (see
+// run() below), not something collectSignals (serialized into the page's
+// own JS context) can produce.
+type BrowserSignals = Omit<RawPageSignals, "sourceUrl" | "screenshotDataUri">;
 
 export class PlaywrightPageAnalyzer implements PageAnalyzer {
   private readonly executablePath: string | undefined;
@@ -83,7 +86,24 @@ export class PlaywrightPageAnalyzer implements PageAnalyzer {
 
       const signals = await page.evaluate(collectSignals, MAX_SCANNED_ELEMENTS);
 
-      return { sourceUrl: url, ...signals };
+      // Best-effort: a viewport (not full-page) JPEG gives the SaaS-vertical
+      // template a genuine "real content" hero visual without an unbounded
+      // capture size/time on tall marketing pages. This is a Node-side CDP
+      // call — collectSignals runs inside the page's own JS context via
+      // evaluate() and has no access to Playwright's screenshot API, so it
+      // has to be a sibling call here rather than part of that function.
+      // Never let a screenshot failure fail extraction as a whole — same
+      // degrade-gracefully philosophy as every other best-effort signal.
+      let screenshotDataUri: string | null = null;
+      try {
+        const buffer = await page.screenshot({ type: "jpeg", quality: 60 });
+        screenshotDataUri = `data:image/jpeg;base64,${buffer.toString("base64")}`;
+      } catch {
+        /* leave null — the render pipeline already treats a missing
+           screenshot as a text-only fallback, same as a missing product */
+      }
+
+      return { sourceUrl: url, ...signals, screenshotDataUri };
     } finally {
       await browser.close();
     }

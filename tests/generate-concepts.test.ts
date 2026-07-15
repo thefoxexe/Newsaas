@@ -30,6 +30,8 @@ const brandKit: BrandKit = {
   products: [{ title: "Veste Aro", price: "CHF 129", imageUrl: "https://example.com/aro.jpg", description: null }],
   copy: { tagline: "Le vestiaire de la ville", headings: [], reviewSnippets: [] },
   services: [],
+  businessType: null,
+  screenshotUrl: null,
 };
 
 function validScenes(overrides: Partial<Record<Scene["role"], Partial<Scene>>> = {}): Scene[] {

@@ -39,6 +39,8 @@ const brandKit: BrandKit = {
   products: [],
   copy: { tagline: null, headings: [], reviewSnippets: [] },
   services: [],
+  businessType: null,
+  screenshotUrl: null,
 };
 
 function makeScenes(overrides: Partial<Record<Scene["role"], Partial<Scene>>> = {}): Scene[] {

@@ -52,6 +52,14 @@ export async function extractBrandKit(
     hasLogo: logo !== null,
   });
 
+  // Heuristic from signals already collected above — no new scraping.
+  // Deliberately no SaaS keyword heuristic: it would need a whole new
+  // page-text signal this extractor doesn't collect, and would inherit the
+  // same fragility already accepted for the `services` heuristic. Left
+  // null ("unknown") otherwise, and the generation prompt is told to infer
+  // it itself from tagline/headings/services/the URL instead.
+  const businessType = products.length > 0 ? "ecommerce" : signals.serviceLikeSnippets.length > 0 ? "service" : null;
+
   return ok({
     sourceUrl: signals.sourceUrl,
     colors: {
@@ -67,5 +75,7 @@ export async function extractBrandKit(
     products,
     copy,
     services: signals.serviceLikeSnippets,
+    businessType,
+    screenshotUrl: signals.screenshotDataUri,
   });
 }
