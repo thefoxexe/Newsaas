@@ -93,11 +93,42 @@ body {
   opacity: 0.55;
 }
 
+/* transition mechanic: typographic masked reveal — the text itself sweeps
+   into view left-to-right via an animated clip-path (like a highlighter
+   pass or a typewriter reveal), layered on top of the parent scene's own
+   plain translateY/opacity fade. Distinct from color-blocks' whole-panel
+   wipe since it's scoped to the text element, not the scene's background. */
 .scene-text {
   font-family: var(--font-heading);
   font-weight: 700;
   font-size: clamp(1.9rem, 7.6vw, 4.6rem);
   line-height: 1.15;
+  clip-path: inset(0 100% 0 0);
+}
+
+@keyframes text-reveal {
+  0% {
+    clip-path: inset(0 100% 0 0);
+  }
+  100% {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+#scene-hook .scene-text {
+  animation: text-reveal 500ms ease-out calc(var(--tl-hook-start) + 100ms) forwards;
+}
+
+#scene-proof .scene-text {
+  animation: text-reveal 500ms ease-out calc(var(--tl-proof-start) + 100ms) forwards;
+}
+
+#scene-feature .scene-text {
+  animation: text-reveal 500ms ease-out calc(var(--tl-feature-start) + 100ms) forwards;
+}
+
+#scene-cta .scene-text {
+  animation: text-reveal 500ms ease-out calc(var(--tl-cta-start) + 100ms) forwards;
 }
 
 /* Emphasis via italic + color instead of a filled highlight — the
@@ -140,23 +171,25 @@ body {
 }
 
 /* Timeline (15000ms total, 4 scenes): hook 0-3500, proof 3500-7000,
-   feature 7000-10500, cta 10500-15000 (holds to the end). */
+   feature 7000-10500, cta 10500-15000 (holds to the end). Offsets/
+   durations reference the shared timeline vars (see
+   src/templates/_shared/timeline.css). */
 #scene-hook {
   animation:
-    scene-in 450ms ease-out 0ms forwards,
-    scene-out 350ms ease-in 3150ms forwards;
+    scene-in var(--tl-in-dur) ease-out var(--tl-hook-start) forwards,
+    scene-out var(--tl-out-dur) ease-in var(--tl-hook-out) forwards;
 }
 
 #scene-proof {
   animation:
-    scene-in 450ms ease-out 3500ms forwards,
-    scene-out 350ms ease-in 6650ms forwards;
+    scene-in var(--tl-in-dur) ease-out var(--tl-proof-start) forwards,
+    scene-out var(--tl-out-dur) ease-in var(--tl-proof-out) forwards;
 }
 
 #scene-feature {
   animation:
-    scene-in 450ms ease-out 7000ms forwards,
-    scene-out 350ms ease-in 10150ms forwards;
+    scene-in var(--tl-in-dur) ease-out var(--tl-feature-start) forwards,
+    scene-out var(--tl-out-dur) ease-in var(--tl-feature-out) forwards;
 }
 
 /* Thin flat border instead of a soft shadow or filled card — keeps the
@@ -196,8 +229,8 @@ body {
 #scene-cta {
   z-index: 10;
   animation:
-    scene-in 450ms ease-out 10500ms forwards,
-    cta-nudge 900ms ease-in-out 11500ms infinite;
+    scene-in var(--tl-in-dur) ease-out var(--tl-cta-start) forwards,
+    cta-nudge 900ms ease-in-out calc(var(--tl-cta-start) + 1000ms) infinite;
 }
 
 @keyframes cta-nudge {
