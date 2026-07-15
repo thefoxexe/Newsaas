@@ -85,6 +85,12 @@ export function renderTemplateHtml(
 
   const withData = withInlineStyles.replace("__REELJOLT_DATA__", dataJson);
 
+  // Inlines the shared kinetic-typography renderer ahead of each template's
+  // own data script, which calls window.__reeljoltRenderKineticText instead
+  // of duplicating its own text-splitting logic (see
+  // src/templates/_shared/kinetic-text.js).
+  const withSharedJs = withData.replace("<!-- __REELJOLT_SHARED_JS__ -->", `<script>${template.sharedJs}</script>`);
+
   // Flat solid background, plain text, fixed position, modest (non-circular)
   // border-radius — matching the safe-for-determinism patterns established
   // for this renderer (see docs/SPEC_REVIEW.md): fully rounded/pill shapes
@@ -95,11 +101,11 @@ export function renderTemplateHtml(
   // watermark would be covered during that beat despite being later in
   // the DOM.
   const finalHtml = watermark
-    ? withData.replace(
+    ? withSharedJs.replace(
         "</body>",
         `<div style="position:fixed;z-index:999;bottom:20px;right:20px;padding:8px 16px;border-radius:8px;background:#000000;color:#ffffff;font-family:system-ui,sans-serif;font-size:16px;font-weight:700;">Made with ReelJolt</div></body>`,
       )
-    : withData;
+    : withSharedJs;
 
   return ok(finalHtml);
 }

@@ -2,7 +2,12 @@ import tseslint from "typescript-eslint";
 
 export default tseslint.config(
   {
-    ignores: ["dist/**", "node_modules/**", "out/**", ".next/**", "next-env.d.ts"],
+    // src/templates/_shared/*.js: vanilla browser runtime scripts inlined
+    // directly into rendered template HTML (see render-html.ts) — plain JS
+    // with no type information, same category as every template's own
+    // inline <script> blocks, which are embedded in .html and never linted
+    // either.
+    ignores: ["dist/**", "node_modules/**", "out/**", ".next/**", "next-env.d.ts", "src/templates/_shared/*.js"],
   },
   ...tseslint.configs.recommendedTypeChecked,
   {

@@ -16,6 +16,7 @@ const template: LoadedTemplate = {
   },
   html: '<html><head><link rel="stylesheet" href="./style.css" /></head><body>__REELJOLT_DATA__</body></html>',
   css: ".stage { color: red; }",
+  sharedJs: "",
 };
 
 const brandKit: BrandKit = {

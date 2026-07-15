@@ -19,4 +19,9 @@
 
   --tl-in-dur: 450ms;
   --tl-out-dur: 350ms;
+
+  /* Total video length — lets kinetic-text.js compute the cta scene's
+     window (totalDuration - cta-start) purely from CSS vars instead of
+     duplicating the 15000ms constant in JS. */
+  --tl-total-duration: 15000ms;
 }
