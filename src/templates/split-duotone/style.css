@@ -162,6 +162,31 @@ body {
   color: var(--color-background);
 }
 
+/* Kinetic typography: each letter pops in individually (opacity + translate
+   + scale only), staggered per-unit via an inline animation-delay set in
+   _shared/kinetic-text.js. The bracket glyphs above live on ::before/::after
+   of the .hl wrapper itself, not on the individual .kt-unit children, so
+   they're unaffected by the letters now inside it. */
+.kt-unit {
+  display: inline-block;
+  opacity: 0;
+  animation-name: letter-pop;
+  animation-duration: 260ms;
+  animation-timing-function: ease-out;
+  animation-fill-mode: both;
+}
+
+@keyframes letter-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(0.4em) scale(0.92);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 @keyframes scene-in {
   0% {
     opacity: 0;
